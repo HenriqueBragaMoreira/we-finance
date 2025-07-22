@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ModeToggle } from "../../_components/mode-toggle";
 
 export function DashboardHeader() {
   return (
@@ -30,7 +31,7 @@ export function DashboardHeader() {
         </div>
       </div>
 
-      {/* <Actions /> */}
+      <ModeToggle />
     </header>
   );
 }
