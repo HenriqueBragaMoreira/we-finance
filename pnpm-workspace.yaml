@@ -2,20 +2,18 @@ packages:
   - apps/*
   - packages/*
 
+catalog:
+  react: ^19.1.0
+  react-dom: ^19.1.0
+  '@types/react': ^19.1.8
+  '@types/react-dom': ^19.1.6
+  cva: 1.0.0-beta.4
+  tailwind-merge: ^3.3.1
+  tailwindcss: ^4.1.11
+  tailwindcss-motion: ^1.1.1
+
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - '@tailwindcss/oxide'
   - core-js
   - esbuild
-
-catalog:
-  "react": "^19.1.0"
-  "react-dom": "^19.1.0"
-
-  "@types/react": "^19.1.8"
-  "@types/react-dom": "^19.1.6"
-
-  "cva": "1.0.0-beta.4"
-  "tailwind-merge": "^3.3.1"
-  "tailwindcss": "^4.1.11"
-  "tailwindcss-motion": "^1.1.1"
