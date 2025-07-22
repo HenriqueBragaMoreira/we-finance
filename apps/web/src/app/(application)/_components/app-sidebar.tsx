@@ -75,7 +75,7 @@ export function AppSidebar() {
       <SidebarContent className="-mt-2">
         {data.map((item) => (
           <SidebarGroup key={item.title}>
-            <SidebarGroupLabel className="uppercase text-muted-foreground/65">
+            <SidebarGroupLabel className="uppercase text-muted-foreground">
               {item.title}
             </SidebarGroupLabel>
             <SidebarGroupContent>
