@@ -10,30 +10,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { masks } from "@/utils/masks";
+import type { ExpenseType } from "../data/expenses";
 
-export type IncomesType = {
-  id: number;
-  name: string;
-  type: string;
-  amount: number;
-  paymentMethod: string;
-  date: string;
-  status: string;
-  person: string;
-  recurring: boolean;
-};
-
-export const columns: ColumnDef<IncomesType>[] = [
+export const columns: ColumnDef<ExpenseType>[] = [
   {
     accessorKey: "name",
     header: "Descrição",
   },
   {
-    accessorKey: "type",
-    header: "Tipo",
+    accessorKey: "category",
+    header: "Categoria",
   },
   {
-    accessorKey: "amount",
+    accessorKey: "value",
     header: "Valor",
     cell: ({ row }) => {
       const value = row.original.amount;
@@ -49,9 +38,12 @@ export const columns: ColumnDef<IncomesType>[] = [
     header: "Data",
     cell: ({ row }) => {
       const date = row.original.date;
-
       return <span>{new Date(date).toLocaleDateString("pt-BR")}</span>;
     },
+  },
+  {
+    accessorKey: "person",
+    header: "Pessoa",
   },
   {
     accessorKey: "status",
@@ -64,7 +56,7 @@ export const columns: ColumnDef<IncomesType>[] = [
           <span
             className={cn(
               "size-1.5 rounded-full",
-              status === "Recebido" && "bg-emerald-500",
+              status === "Pago" && "bg-emerald-500",
               status === "Pendente" && "bg-amber-500"
             )}
             aria-hidden="true"
@@ -73,10 +65,6 @@ export const columns: ColumnDef<IncomesType>[] = [
         </Badge>
       );
     },
-  },
-  {
-    accessorKey: "person",
-    header: "Pessoa",
   },
   {
     id: "action",
