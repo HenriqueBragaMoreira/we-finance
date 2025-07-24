@@ -1,11 +1,3 @@
-import {
-  ChartLine,
-  Ellipsis,
-  LogOut,
-  NotebookText,
-  ScrollText,
-  UserRound,
-} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -19,6 +11,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Ellipsis, LogOut, UserRound } from "lucide-react";
 
 export function NavUser({
   user: { name, avatar },
@@ -59,14 +52,6 @@ export function NavUser({
             sideOffset={4}
           >
             <DropdownMenuItem className="gap-3 px-1">
-              <ChartLine
-                size={20}
-                className="text-muted-foreground/70"
-                aria-hidden="true"
-              />
-              <span>Dashboard</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-3 px-1">
               <UserRound
                 size={20}
                 className="text-muted-foreground/70"
@@ -75,25 +60,9 @@ export function NavUser({
               <span>Profile</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="gap-3 px-1">
-              <NotebookText
-                size={20}
-                className="text-muted-foreground/70"
-                aria-hidden="true"
-              />
-              <span>Changelog</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-3 px-1">
-              <ScrollText
-                size={20}
-                className="text-muted-foreground/70"
-                aria-hidden="true"
-              />
-              <span>History</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-3 px-1">
               <LogOut
                 size={20}
-                className="text-muted-foreground/70"
+                className="text-destructive/70"
                 aria-hidden="true"
               />
               <span>Log out</span>

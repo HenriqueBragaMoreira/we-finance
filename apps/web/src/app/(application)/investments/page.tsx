@@ -1,14 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PiggyBank, TrendingUp } from "lucide-react";
 import { DataTable } from "./components/data-table";
-import { InvestmentsHeader } from "./components/investments-header";
 // import { DataTable } from "./components/data-table";
 
 export default function InvestmentsPage() {
   return (
     <>
-      <InvestmentsHeader />
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 *:data-[slot=card]:gap-2 **:data-[slot=card-header]:pb-0">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

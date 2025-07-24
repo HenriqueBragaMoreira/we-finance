@@ -1,15 +1,12 @@
-import { DollarSign, PiggyBank, TrendingDown, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DollarSign, PiggyBank, TrendingDown, TrendingUp } from "lucide-react";
 import { ChartBarMultiple } from "./components/chart-bar-multiple";
 import { ChartPieSimple } from "./components/chart-pie-simple";
-import { DashboardHeader } from "./components/dashboard-header";
 import { RecentTransactions } from "./components/recent-transactions";
 
 export default function DashboardPage() {
   return (
     <>
-      <DashboardHeader />
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 *:data-[slot=card]:gap-2 **:data-[slot=card-header]:pb-0">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

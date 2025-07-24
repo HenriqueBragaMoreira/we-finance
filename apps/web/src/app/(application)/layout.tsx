@@ -1,5 +1,6 @@
-import { cookies } from "next/headers";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { cookies } from "next/headers";
+import { AppHeader } from "./_components/app-header";
 import { AppSidebar } from "./_components/app-sidebar";
 
 export default async function ApplicationLayout({
@@ -14,7 +15,11 @@ export default async function ApplicationLayout({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
 
-      <SidebarInset className="p-10 pt-2 space-y-7">{children}</SidebarInset>
+      <SidebarInset className="p-10 pt-2 space-y-7">
+        <AppHeader />
+
+        {children}
+      </SidebarInset>
     </SidebarProvider>
   );
 }

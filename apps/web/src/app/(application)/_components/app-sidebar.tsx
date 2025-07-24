@@ -1,15 +1,6 @@
 "use client";
 
 import {
-  ChartCandlestick,
-  type LucideProps,
-  PiggyBank,
-  TrendingDown,
-  TrendingUp,
-} from "lucide-react";
-import { usePathname } from "next/navigation";
-import type { ForwardRefExoticComponent } from "react";
-import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -21,41 +12,18 @@ import {
   SidebarMenuItem,
   SidebarMenuLink,
 } from "@/components/ui/sidebar";
+import { type RoutesType, routes } from "@/routes/routes";
+import { usePathname } from "next/navigation";
 import { NavUser } from "./nav-user";
 
 const data = [
   {
     title: "Geral",
-    items: [
-      {
-        title: "Dashboard",
-        url: "/dashboard",
-        icon: ChartCandlestick,
-      },
-      {
-        title: "Receitas",
-        url: "/revenues",
-        icon: TrendingUp,
-      },
-      {
-        title: "Despesas",
-        url: "/expenses",
-        icon: TrendingDown,
-      },
-      {
-        title: "Investimentos",
-        url: "/investments",
-        icon: PiggyBank,
-      },
-    ],
+    items: routes,
   },
 ] as {
   title: string;
-  items: {
-    title: string;
-    url: string;
-    icon: ForwardRefExoticComponent<Omit<LucideProps, "ref">>;
-  }[];
+  items: RoutesType[];
 }[];
 
 const user = {
@@ -85,8 +53,8 @@ export function AppSidebar() {
                     <SidebarMenuLink
                       className="group/menu-button group-data-[collapsible=icon]:px-[5px]! gap-3 h-9 [&>svg]:size-auto"
                       tooltip={item.title}
-                      isActive={pathname === item.url}
-                      href={item.url}
+                      isActive={pathname === item.path}
+                      href={item.path}
                     >
                       {item.icon && (
                         <item.icon
