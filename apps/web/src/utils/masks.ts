@@ -1,7 +1,11 @@
 export const masks = {
-  money: (value: string) => {
-    if (!value || typeof value !== "string") {
+  money: (value: string | number) => {
+    if (!value || (typeof value !== "string" && typeof value !== "number")) {
       return "";
+    }
+
+    if (typeof value === "number") {
+      value = value.toString();
     }
 
     let cleanValue = value?.replace(/[^\d]/g, "");

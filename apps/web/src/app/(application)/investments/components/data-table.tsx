@@ -15,18 +15,18 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { expenses } from "../data/expenses";
+import { investments } from "../data/investments";
 import { columns } from "./columns";
 
 export function DataTable() {
   const paginationHook = usePagination();
 
-  const totalLength = expenses.length;
+  const totalLength = investments.length;
 
   const pageCount = Math.ceil(totalLength / paginationHook.rowsPerPage);
 
   const table = useReactTable({
-    data: expenses,
+    data: investments,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

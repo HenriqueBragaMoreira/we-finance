@@ -1,5 +1,5 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { UsePaginationReturn } from "@/hooks/use-pagination";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Select,
@@ -59,14 +59,14 @@ export function Pagination({
   const isActive = (page: number): boolean => pageIndex + 1 === page;
 
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex justify-center sm:justify-between items-center">
       <Select
         value={paginationTable.rowsPerPage.toString()}
         onValueChange={(value) =>
           paginationTable.handleChangeRowsPerPage(Number(value))
         }
       >
-        <SelectTrigger className="w-40 max-h-10">
+        <SelectTrigger className="hidden sm:flex w-40 max-h-10">
           <SelectValue placeholder="Categoria" />
         </SelectTrigger>
         <SelectContent>

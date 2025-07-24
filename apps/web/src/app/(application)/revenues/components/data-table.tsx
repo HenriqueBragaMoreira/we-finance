@@ -1,10 +1,4 @@
 "use client";
-import {
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import { Pagination } from "@/components/pagination";
 import {
   Table,
@@ -15,6 +9,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePagination } from "@/hooks/use-pagination";
+import {
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { incomes } from "../data/incomes";
 import { columns } from "./columns";
 
@@ -40,7 +40,7 @@ export function DataTable() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-md border *:data-[slot=table-container]:h-[calc(100vh-22.5rem)]">
+      <div className="rounded-md border sm:*:data-[slot=table-container]:h-[calc(100vh-22.5rem)]">
         <Table className="h-full">
           <TableHeader className="sticky top-0 bg-background z-30">
             {table.getHeaderGroups().map((headerGroup) => (
