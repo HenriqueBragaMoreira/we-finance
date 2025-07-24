@@ -1,5 +1,11 @@
 "use client";
 
+import { CalendarDays, History, UsersRound } from "lucide-react";
+import { usePathname } from "next/navigation";
+import {
+  DashboardFilters,
+  type FilterOptionsType,
+} from "@/app/(application)/dashboard/components/dashboard-filters";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,8 +17,46 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { routes } from "@/routes/routes";
-import { usePathname } from "next/navigation";
 import { ModeToggle } from "./mode-toggle";
+
+const filterOptions: FilterOptionsType[] = [
+  {
+    label: "Pessoa",
+    value: "person",
+    icon: <UsersRound className="size-4" />,
+    variant: "select",
+    options: [
+      { value: "all", label: "Todos" },
+      { value: "henrique", label: "Henrique" },
+      { value: "gislaine", label: "Gislaine" },
+    ],
+  },
+  {
+    label: "Mês",
+    value: "month",
+    icon: <CalendarDays className="size-4" />,
+    variant: "multiSelect",
+    options: [
+      { value: "janeiro", label: "Janeiro" },
+      { value: "fevereiro", label: "Fevereiro" },
+      { value: "março", label: "Março" },
+      { value: "abril", label: "Abril" },
+      { value: "maio", label: "Maio" },
+      { value: "junho", label: "Junho" },
+      { value: "julho", label: "Julho" },
+    ],
+  },
+  {
+    label: "Ano",
+    value: "year",
+    icon: <History className="size-4" />,
+    variant: "multiSelect",
+    options: [
+      { value: "2024", label: "2024" },
+      { value: "2025", label: "2025" },
+    ],
+  },
+];
 
 export function AppHeader() {
   const currentPath = usePathname();
@@ -27,7 +71,7 @@ export function AppHeader() {
           <Separator orientation="vertical" className="me-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
-              {currentPath !== "/dashboard" && (
+              {currentRoute?.path !== "/dashboard" && (
                 <>
                   <BreadcrumbItem>
                     <BreadcrumbLink href={routes[0].path}>
@@ -47,7 +91,13 @@ export function AppHeader() {
         </div>
       </div>
 
-      <ModeToggle />
+      <div className="flex items-center gap-3">
+        {currentRoute?.path === "/dashboard" && (
+          <DashboardFilters filterOptions={filterOptions} />
+        )}
+
+        <ModeToggle />
+      </div>
     </header>
   );
 }

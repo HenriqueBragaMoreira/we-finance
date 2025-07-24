@@ -1,3 +1,5 @@
+import type { ColumnDef } from "@tanstack/react-table";
+import { EllipsisIcon, SquarePen, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,8 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { masks } from "@/utils/masks";
-import type { ColumnDef } from "@tanstack/react-table";
-import { EllipsisIcon, SquarePen, Trash2 } from "lucide-react";
 import type { InvestmentType } from "../data/investments";
 
 export const columns: ColumnDef<InvestmentType>[] = [

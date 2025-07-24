@@ -1,3 +1,4 @@
+import { Ellipsis, LogOut, UserRound } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -11,7 +12,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Ellipsis, LogOut, UserRound } from "lucide-react";
 
 export function NavUser({
   user: { name, avatar },

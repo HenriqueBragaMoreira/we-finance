@@ -1,5 +1,5 @@
-import type { UsePaginationReturn } from "@/hooks/use-pagination";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { UsePaginationReturn } from "@/hooks/use-pagination";
 import { Button } from "./ui/button";
 import {
   Select,

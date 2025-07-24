@@ -1,4 +1,10 @@
 "use client";
+import {
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { Pagination } from "@/components/pagination";
 import {
   Table,
@@ -9,12 +15,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePagination } from "@/hooks/use-pagination";
-import {
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import { incomes } from "../data/incomes";
 import { columns } from "./columns";
 

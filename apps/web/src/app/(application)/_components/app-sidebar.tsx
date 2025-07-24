@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -13,7 +14,6 @@ import {
   SidebarMenuLink,
 } from "@/components/ui/sidebar";
 import { type RoutesType, routes } from "@/routes/routes";
-import { usePathname } from "next/navigation";
 import { NavUser } from "./nav-user";
 
 const data = [
