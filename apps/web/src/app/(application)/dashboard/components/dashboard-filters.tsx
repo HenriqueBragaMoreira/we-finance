@@ -3,6 +3,9 @@
 import { BadgeCheck, Check, Funnel, Text, X } from "lucide-react";
 import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
 import { type JSX, useCallback, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandGroup,
@@ -10,14 +13,11 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Badge } from "../../../../components/ui/badge";
-import { Button } from "../../../../components/ui/button";
-import { Calendar } from "../../../../components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../../../components/ui/popover";
+} from "@/components/ui/popover";
 
 export type FilterOptionsType = {
   label: string;

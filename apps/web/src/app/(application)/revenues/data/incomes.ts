@@ -1,4 +1,16 @@
-export const incomes = [
+export type IncomesType = {
+  id: number;
+  name: string;
+  type: string;
+  amount: number;
+  paymentMethod: string;
+  date: string;
+  status: string;
+  person: string;
+  recurring: boolean;
+};
+
+export const incomes: IncomesType[] = [
   {
     id: 1,
     name: "Salário Henrique",
