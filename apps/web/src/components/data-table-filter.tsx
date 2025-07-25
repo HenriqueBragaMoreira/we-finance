@@ -1,9 +1,5 @@
 "use client";
 
-import type { Column, Table } from "@tanstack/react-table";
-import { BadgeCheck, Check, Funnel, Text, X } from "lucide-react";
-import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
-import { type JSX, useCallback, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -20,6 +16,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import type { Column, Table } from "@tanstack/react-table";
+import { BadgeCheck, Check, Funnel, Text, X } from "lucide-react";
+import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
+import { type JSX, useCallback, useMemo, useState } from "react";
 
 declare module "@tanstack/react-table" {
   // biome-ignore lint: Generic types needed for module augmentation
@@ -239,7 +239,7 @@ export function DataTableFilter<TData>({
         <Button
           aria-label="Reset all filters"
           variant="outline"
-          size="icon"
+          className="size-8"
           onClick={() => {
             const resetFilters = Object.keys(filtersConfig).reduce(
               (acc, key) => {
@@ -255,7 +255,7 @@ export function DataTableFilter<TData>({
             setFilters(resetFilters);
           }}
         >
-          <X className="size-[1.2rem]" />
+          <X />
         </Button>
       )}
     </div>
