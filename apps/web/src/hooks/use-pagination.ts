@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { parseAsInteger, useQueryState } from "nuqs";
 
 export type UsePaginationReturn = {
   page: number;
@@ -12,8 +12,14 @@ export type UsePaginationReturn = {
 };
 
 export function usePagination(): UsePaginationReturn {
-  const [pageQuery, setPageQuery] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [pageQuery, setPageQuery] = useQueryState<number>(
+    "page",
+    parseAsInteger.withDefault(0)
+  );
+  const [rowsPerPage, setRowsPerPage] = useQueryState<number>(
+    "rowsPerPage",
+    parseAsInteger.withDefault(10)
+  );
 
   function handleChangePage(newPage: number): void {
     setPageQuery(newPage);
