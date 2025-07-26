@@ -1,6 +1,6 @@
-import { PiggyBank, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "./components/data-table";
+import { PiggyBank, TrendingUp } from "lucide-react";
+import { DataTableContainer } from "./components/data-table-container";
 
 export default function InvestmentsPage() {
   return (
@@ -39,7 +39,7 @@ export default function InvestmentsPage() {
         </Card>
       </div>
 
-      <DataTable />
+      <DataTableContainer />
     </>
   );
 }

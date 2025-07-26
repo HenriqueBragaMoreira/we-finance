@@ -1,6 +1,6 @@
-import { TrendingDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "./components/data-table";
+import { TrendingDown } from "lucide-react";
+import { DataTableContainer } from "./components/data-table-container";
 
 export default function ExpensesPage() {
   return (
@@ -39,7 +39,7 @@ export default function ExpensesPage() {
         </Card>
       </div>
 
-      <DataTable />
+      <DataTableContainer />
     </>
   );
 }

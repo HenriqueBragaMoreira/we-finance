@@ -1,3 +1,13 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { masks } from "@/utils/masks";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   Banknote,
@@ -10,16 +20,6 @@ import {
   Trash2,
   UserRound,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import { masks } from "@/utils/masks";
 import type { IncomesType } from "../data/incomes";
 
 type useColumnsProps = {
@@ -114,6 +114,18 @@ export function useColumns({ incomes }: useColumnsProps) {
       enableColumnFilter: true,
     },
     {
+      id: "person",
+      accessorKey: "person",
+      header: "Pessoa",
+      meta: {
+        label: "Pessoa",
+        variant: "text",
+        icon: UserRound,
+        filterType: "text",
+      },
+      enableColumnFilter: true,
+    },
+    {
       id: "status",
       accessorKey: "status",
       header: "Status",
@@ -143,18 +155,6 @@ export function useColumns({ incomes }: useColumnsProps) {
         })),
         icon: CircleDashed,
         filterType: "multiText",
-      },
-      enableColumnFilter: true,
-    },
-    {
-      id: "person",
-      accessorKey: "person",
-      header: "Pessoa",
-      meta: {
-        label: "Pessoa",
-        variant: "text",
-        icon: UserRound,
-        filterType: "text",
       },
       enableColumnFilter: true,
     },
