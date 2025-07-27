@@ -1,4 +1,3 @@
-import { Ellipsis, LogOut, UserRound } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -12,17 +11,36 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { authClient } from "@/lib/auth";
+import { Ellipsis, UserRound } from "lucide-react";
+import { LogoutDropdownMenuItem } from "./logout-dropdown-menu-item";
 
-export function NavUser({
-  user: { name, avatar },
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function NavUser() {
   const { isMobile } = useSidebar();
+  const { data, isPending } = authClient.useSession();
+
+  if (isPending) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            size="lg"
+            className="bg-accent text-foreground"
+            disabled
+          >
+            <Skeleton className="bg-gray-400/60 size-7 rounded-full" />
+            <div className="in-data-[state=collapsed]:hidden grid flex-1 text-left text-sm leading-tight ms-1">
+              <Skeleton className="bg-gray-400/60 h-4 w-full" />
+            </div>
+            <div className="size-8 rounded-lg flex items-center justify-center bg-sidebar-accent/50 in-data-[state=collapsed]:hidden">
+              <Skeleton className="bg-gray-400/60 size-8" />
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
   return (
     <SidebarMenu>
@@ -34,11 +52,14 @@ export function NavUser({
               className="bg-accent text-foreground data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="in-data-[state=expanded]:size-6 transition-[width,height] duration-200 ease-in-out">
-                <AvatarImage src={avatar} alt={name} />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarImage
+                  src={data?.user.image ?? undefined}
+                  alt={data?.user.name}
+                />
+                <AvatarFallback>{data?.user.name?.slice(0, 1)}</AvatarFallback>
               </Avatar>
               <div className="in-data-[state=collapsed]:hidden grid flex-1 text-left text-sm leading-tight ms-1">
-                <span className="truncate font-medium">{name}</span>
+                <span className="truncate font-medium">{data?.user.name}</span>
               </div>
               <div className="size-8 rounded-lg flex items-center justify-center bg-sidebar-accent/50 in-data-[state=collapsed]:hidden in-[[data-slot=dropdown-menu-trigger]:hover]:bg-transparent">
                 <Ellipsis className="size-5 opacity-40" size={20} />
@@ -57,16 +78,10 @@ export function NavUser({
                 className="text-muted-foreground/70"
                 aria-hidden="true"
               />
-              <span>Profile</span>
+              <span>Perfil</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-3 px-1">
-              <LogOut
-                size={20}
-                className="text-destructive/70"
-                aria-hidden="true"
-              />
-              <span>Log out</span>
-            </DropdownMenuItem>
+
+            <LogoutDropdownMenuItem />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

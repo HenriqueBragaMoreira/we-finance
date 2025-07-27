@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import { usePathname } from "next/navigation";
 import logo from "@/app/favicon.ico";
 import {
   Sidebar,
@@ -16,6 +14,8 @@ import {
   SidebarMenuLink,
 } from "@/components/ui/sidebar";
 import { type RoutesType, routes } from "@/routes/routes";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { NavUser } from "./nav-user";
 
 const data = [
@@ -27,12 +27,6 @@ const data = [
   title: string;
   items: RoutesType[];
 }[];
-
-const user = {
-  name: "Henrique Braga",
-  email: "henrique@braga.com",
-  avatar: "https://avatars.githubusercontent.com/u/94729971?v=4",
-};
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -82,7 +76,7 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );
