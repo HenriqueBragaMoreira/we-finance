@@ -19,6 +19,10 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  incomes     Income[]
+  expenses    Expense[]
+  investments Investment[]
+
   @@unique([email])
   @@map("user")
 }
@@ -66,4 +70,90 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Income {
+  id             String       @id @default(cuid())
+  name           String
+  type           String
+  amount         Decimal      @db.Decimal(10, 2)
+  receivedAt     DateTime
+  paymentMethod  String
+  status         IncomeStatus @default(PENDING)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  categoryId     String
+  category       Category     @relation(fields: [categoryId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Expense {
+  id             String        @id @default(cuid())
+  name           String
+  type           String
+  amount         Decimal       @db.Decimal(10, 2)
+  spentAt        DateTime
+  paymentMethod  String
+  status         ExpenseStatus @default(PENDING)
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  categoryId     String
+  category       Category      @relation(fields: [categoryId], references: [id])
+  isInstallment  Boolean       @default(false)
+  installments   Installment[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Installment {
+  id          String        @id @default(cuid())
+  expenseId   String
+  expense     Expense       @relation(fields: [expenseId], references: [id])
+  dueDate     DateTime
+  amount      Decimal       @db.Decimal(10, 2)
+  number      Int           
+  status      ExpenseStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+}
+
+model Investment {
+  id          String     @id @default(cuid())
+  type        String
+  amount      Decimal    @db.Decimal(10, 2)
+  investedAt  DateTime
+  notes       String?
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  categoryId  String
+  category    Category   @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Category {
+  id           String         @id @default(cuid())
+  name         String
+  type         CategoryType
+  incomes      Income[]
+  expenses     Expense[]
+  investments  Investment[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+enum IncomeStatus {
+  PENDING
+  RECEIVED
+}
+
+enum ExpenseStatus {
+  PENDING
+  PAID
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+  INVESTMENT
 }
