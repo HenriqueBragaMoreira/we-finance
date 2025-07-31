@@ -17,7 +17,10 @@ async function bootstrap() {
       "Documentação da API para o sistema de finanças pessoais e familiares"
     )
     .setVersion("1.0")
-    .addBearerAuth()
+    .addBearerAuth(
+      { type: "http", scheme: "bearer", bearerFormat: "JWT" },
+      "jwt"
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

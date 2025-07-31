@@ -43,7 +43,7 @@ export class FilterIncomeDto {
 
   @ApiPropertyOptional({
     example: "0",
-    description: "Número de registros para pular (paginação)",
+    description: "Número da página",
   })
   init?: string;
 
