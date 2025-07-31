@@ -6,8 +6,18 @@
     "includes": ["**"]
   },
   "linter": {
+    "rules": {
+      "style": {
+        "useImportType": "off"
+      }
+    },
     "domains": {
       "project": "all"
+    }
+  },
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
     }
   }
 }
