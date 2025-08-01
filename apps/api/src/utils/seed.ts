@@ -1,6 +1,6 @@
+import { auth } from "@/lib/auth";
 import { faker } from "@faker-js/faker";
 import { PrismaClient } from "@prisma/client";
-import { auth } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -197,7 +197,7 @@ const prisma = new PrismaClient();
 
     for (const user of users) {
       for (let i = 0; i < 20; i++) {
-        const isInstallment = faker.datatype.boolean(0.3);
+        const shouldHaveInstallments = faker.datatype.boolean(0.3);
 
         const expense = await prisma.expense.create({
           data: {
@@ -215,11 +215,10 @@ const prisma = new PrismaClient();
             status: faker.helpers.arrayElement(["PENDING", "PAID"]),
             userId: user.id,
             categoryId: faker.helpers.arrayElement(expenseCategories).id,
-            isInstallment,
           },
         });
 
-        if (isInstallment) {
+        if (shouldHaveInstallments) {
           const installmentCount = faker.number.int({ min: 2, max: 12 });
           const installmentAmount = Number(expense.amount) / installmentCount;
 

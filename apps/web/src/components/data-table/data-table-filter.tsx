@@ -212,7 +212,6 @@ export function DataTableFilter<TData>({
                       const columnId = column.id;
                       const filterValue = columnId ? filters[columnId] : null;
 
-                      // Calculate count based on filter type
                       let count = 0;
                       if (filterValue) {
                         if (Array.isArray(filterValue)) {

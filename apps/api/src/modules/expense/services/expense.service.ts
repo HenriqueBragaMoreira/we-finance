@@ -20,9 +20,9 @@ export class ExpenseService {
 
     const { installmentsCount, ...expenseData } = data;
 
-    const isInstallment = installmentsCount && installmentsCount > 1;
+    const hasInstallments = installmentsCount && installmentsCount > 1;
 
-    if (isInstallment) {
+    if (hasInstallments) {
       const installmentAmount = Number(
         (data.amount / installmentsCount).toFixed(2)
       );
@@ -54,7 +54,6 @@ export class ExpenseService {
 
       return this.repo.create({
         ...expenseData,
-        isInstallment: true,
         user: { connect: { id: userId } },
         category: { connect: { id: category.id } },
         installments: {
@@ -65,7 +64,6 @@ export class ExpenseService {
 
     return this.repo.create({
       ...expenseData,
-      isInstallment: false,
       user: { connect: { id: userId } },
       category: { connect: { id: category.id } },
     });
