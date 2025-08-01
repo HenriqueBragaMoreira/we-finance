@@ -15,20 +15,20 @@ import {
   Session,
   type UserSession,
 } from "@thallesp/nestjs-better-auth";
-import type { CreateIncomeDto } from "../dtos/create-income.dto";
-import type { FilterIncomeDto } from "../dtos/filter-income.dto";
-import type { UpdateIncomeDto } from "../dtos/update-income.dto";
-import { IncomeService } from "../services/income.service";
+import type { CreateExpenseDto } from "../dtos/create-expense.dto";
+import type { FilterExpenseDto } from "../dtos/filter-expense.dto";
+import type { UpdateExpenseDto } from "../dtos/update-expense.dto";
+import { ExpenseService } from "../services/expense.service";
 
-@Controller("incomes")
+@Controller("expenses")
 @UseGuards(AuthGuard)
-export class IncomeController {
-  constructor(private readonly service: IncomeService) {}
+export class ExpenseController {
+  constructor(private readonly service: ExpenseService) {}
 
   @Get()
-  @ApiOperation({ summary: "Lista receitas com filtros e paginação" })
+  @ApiOperation({ summary: "Lista gastos com filtros e paginação" })
   @ApiQuery({ name: "description", required: false, type: String })
-  @ApiQuery({ name: "type", required: false, type: String })
+  @ApiQuery({ name: "category", required: false, type: String })
   @ApiQuery({ name: "amount", required: false, type: Number })
   @ApiQuery({ name: "paymentMethod", required: false, type: String })
   @ApiQuery({
@@ -49,112 +49,106 @@ export class IncomeController {
   @ApiQuery({ name: "limit", required: false, type: String, example: "10" })
   @ApiResponse({
     status: 200,
-    description: "Lista paginada de receitas com total de registros",
+    description: "Lista paginada de gastos com total de registros",
   })
-  findAll(@Query() filter: FilterIncomeDto) {
+  findAll(@Query() filter: FilterExpenseDto) {
     return this.service.findAll(filter);
   }
 
   @Post()
-  @ApiOperation({ summary: "Cria uma nova receita" })
+  @ApiOperation({ summary: "Cria um novo gasto" })
   @ApiBody({
-    description: "Dados para criar uma nova receita",
+    description: "Dados para criar um novo gasto",
     schema: {
       type: "object",
       properties: {
         name: {
           type: "string",
-          example: "Salário de Julho",
-          description: "Nome da receita",
+          example: "Conta de Luz",
+          description: "Nome do gasto",
         },
         amount: {
           type: "number",
-          example: 4500.0,
-          description: "Valor da receita",
-        },
-        type: {
-          type: "string",
-          example: "Salário",
-          description: "Tipo da receita",
+          example: 150.5,
+          description: "Valor do gasto",
         },
         paymentMethod: {
           type: "string",
-          example: "PIX",
+          example: "Cartão de Crédito",
           description: "Método de pagamento",
         },
         status: {
           type: "string",
-          enum: ["PENDING", "RECEIVED"],
-          example: "RECEIVED",
-          description: "Status da receita",
+          enum: ["PENDING", "PAID"],
+          example: "PENDING",
+          description: "Status do gasto",
         },
-        receivedAt: {
+        spentAt: {
           type: "string",
           example: "2025-07-01T14:30:00Z",
-          description: "Data de recebimento",
+          description: "Data do gasto",
         },
         category: {
           type: "string",
-          example: "category-uuid",
-          description: "ID da categoria",
+          example: "Utilidades",
+          description: "Nome da categoria",
+        },
+        installmentsCount: {
+          type: "number",
+          example: 12,
+          description:
+            "Número de parcelas (opcional). Se informado, criará as parcelas automaticamente",
         },
       },
       required: [
         "name",
         "amount",
-        "type",
         "paymentMethod",
-        "date",
         "status",
-        "receivedAt",
+        "spentAt",
         "category",
       ],
     },
   })
-  @ApiResponse({ status: 201, description: "Receita criada com sucesso" })
-  create(@Body() data: CreateIncomeDto, @Session() session: UserSession) {
+  @ApiResponse({ status: 201, description: "Gasto criado com sucesso" })
+  create(@Body() data: CreateExpenseDto, @Session() session: UserSession) {
     return this.service.create(data, session.user.id);
   }
 
   @Patch(":id")
-  @ApiOperation({ summary: "Atualiza uma receita existente" })
+  @ApiOperation({ summary: "Atualiza um gasto existente" })
   @ApiBody({
-    description: "Dados para atualizar uma receita existente",
+    description: "Dados para atualizar um gasto existente",
     schema: {
       type: "object",
       properties: {
         name: {
           type: "string",
-          example: "Salário de Agosto",
-          description: "Nome da receita (opcional)",
+          example: "Conta de Luz - Agosto",
+          description: "Nome do gasto (opcional)",
         },
         amount: {
           type: "number",
-          example: 5000.0,
-          description: "Valor da receita (opcional)",
-        },
-        type: {
-          type: "string",
-          example: "Salário",
-          description: "Tipo da receita (opcional)",
+          example: 175.0,
+          description: "Valor do gasto (opcional)",
         },
         paymentMethod: {
           type: "string",
-          example: "Transferência",
+          example: "PIX",
           description: "Método de pagamento (opcional)",
         },
         status: {
           type: "string",
-          enum: ["PENDING", "RECEIVED"],
-          example: "RECEIVED",
-          description: "Status da receita (opcional)",
+          enum: ["PENDING", "PAID"],
+          example: "PAID",
+          description: "Status do gasto (opcional)",
         },
-        receivedAt: {
+        spentAt: {
           type: "string",
           example: "2025-08-01T14:30:00Z",
-          description: "Data de recebimento (opcional)",
+          description: "Data do gasto (opcional)",
         },
-        category: {
+        categoryId: {
           type: "string",
           example: "category-uuid",
           description: "ID da categoria (opcional)",
@@ -162,12 +156,12 @@ export class IncomeController {
       },
     },
   })
-  update(@Param("id") id: string, @Body() data: UpdateIncomeDto) {
+  update(@Param("id") id: string, @Body() data: UpdateExpenseDto) {
     return this.service.update(id, data);
   }
 
   @Delete(":id")
-  @ApiOperation({ summary: "Remove uma receita" })
+  @ApiOperation({ summary: "Remove um gasto" })
   delete(@Param("id") id: string) {
     return this.service.delete(id);
   }
