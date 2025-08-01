@@ -75,7 +75,6 @@ model Verification {
 model Income {
   id             String       @id @default(cuid())
   name           String
-  type           String
   amount         Decimal      @db.Decimal(10, 2)
   receivedAt     DateTime
   paymentMethod  String
@@ -91,7 +90,6 @@ model Income {
 model Expense {
   id             String        @id @default(cuid())
   name           String
-  type           String
   amount         Decimal       @db.Decimal(10, 2)
   spentAt        DateTime
   paymentMethod  String
@@ -119,7 +117,6 @@ model Installment {
 
 model Investment {
   id          String     @id @default(cuid())
-  type        String
   amount      Decimal    @db.Decimal(10, 2)
   investedAt  DateTime
   notes       String?

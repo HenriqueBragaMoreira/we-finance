@@ -1,6 +1,6 @@
-import { auth } from "@/lib/auth";
 import { faker } from "@faker-js/faker";
 import { PrismaClient } from "@prisma/client";
+import { auth } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -165,9 +165,6 @@ const prisma = new PrismaClient();
       "Dinheiro",
       "Transferência",
     ];
-    const incomeTypes = ["Recorrente", "Única", "Variável"];
-    const expenseTypes = ["Fixa", "Variável", "Eventual"];
-    const investmentTypes = ["Ações", "Fundos", "Títulos", "Criptomoedas"];
 
     console.info("💰 Creating incomes...");
 
@@ -176,7 +173,6 @@ const prisma = new PrismaClient();
         await prisma.income.create({
           data: {
             name: faker.finance.transactionDescription(),
-            type: faker.helpers.arrayElement(incomeTypes),
             amount: faker.number.float({
               min: 500,
               max: 8000,
@@ -206,7 +202,6 @@ const prisma = new PrismaClient();
         const expense = await prisma.expense.create({
           data: {
             name: faker.commerce.productName(),
-            type: faker.helpers.arrayElement(expenseTypes),
             amount: faker.number.float({
               min: 50,
               max: 2000,
@@ -251,7 +246,6 @@ const prisma = new PrismaClient();
       for (let i = 0; i < 10; i++) {
         await prisma.investment.create({
           data: {
-            type: faker.helpers.arrayElement(investmentTypes),
             amount: faker.number.float({
               min: 100,
               max: 10000,
