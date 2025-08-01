@@ -1,7 +1,23 @@
-import { Controller, Get, Query, UseGuards } from "@nestjs/common";
-import { ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
-import { AuthGuard } from "@thallesp/nestjs-better-auth";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
+import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import {
+  AuthGuard,
+  Session,
+  type UserSession,
+} from "@thallesp/nestjs-better-auth";
+import type { CreateIncomeDto } from "../dtos/create-income.dto";
 import type { FilterIncomeDto } from "../dtos/filter-income.dto";
+import type { UpdateIncomeDto } from "../dtos/update-income.dto";
 import { IncomeService } from "../services/income.service";
 
 @Controller("incomes")
@@ -37,5 +53,122 @@ export class IncomeController {
   })
   findAll(@Query() filter: FilterIncomeDto) {
     return this.service.findAll(filter);
+  }
+
+  @Post()
+  @ApiOperation({ summary: "Cria uma nova receita" })
+  @ApiBody({
+    description: "Dados para criar uma nova receita",
+    schema: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          example: "Salário de Julho",
+          description: "Nome da receita",
+        },
+        amount: {
+          type: "number",
+          example: 4500.0,
+          description: "Valor da receita",
+        },
+        type: {
+          type: "string",
+          example: "Salário",
+          description: "Tipo da receita",
+        },
+        paymentMethod: {
+          type: "string",
+          example: "PIX",
+          description: "Método de pagamento",
+        },
+        status: {
+          type: "string",
+          enum: ["PENDING", "RECEIVED"],
+          example: "RECEIVED",
+          description: "Status da receita",
+        },
+        receivedAt: {
+          type: "string",
+          example: "2025-07-01T14:30:00Z",
+          description: "Data de recebimento",
+        },
+        category: {
+          type: "string",
+          example: "category-uuid",
+          description: "ID da categoria",
+        },
+      },
+      required: [
+        "name",
+        "amount",
+        "type",
+        "paymentMethod",
+        "date",
+        "status",
+        "receivedAt",
+        "category",
+      ],
+    },
+  })
+  @ApiResponse({ status: 201, description: "Receita criada com sucesso" })
+  create(@Body() data: CreateIncomeDto, @Session() session: UserSession) {
+    return this.service.create(data, session.user.id);
+  }
+
+  @Patch(":id")
+  @ApiOperation({ summary: "Atualiza uma receita existente" })
+  @ApiBody({
+    description: "Dados para atualizar uma receita existente",
+    schema: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          example: "Salário de Agosto",
+          description: "Nome da receita (opcional)",
+        },
+        amount: {
+          type: "number",
+          example: 5000.0,
+          description: "Valor da receita (opcional)",
+        },
+        type: {
+          type: "string",
+          example: "Salário",
+          description: "Tipo da receita (opcional)",
+        },
+        paymentMethod: {
+          type: "string",
+          example: "Transferência",
+          description: "Método de pagamento (opcional)",
+        },
+        status: {
+          type: "string",
+          enum: ["PENDING", "RECEIVED"],
+          example: "RECEIVED",
+          description: "Status da receita (opcional)",
+        },
+        receivedAt: {
+          type: "string",
+          example: "2025-08-01T14:30:00Z",
+          description: "Data de recebimento (opcional)",
+        },
+        categoryId: {
+          type: "string",
+          example: "category-uuid",
+          description: "ID da categoria (opcional)",
+        },
+      },
+    },
+  })
+  update(@Param("id") id: string, @Body() data: UpdateIncomeDto) {
+    return this.service.update(id, data);
+  }
+
+  @Delete(":id")
+  @ApiOperation({ summary: "Remove uma receita" })
+  delete(@Param("id") id: string) {
+    return this.service.delete(id);
   }
 }
