@@ -1,0 +1,131 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
+import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import {
+  AuthGuard,
+  Session,
+  type UserSession,
+} from "@thallesp/nestjs-better-auth";
+import type { CreateInvestmentDto } from "../dtos/create-investment.dto";
+import type { FilterInvestmentDto } from "../dtos/filter-investment.dto";
+import type { UpdateInvestmentDto } from "../dtos/update-investment.dto";
+import { InvestmentService } from "../services/investment.service";
+
+@Controller("investments")
+@UseGuards(AuthGuard)
+export class InvestmentController {
+  constructor(private readonly service: InvestmentService) {}
+
+  @Get()
+  @ApiOperation({ summary: "Lista investimentos com filtros e paginação" })
+  @ApiQuery({ name: "amount", required: false, type: Number })
+  @ApiQuery({
+    name: "investedAt",
+    required: false,
+    description: "yyyy-mm-dd",
+    type: String,
+  })
+  @ApiQuery({ name: "notes", required: false, type: String })
+  @ApiQuery({ name: "userId", required: false, type: String })
+  @ApiQuery({ name: "categoryId", required: false, type: String })
+  @ApiQuery({
+    name: "init",
+    required: false,
+    type: String,
+    example: "0",
+    description: "Número da página",
+  })
+  @ApiQuery({ name: "limit", required: false, type: String, example: "10" })
+  @ApiResponse({
+    status: 200,
+    description: "Lista paginada de investimentos com total de registros",
+  })
+  findAll(@Query() filter: FilterInvestmentDto) {
+    return this.service.findAll(filter);
+  }
+
+  @Post()
+  @ApiOperation({ summary: "Cria um novo investimento" })
+  @ApiBody({
+    description: "Dados para criar um novo investimento",
+    schema: {
+      type: "object",
+      properties: {
+        notes: {
+          type: "string",
+          example: "Ações da Petrobras",
+          description: "Nome do investimento",
+        },
+        amount: {
+          type: "number",
+          example: 1500.75,
+          description: "Valor do investimento",
+        },
+        investedAt: {
+          type: "string",
+          example: "2025-07-01T14:30:00Z",
+          description: "Data do investimento",
+        },
+        category: {
+          type: "string",
+          example: "Ações",
+          description: "Nome da categoria",
+        },
+      },
+      required: ["notes", "amount", "investedAt", "category"],
+    },
+  })
+  @ApiResponse({ status: 201, description: "Investimento criado com sucesso" })
+  create(@Body() data: CreateInvestmentDto, @Session() session: UserSession) {
+    return this.service.create(data, session.user.id);
+  }
+
+  @Patch(":id")
+  @ApiOperation({ summary: "Atualiza um investimento existente" })
+  @ApiBody({
+    description: "Dados para atualizar um investimento existente",
+    schema: {
+      type: "object",
+      properties: {
+        amount: {
+          type: "number",
+          example: 2000.0,
+          description: "Valor do investimento (opcional)",
+        },
+        investedAt: {
+          type: "string",
+          example: "2025-08-01T14:30:00Z",
+          description: "Data do investimento (opcional)",
+        },
+        notes: {
+          type: "string",
+          example: "Investimento atualizado",
+          description: "Observações sobre o investimento (opcional)",
+        },
+        categoryId: {
+          type: "string",
+          example: "category-uuid",
+          description: "ID da categoria (opcional)",
+        },
+      },
+    },
+  })
+  update(@Param("id") id: string, @Body() data: UpdateInvestmentDto) {
+    return this.service.update(id, data);
+  }
+
+  @Delete(":id")
+  @ApiOperation({ summary: "Remove um investimento" })
+  delete(@Param("id") id: string) {
+    return this.service.delete(id);
+  }
+}
