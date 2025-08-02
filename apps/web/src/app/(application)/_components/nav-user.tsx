@@ -1,3 +1,4 @@
+import { Ellipsis, UserRound } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth";
-import { Ellipsis, UserRound } from "lucide-react";
 import { LogoutDropdownMenuItem } from "./logout-dropdown-menu-item";
 
 export function NavUser() {

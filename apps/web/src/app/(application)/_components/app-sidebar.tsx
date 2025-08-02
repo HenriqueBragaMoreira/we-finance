@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 import logo from "@/app/favicon.ico";
 import {
   Sidebar,
@@ -14,8 +16,6 @@ import {
   SidebarMenuLink,
 } from "@/components/ui/sidebar";
 import { type RoutesType, routes } from "@/routes/routes";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { NavUser } from "./nav-user";
 
 const data = [

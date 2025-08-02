@@ -1,8 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import { TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { incomesServices } from "@/services/incomes";
 import { DataTableContainer } from "./components/data-table-container";
 
-export default function RevenuesPage() {
+export default async function RevenuesPage() {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["get-incomes"],
+    queryFn: incomesServices.get,
+  });
+
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 *:data-[slot=card]:gap-2 **:data-[slot=card-header]:pb-0">
@@ -39,7 +52,9 @@ export default function RevenuesPage() {
         </Card>
       </div>
 
-      <DataTableContainer />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <DataTableContainer />
+      </HydrationBoundary>
     </>
   );
 }

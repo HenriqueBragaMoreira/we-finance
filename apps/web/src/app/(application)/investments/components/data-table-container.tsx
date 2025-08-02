@@ -1,8 +1,8 @@
 "use client";
 
+import { PiggyBank } from "lucide-react";
 import { DataTable } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
-import { PiggyBank } from "lucide-react";
 import { investments } from "../data/investments";
 import { useColumns } from "./columns";
 

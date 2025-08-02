@@ -1,12 +1,3 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { masks } from "@/utils/masks";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   Banknote,
@@ -19,6 +10,15 @@ import {
   Trash2,
   UserRound,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { masks } from "@/utils/masks";
 import type { InvestmentType } from "../data/investments";
 
 export function useColumns({ investments }: { investments: InvestmentType[] }) {

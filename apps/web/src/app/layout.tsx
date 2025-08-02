@@ -1,8 +1,7 @@
-import { ThemeProvider } from "@/components/theme-provider";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -19,14 +18,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${inter.className} font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          // enableSystem
-          // disableTransitionOnChange
-        >
-          <NuqsAdapter>{children}</NuqsAdapter>
-        </ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

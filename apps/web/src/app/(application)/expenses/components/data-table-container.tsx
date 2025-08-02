@@ -1,8 +1,8 @@
 "use client";
 
+import { CreditCard } from "lucide-react";
 import { DataTable } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
-import { CreditCard } from "lucide-react";
 import { expenses } from "../data/expenses";
 import { useColumns } from "./columns";
 
