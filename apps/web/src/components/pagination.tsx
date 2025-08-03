@@ -82,7 +82,7 @@ export function Pagination({
         <Button
           onClick={() => paginationTable.handleChangePage(pageIndex - 1)}
           variant="outline"
-          size="icon"
+          className="size-8"
           disabled={!canPreviousPage}
         >
           <ChevronLeft size={12} />
@@ -115,7 +115,7 @@ export function Pagination({
         <Button
           onClick={() => paginationTable.handleChangePage(pageIndex + 1)}
           variant="outline"
-          size="icon"
+          className="size-8"
           disabled={!canNextPage}
         >
           <ChevronRight size={12} />

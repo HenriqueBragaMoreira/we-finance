@@ -19,11 +19,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import type { GetIncomesResponseDataField } from "@/services/incomes/types";
 import { masks } from "@/utils/masks";
-import type { IncomesType } from "../data/incomes";
 
 type useColumnsProps = {
-  incomes: IncomesType[];
+  // biome-ignore lint/suspicious/noExplicitAny: <>
+  incomes: any[];
 };
 
 export function useColumns({ incomes }: useColumnsProps) {
@@ -33,13 +34,20 @@ export function useColumns({ incomes }: useColumnsProps) {
     ...new Set(incomes.map((item) => item.paymentMethod)),
   ];
 
-  const uniqueStatus = [...new Set(incomes.map((item) => item.status))];
-
-  const columns: ColumnDef<IncomesType>[] = [
+  const columns: ColumnDef<GetIncomesResponseDataField>[] = [
     {
       id: "description",
       accessorKey: "name",
       header: "Descrição",
+      cell: ({ row }) => {
+        const description = row.original.name;
+
+        return (
+          <span className="max-w-80 truncate block" title={description}>
+            {description}
+          </span>
+        );
+      },
       meta: {
         label: "Descrição",
         variant: "text",
@@ -49,11 +57,11 @@ export function useColumns({ incomes }: useColumnsProps) {
       enableColumnFilter: true,
     },
     {
-      id: "type",
-      accessorKey: "type",
-      header: "Tipo",
+      id: "category",
+      accessorKey: "category",
+      header: "Categoria",
       meta: {
-        label: "Tipo",
+        label: "Categoria",
         variant: "multiSelect",
         options: uniqueTypes.map((type) => ({
           label: type,
@@ -70,7 +78,7 @@ export function useColumns({ incomes }: useColumnsProps) {
       header: "Valor",
       cell: ({ row }) => {
         const value = row.original.amount;
-        return <span>{masks.money(String(value))}</span>;
+        return <span>{masks.listedMoney(String(value))}</span>;
       },
       meta: {
         label: "Valor",
@@ -101,7 +109,7 @@ export function useColumns({ incomes }: useColumnsProps) {
       accessorKey: "date",
       header: "Data",
       cell: ({ row }) => {
-        const date = row.original.date;
+        const date = row.original.receivedAt;
 
         return <span>{new Date(date).toLocaleDateString("pt-BR")}</span>;
       },
@@ -115,7 +123,8 @@ export function useColumns({ incomes }: useColumnsProps) {
     },
     {
       id: "person",
-      accessorKey: "person",
+      accessorFn: (row) => row.user,
+      accessorKey: "user",
       header: "Pessoa",
       meta: {
         label: "Pessoa",
@@ -132,27 +141,39 @@ export function useColumns({ incomes }: useColumnsProps) {
       cell: ({ row }) => {
         const status = row.original.status;
 
+        const translatedStatus =
+          {
+            RECEIVED: "Recebido",
+            PENDING: "Pendente",
+          }[status] || status;
+
         return (
           <Badge className="gap-1.5" variant="outline">
             <span
               className={cn(
                 "size-1.5 rounded-full",
-                status === "Recebido" && "bg-emerald-500",
-                status === "Pendente" && "bg-amber-500"
+                status === "RECEIVED" && "bg-emerald-500",
+                status === "PENDING" && "bg-amber-500"
               )}
               aria-hidden="true"
             />
-            {status}
+            {translatedStatus}
           </Badge>
         );
       },
       meta: {
         label: "Status",
         variant: "multiSelect",
-        options: uniqueStatus.map((status) => ({
-          label: status,
-          value: status,
-        })),
+        options: [
+          {
+            label: "Recebido",
+            value: "RECEIVED",
+          },
+          {
+            label: "Pendente",
+            value: "PENDING",
+          },
+        ],
         icon: CircleDashed,
         filterType: "multiText",
       },
