@@ -13,6 +13,7 @@ export function DataTableContainer() {
     <DataTable
       data={expenses}
       columns={columns}
+      totalLength={expenses.length}
       action={
         <Button variant="destructive" size="sm">
           <CreditCard />

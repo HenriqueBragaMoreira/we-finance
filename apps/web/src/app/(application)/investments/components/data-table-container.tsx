@@ -12,6 +12,7 @@ export function DataTableContainer() {
   return (
     <DataTable
       data={investments}
+      totalLength={investments.length}
       columns={columns}
       action={
         <Button

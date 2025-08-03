@@ -3,7 +3,6 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { DataTableFilter } from "@/components/data-table/data-table-filter";
@@ -21,18 +20,18 @@ import { usePagination } from "@/hooks/use-pagination";
 
 type DataTableProps<TData, TValue> = {
   data: TData[];
+  totalLength: number;
   columns: ColumnDef<TData, TValue>[];
   action: React.JSX.Element;
 };
 
 export function DataTable<TData, TValue>({
   data,
+  totalLength,
   columns,
   action,
 }: DataTableProps<TData, TValue>) {
   const paginationHook = usePagination();
-
-  const totalLength = data.length;
 
   const pageCount = Math.ceil(totalLength / paginationHook.rowsPerPage);
 
@@ -40,12 +39,16 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
+    pageCount: Math.ceil(totalLength / paginationHook.rowsPerPage),
     state: {
       pagination: {
         pageIndex: paginationHook.page,
         pageSize: paginationHook.rowsPerPage,
       },
+    },
+    onPaginationChange() {
+      paginationHook.handleChangePage(table.getState().pagination.pageIndex);
     },
   });
 
