@@ -14,11 +14,28 @@ export class IncomeRepository {
     const pageSize = limit ? Number(limit) : undefined;
     const skip = pageSize ? page * pageSize : undefined;
 
+    let categoryFilter: Prisma.CategoryWhereInput | undefined;
+
+    if (filters.category) {
+      const categories = filters.category.split(",").map((cat) => cat.trim());
+      if (categories.length === 1) {
+        categoryFilter = {
+          name: { contains: categories[0], mode: "insensitive" },
+        };
+      } else {
+        categoryFilter = {
+          OR: categories.map((cat) => ({
+            name: { contains: cat, mode: "insensitive" as const },
+          })),
+        };
+      }
+    }
+
     const whereClause = {
       name: filters.description
         ? { contains: filters.description, mode: "insensitive" as const }
         : undefined,
-      type: filters.type,
+      category: categoryFilter,
       amount: filters.amount,
       paymentMethod: filters.paymentMethod,
       status: filters.status,
@@ -50,8 +67,6 @@ export class IncomeRepository {
         where: whereClause,
       }),
     ]);
-
-    console.log("Raw Data:", rawData);
 
     const data = rawData.map((income) => {
       const { categoryId: _, userId: __, category, user, ...rest } = income;
@@ -108,5 +123,68 @@ export class IncomeRepository {
         type,
       },
     });
+  }
+
+  async getMonthlyStats(userId: string, month: string) {
+    // Parse do mês (formato YYYY-MM)
+    const [year, monthNum] = month.split("-").map(Number);
+
+    // Primeiro dia do mês
+    const startDate = new Date(year, monthNum - 1, 1);
+
+    // Primeiro dia do próximo mês
+    const endDate = new Date(year, monthNum, 1);
+
+    const result = await this.prisma.income.aggregate({
+      where: {
+        userId,
+        createdAt: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const receivedResult = await this.prisma.income.aggregate({
+      where: {
+        userId,
+        status: "RECEIVED",
+        createdAt: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const pendingResult = await this.prisma.income.aggregate({
+      where: {
+        userId,
+        status: "PENDING",
+        createdAt: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const totalRevenues = result._sum.amount?.toNumber() || 0;
+    const received = receivedResult._sum.amount?.toNumber() || 0;
+    const pending = pendingResult._sum.amount?.toNumber() || 0;
+
+    return {
+      totalRevenues,
+      received,
+      pending,
+      month,
+    };
   }
 }

@@ -9,11 +9,11 @@ export class CreateIncomeDto {
   @ApiProperty({ example: "Salário de Julho" })
   name!: string;
 
+  @ApiProperty({ example: "category-uuid" })
+  category!: string;
+
   @ApiProperty({ example: 4500.0 })
   amount!: number;
-
-  @ApiProperty({ example: "Salário" })
-  type!: string;
 
   @ApiProperty({ example: "PIX", description: "Método de pagamento" })
   paymentMethod!: string;
@@ -26,7 +26,4 @@ export class CreateIncomeDto {
     description: "Data de recebimento",
   })
   receivedAt!: Date;
-
-  @ApiProperty({ example: "category-uuid" })
-  category!: string;
 }

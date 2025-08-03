@@ -13,8 +13,12 @@ export class FilterIncomeDto {
   })
   description?: string;
 
-  @ApiPropertyOptional({ example: "Salário", description: "Filtrar por tipo" })
-  type?: string;
+  @ApiPropertyOptional({
+    example: "Salário,Vendas",
+    description:
+      "Filtrar por nome da categoria. Use vírgula para múltiplas categorias",
+  })
+  category?: string;
 
   @IsOptional()
   @IsNumber()

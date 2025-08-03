@@ -17,6 +17,7 @@ import {
 } from "@thallesp/nestjs-better-auth";
 import type { CreateIncomeDto } from "../dtos/create-income.dto";
 import type { FilterIncomeDto } from "../dtos/filter-income.dto";
+import type { MonthlyStatsDto } from "../dtos/monthly-stats.dto";
 import type { UpdateIncomeDto } from "../dtos/update-income.dto";
 import { IncomeService } from "../services/income.service";
 
@@ -28,7 +29,13 @@ export class IncomeController {
   @Get()
   @ApiOperation({ summary: "Lista receitas com filtros e paginação" })
   @ApiQuery({ name: "description", required: false, type: String })
-  @ApiQuery({ name: "type", required: false, type: String })
+  @ApiQuery({
+    name: "category",
+    required: false,
+    type: String,
+    description:
+      "Filtrar por categoria(s). Use vírgula para múltiplas: 'Salário,Vendas'",
+  })
   @ApiQuery({ name: "amount", required: false, type: Number })
   @ApiQuery({ name: "paymentMethod", required: false, type: String })
   @ApiQuery({
@@ -67,15 +74,15 @@ export class IncomeController {
           example: "Salário de Julho",
           description: "Nome da receita",
         },
+        category: {
+          type: "string",
+          example: "category-uuid",
+          description: "ID da categoria",
+        },
         amount: {
           type: "number",
           example: 4500.0,
           description: "Valor da receita",
-        },
-        type: {
-          type: "string",
-          example: "Salário",
-          description: "Tipo da receita",
         },
         paymentMethod: {
           type: "string",
@@ -93,16 +100,10 @@ export class IncomeController {
           example: "2025-07-01T14:30:00Z",
           description: "Data de recebimento",
         },
-        category: {
-          type: "string",
-          example: "category-uuid",
-          description: "ID da categoria",
-        },
       },
       required: [
         "name",
         "amount",
-        "type",
         "paymentMethod",
         "date",
         "status",
@@ -114,6 +115,56 @@ export class IncomeController {
   @ApiResponse({ status: 201, description: "Receita criada com sucesso" })
   create(@Body() data: CreateIncomeDto, @Session() session: UserSession) {
     return this.service.create(data, session.user.id);
+  }
+
+  @Get("monthly-stats")
+  @ApiOperation({
+    summary: "Estatísticas mensais de receitas",
+    description:
+      "Retorna o total, recebidas e pendentes do mês atual ou mês especificado",
+  })
+  @ApiQuery({
+    name: "month",
+    required: false,
+    type: String,
+    description:
+      "Mês no formato YYYY-MM (ex: 2025-08). Se não informado, usa o mês atual",
+    example: "2025-08",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Estatísticas mensais retornadas com sucesso",
+    schema: {
+      type: "object",
+      properties: {
+        totalRevenues: {
+          type: "number",
+          example: 5000.0,
+          description: "Total de receitas no mês",
+        },
+        received: {
+          type: "number",
+          example: 3000.0,
+          description: "Total de receitas recebidas no mês",
+        },
+        pending: {
+          type: "number",
+          example: 2000.0,
+          description: "Total de receitas pendentes no mês",
+        },
+        month: {
+          type: "string",
+          example: "2025-08",
+          description: "Mês dos dados retornados",
+        },
+      },
+    },
+  })
+  getMonthlyStats(
+    @Query() filter: MonthlyStatsDto,
+    @Session() session: UserSession
+  ) {
+    return this.service.getMonthlyStats(session.user.id, filter);
   }
 
   @Patch(":id")
@@ -132,11 +183,6 @@ export class IncomeController {
           type: "number",
           example: 5000.0,
           description: "Valor da receita (opcional)",
-        },
-        type: {
-          type: "string",
-          example: "Salário",
-          description: "Tipo da receita (opcional)",
         },
         paymentMethod: {
           type: "string",

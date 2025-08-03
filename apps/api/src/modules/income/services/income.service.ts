@@ -1,6 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import type { CreateIncomeDto } from "../dtos/create-income.dto";
 import { FilterIncomeDto } from "../dtos/filter-income.dto";
+import type {
+  MonthlyStatsDto,
+  MonthlyStatsResponseDto,
+} from "../dtos/monthly-stats.dto";
 import type { UpdateIncomeDto } from "../dtos/update-income.dto";
 import { IncomeRepository } from "../income.repository";
 
@@ -36,5 +40,21 @@ export class IncomeService {
 
   delete(id: string) {
     return this.repo.delete(id);
+  }
+
+  async getMonthlyStats(
+    userId: string,
+    filter: MonthlyStatsDto
+  ): Promise<MonthlyStatsResponseDto> {
+    // Se não foi passado mês, usa o mês atual
+    let month = filter.month;
+    if (!month) {
+      const now = new Date();
+      const year = now.getFullYear();
+      const monthNum = (now.getMonth() + 1).toString().padStart(2, "0");
+      month = `${year}-${monthNum}`;
+    }
+
+    return this.repo.getMonthlyStats(userId, month);
   }
 }
