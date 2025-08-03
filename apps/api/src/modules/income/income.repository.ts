@@ -1,6 +1,6 @@
+import { PrismaService } from "@/utils/prisma.service";
 import { Injectable } from "@nestjs/common";
 import type { IncomeStatus, Prisma } from "@prisma/client";
-import { PrismaService } from "@/utils/prisma.service";
 import { FilterIncomeDto } from "./dtos/filter-income.dto";
 
 @Injectable()
@@ -41,22 +41,21 @@ export class IncomeRepository {
       }
     }
 
-    let paymentMethodCondition:
-      | string
-      | Prisma.StringFilter
-      | { in: string[] }
-      | undefined;
+    let paymentMethodCondition: Prisma.PaymentMethodWhereInput | undefined;
     if (filters.paymentMethod) {
       const paymentMethods = filters.paymentMethod
         .split(",")
         .map((method) => method.trim());
       if (paymentMethods.length === 1) {
         paymentMethodCondition = {
-          contains: paymentMethods[0],
-          mode: "insensitive",
+          name: { contains: paymentMethods[0], mode: "insensitive" },
         };
       } else {
-        paymentMethodCondition = { in: paymentMethods };
+        paymentMethodCondition = {
+          OR: paymentMethods.map((method) => ({
+            name: { contains: method, mode: "insensitive" as const },
+          })),
+        };
       }
     }
 
@@ -89,6 +88,11 @@ export class IncomeRepository {
             name: true,
           },
         },
+        paymentMethod: {
+          select: {
+            name: true,
+          },
+        },
         user: {
           select: {
             name: true,
@@ -106,11 +110,21 @@ export class IncomeRepository {
     ]);
 
     const data = rawData.map((income) => {
-      const { categoryId: _, userId: __, ...rest } = income;
+      const {
+        categoryId: _,
+        userId: __,
+        paymentMethodId: ___,
+        category,
+        user,
+        paymentMethod,
+        ...rest
+      } = income;
       return {
         ...rest,
-        user: income.user.name,
-        category: income.category.name,
+        amount: income.amount.toNumber(),
+        user: user.name,
+        category: category.name,
+        paymentMethod: paymentMethod.name,
       };
     });
 
@@ -158,6 +172,27 @@ export class IncomeRepository {
       data: {
         name,
         type,
+      },
+    });
+  }
+
+  async findOrCreatePaymentMethod(name: string) {
+    const existingPaymentMethod = await this.prisma.paymentMethod.findFirst({
+      where: {
+        name: {
+          equals: name,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    if (existingPaymentMethod) {
+      return existingPaymentMethod;
+    }
+
+    return this.prisma.paymentMethod.create({
+      data: {
+        name,
       },
     });
   }

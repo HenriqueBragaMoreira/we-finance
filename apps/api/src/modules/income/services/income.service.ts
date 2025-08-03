@@ -22,19 +22,35 @@ export class IncomeService {
       "INCOME"
     );
 
+    const paymentMethod = await this.repo.findOrCreatePaymentMethod(
+      data.paymentMethod
+    );
+
     return this.repo.create({
-      ...data,
+      name: data.name,
+      amount: data.amount,
+      receivedAt: data.receivedAt,
+      status: data.status,
       user: { connect: { id: userId } },
       category: { connect: { id: category.id } },
+      paymentMethod: { connect: { id: paymentMethod.id } },
     });
   }
 
-  update(id: string, data: UpdateIncomeDto) {
-    const { categoryId, ...updateData } = data;
+  async update(id: string, data: UpdateIncomeDto) {
+    const { categoryId, paymentMethod, ...updateData } = data;
+
+    let paymentMethodConnect: { connect: { id: string } } | undefined;
+    if (paymentMethod) {
+      const foundPaymentMethod =
+        await this.repo.findOrCreatePaymentMethod(paymentMethod);
+      paymentMethodConnect = { connect: { id: foundPaymentMethod.id } };
+    }
 
     return this.repo.update(id, {
       ...updateData,
-      category: { connect: { id: categoryId } },
+      ...(categoryId && { category: { connect: { id: categoryId } } }),
+      ...(paymentMethodConnect && { paymentMethod: paymentMethodConnect }),
     });
   }
 

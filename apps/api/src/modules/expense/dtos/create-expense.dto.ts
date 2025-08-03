@@ -13,8 +13,8 @@ export class CreateExpenseDto {
   amount!: number;
 
   @ApiProperty({
-    example: "Cartão de Crédito",
-    description: "Método de pagamento",
+    example: "PIX",
+    description: "Nome do método de pagamento",
   })
   paymentMethod!: string;
 

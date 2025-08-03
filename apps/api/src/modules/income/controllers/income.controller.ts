@@ -99,7 +99,8 @@ export class IncomeController {
         paymentMethod: {
           type: "string",
           example: "PIX",
-          description: "Método de pagamento",
+          description:
+            "Nome do método de pagamento (será criado se não existir)",
         },
         status: {
           type: "string",
@@ -113,15 +114,7 @@ export class IncomeController {
           description: "Data de recebimento",
         },
       },
-      required: [
-        "name",
-        "amount",
-        "paymentMethod",
-        "date",
-        "status",
-        "receivedAt",
-        "category",
-      ],
+      required: ["name", "amount", "status", "receivedAt", "category"],
     },
   })
   @ApiResponse({ status: 201, description: "Receita criada com sucesso" })
@@ -198,8 +191,9 @@ export class IncomeController {
         },
         paymentMethod: {
           type: "string",
-          example: "Transferência",
-          description: "Método de pagamento (opcional)",
+          example: "PIX",
+          description:
+            "Nome do método de pagamento (opcional - será criado se não existir)",
         },
         status: {
           type: "string",

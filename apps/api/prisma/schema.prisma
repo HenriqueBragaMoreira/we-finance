@@ -73,34 +73,36 @@ model Verification {
 }
 
 model Income {
-  id             String       @id @default(cuid())
-  name           String
-  amount         Decimal      @db.Decimal(10, 2)
-  receivedAt     DateTime
-  paymentMethod  String
-  status         IncomeStatus @default(PENDING)
-  userId         String
-  user           User         @relation(fields: [userId], references: [id])
-  categoryId     String
-  category       Category     @relation(fields: [categoryId], references: [id])
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id                String        @id @default(cuid())
+  name              String
+  amount            Decimal       @db.Decimal(10, 2)
+  receivedAt        DateTime
+  paymentMethodId   String
+  paymentMethod     PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  status            IncomeStatus  @default(PENDING)
+  userId            String
+  user              User          @relation(fields: [userId], references: [id])
+  categoryId        String
+  category          Category      @relation(fields: [categoryId], references: [id])
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 }
 
 model Expense {
-  id             String        @id @default(cuid())
-  name           String
-  amount         Decimal       @db.Decimal(10, 2)
-  spentAt        DateTime
-  paymentMethod  String
-  status         ExpenseStatus @default(PENDING)
-  userId         String
-  user           User          @relation(fields: [userId], references: [id])
-  categoryId     String
-  category       Category      @relation(fields: [categoryId], references: [id])
-  installments   Installment[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id                String          @id @default(cuid())
+  name              String
+  amount            Decimal         @db.Decimal(10, 2)
+  spentAt           DateTime
+  paymentMethodId   String
+  paymentMethod     PaymentMethod   @relation(fields: [paymentMethodId], references: [id])
+  status            ExpenseStatus   @default(PENDING)
+  userId            String
+  user              User            @relation(fields: [userId], references: [id])
+  categoryId        String
+  category          Category        @relation(fields: [categoryId], references: [id])
+  installments      Installment[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 }
 
 model Installment {
@@ -136,6 +138,16 @@ model Category {
   investments  Investment[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+}
+
+model PaymentMethod {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  isActive    Boolean   @default(true)
+  incomes     Income[]
+  expenses    Expense[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 enum IncomeStatus {

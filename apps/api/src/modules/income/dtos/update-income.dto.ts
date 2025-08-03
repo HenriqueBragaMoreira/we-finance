@@ -6,5 +6,5 @@ export class UpdateIncomeDto extends PartialType(
   OmitType(CreateIncomeDto, ["category"])
 ) {
   @ApiProperty({ example: "category-uuid" })
-  categoryId!: string;
+  categoryId?: string;
 }

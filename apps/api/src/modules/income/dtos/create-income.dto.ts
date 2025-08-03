@@ -15,7 +15,7 @@ export class CreateIncomeDto {
   @ApiProperty({ example: 4500.0 })
   amount!: number;
 
-  @ApiProperty({ example: "PIX", description: "Método de pagamento" })
+  @ApiProperty({ example: "PIX", description: "Nome do método de pagamento" })
   paymentMethod!: string;
 
   @ApiProperty({ example: "RECEIVED", enum: IncomeStatus })

@@ -2,13 +2,16 @@ import { Injectable } from "@nestjs/common";
 import type { CreateExpenseDto } from "../dtos/create-expense.dto";
 import { FilterExpenseDto } from "../dtos/filter-expense.dto";
 import type { UpdateExpenseDto } from "../dtos/update-expense.dto";
-import { ExpenseRepository } from "../expense.repository";
+import {
+  type ExpenseListResponse,
+  ExpenseRepository,
+} from "../expense.repository";
 
 @Injectable()
 export class ExpenseService {
   constructor(private readonly repo: ExpenseRepository) {}
 
-  findAll(filter: FilterExpenseDto) {
+  findAll(filter: FilterExpenseDto): Promise<ExpenseListResponse> {
     return this.repo.findAll(filter);
   }
 
@@ -16,6 +19,10 @@ export class ExpenseService {
     const category = await this.repo.findOrCreateCategory(
       data.category,
       "EXPENSE"
+    );
+
+    const paymentMethod = await this.repo.findOrCreatePaymentMethod(
+      data.paymentMethod
     );
 
     const { installmentsCount, ...expenseData } = data;
@@ -56,6 +63,7 @@ export class ExpenseService {
         ...expenseData,
         user: { connect: { id: userId } },
         category: { connect: { id: category.id } },
+        paymentMethod: { connect: { id: paymentMethod.id } },
         installments: {
           create: installments,
         },
@@ -66,16 +74,26 @@ export class ExpenseService {
       ...expenseData,
       user: { connect: { id: userId } },
       category: { connect: { id: category.id } },
+      paymentMethod: { connect: { id: paymentMethod.id } },
     });
   }
 
   async update(id: string, data: UpdateExpenseDto) {
-    const { categoryId, ...updateData } = data;
+    const { categoryId, paymentMethod, ...updateData } = data;
 
-    return this.repo.update(id, {
-      ...updateData,
-      ...(categoryId && { category: { connect: { id: categoryId } } }),
-    });
+    const updatePayload: Record<string, unknown> = { ...updateData };
+
+    if (categoryId) {
+      updatePayload.category = { connect: { id: categoryId } };
+    }
+
+    if (paymentMethod) {
+      const paymentMethodRecord =
+        await this.repo.findOrCreatePaymentMethod(paymentMethod);
+      updatePayload.paymentMethod = { connect: { id: paymentMethodRecord.id } };
+    }
+
+    return this.repo.update(id, updatePayload);
   }
 
   delete(id: string) {

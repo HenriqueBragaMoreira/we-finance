@@ -1,30 +1,68 @@
+import { PrismaService } from "@/utils/prisma.service";
 import { Injectable } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
-import { PrismaService } from "@/utils/prisma.service";
 import { FilterExpenseDto } from "./dtos/filter-expense.dto";
+
+interface ExpenseListResponse {
+  data: Array<{
+    id: string;
+    name: string;
+    amount: number;
+    status: string;
+    spentAt: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    category: string;
+    user: string;
+    paymentMethod?: string;
+    installments: Array<{
+      id: string;
+      amount: number;
+      dueDate: Date;
+      number: number;
+      status: string;
+    }>;
+  }>;
+  total: number;
+  count: number;
+}
+
+export type { ExpenseListResponse };
 
 @Injectable()
 export class ExpenseRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(filter: FilterExpenseDto) {
-    const { init, limit, ...filters } = filter;
-
-    const page = Number(init) || 0;
-    const pageSize = limit ? Number(limit) : undefined;
-    const skip = pageSize ? page * pageSize : undefined;
+  async findAll(filter: FilterExpenseDto): Promise<ExpenseListResponse> {
+    const { init, limit } = filter;
+    const skip = (Number(init) || 0) * (Number(limit) || 10);
+    const pageSize = Number(limit) || 10;
 
     const whereClause = {
-      name: filters.description
-        ? { contains: filters.description, mode: "insensitive" as const }
+      description: filter.description
+        ? { contains: filter.description, mode: "insensitive" as const }
         : undefined,
-      amount: filters.amount,
-      paymentMethod: filters.paymentMethod,
-      status: filters.status,
-      spentAt: filters.date ? new Date(filters.date) : undefined,
-      userId: filters.userId,
-      category: filters.category
-        ? { name: { contains: filters.category, mode: "insensitive" as const } }
+      amount: filter.amount,
+      paymentMethod: filter.paymentMethod
+        ? {
+            name: {
+              contains: filter.paymentMethod,
+              mode: "insensitive" as const,
+            },
+          }
+        : undefined,
+      status: filter.status,
+      spentAt: filter.date ? new Date(filter.date) : undefined,
+      userId: filter.userId,
+      category: filter.category
+        ? {
+            OR: filter.category.split(",").map((categoryName) => ({
+              name: {
+                contains: categoryName.trim(),
+                mode: "insensitive" as const,
+              },
+            })),
+          }
         : undefined,
     };
 
@@ -33,6 +71,11 @@ export class ExpenseRepository {
       orderBy: { createdAt: "desc" as const },
       include: {
         category: {
+          select: {
+            name: true,
+          },
+        },
+        paymentMethod: {
           select: {
             name: true,
           },
@@ -66,17 +109,32 @@ export class ExpenseRepository {
     ]);
 
     const data = rawData.map((expense) => {
-      const { categoryId: _, userId: __, category, user, ...rest } = expense;
+      const {
+        categoryId: _,
+        userId: __,
+        paymentMethodId: ___,
+        category,
+        user,
+        paymentMethod,
+        ...rest
+      } = expense;
       return {
         ...rest,
+        amount: expense.amount.toNumber(),
         user: user.name,
         category: category.name,
+        paymentMethod: paymentMethod?.name,
+        installments: expense.installments.map((installment) => ({
+          ...installment,
+          amount: installment.amount.toNumber(),
+        })),
       };
     });
 
     return {
       data,
-      totalLength,
+      total: totalLength,
+      count: data.length,
     };
   }
 
@@ -114,6 +172,27 @@ export class ExpenseRepository {
       data: {
         name,
         type,
+      },
+    });
+  }
+
+  async findOrCreatePaymentMethod(name: string) {
+    const existingPaymentMethod = await this.prisma.paymentMethod.findFirst({
+      where: {
+        name: {
+          equals: name,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    if (existingPaymentMethod) {
+      return existingPaymentMethod;
+    }
+
+    return this.prisma.paymentMethod.create({
+      data: {
+        name,
       },
     });
   }

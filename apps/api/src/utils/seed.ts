@@ -1,6 +1,6 @@
+import { auth } from "@/lib/auth";
 import { faker } from "@faker-js/faker";
 import { PrismaClient } from "@prisma/client";
-import { auth } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -16,6 +16,7 @@ const prisma = new PrismaClient();
     await prisma.expense.deleteMany();
     await prisma.investment.deleteMany();
     await prisma.category.deleteMany();
+    await prisma.paymentMethod.deleteMany();
     await prisma.session.deleteMany();
     await prisma.account.deleteMany();
     await prisma.user.deleteMany();
@@ -157,14 +158,44 @@ const prisma = new PrismaClient();
 
     console.info("✅ Categories created successfully");
 
+    console.info("💳 Creating payment methods...");
+
+    const paymentMethods = await Promise.all([
+      prisma.paymentMethod.create({
+        data: {
+          name: "PIX",
+        },
+      }),
+      prisma.paymentMethod.create({
+        data: {
+          name: "Cartão de Crédito",
+        },
+      }),
+      prisma.paymentMethod.create({
+        data: {
+          name: "Cartão de Débito",
+        },
+      }),
+      prisma.paymentMethod.create({
+        data: {
+          name: "Dinheiro",
+        },
+      }),
+      prisma.paymentMethod.create({
+        data: {
+          name: "Transferência Bancária",
+        },
+      }),
+      prisma.paymentMethod.create({
+        data: {
+          name: "Boleto",
+        },
+      }),
+    ]);
+
+    console.info("✅ Payment methods created successfully");
+
     const users = [createdUser, secondUser];
-    const paymentMethods = [
-      "PIX",
-      "Cartão de Crédito",
-      "Cartão de Débito",
-      "Dinheiro",
-      "Transferência",
-    ];
 
     console.info("💰 Creating incomes...");
 
@@ -182,10 +213,14 @@ const prisma = new PrismaClient();
               from: new Date(2024, 0, 1),
               to: new Date(),
             }),
-            paymentMethod: faker.helpers.arrayElement(paymentMethods),
+            paymentMethod: {
+              connect: { id: faker.helpers.arrayElement(paymentMethods).id },
+            },
             status: faker.helpers.arrayElement(["PENDING", "RECEIVED"]),
-            userId: user.id,
-            categoryId: faker.helpers.arrayElement(incomeCategories).id,
+            user: { connect: { id: user.id } },
+            category: {
+              connect: { id: faker.helpers.arrayElement(incomeCategories).id },
+            },
           },
         });
       }
@@ -211,10 +246,14 @@ const prisma = new PrismaClient();
               from: new Date(2024, 0, 1),
               to: new Date(),
             }),
-            paymentMethod: faker.helpers.arrayElement(paymentMethods),
+            paymentMethod: {
+              connect: { id: faker.helpers.arrayElement(paymentMethods).id },
+            },
             status: faker.helpers.arrayElement(["PENDING", "PAID"]),
-            userId: user.id,
-            categoryId: faker.helpers.arrayElement(expenseCategories).id,
+            user: { connect: { id: user.id } },
+            category: {
+              connect: { id: faker.helpers.arrayElement(expenseCategories).id },
+            },
           },
         });
 
