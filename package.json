@@ -5,7 +5,9 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint"
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "format": "turbo run format"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.6",
