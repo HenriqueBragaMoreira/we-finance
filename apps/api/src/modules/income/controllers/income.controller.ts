@@ -37,7 +37,13 @@ export class IncomeController {
       "Filtrar por categoria(s). Use vírgula para múltiplas: 'Salário,Vendas'",
   })
   @ApiQuery({ name: "amount", required: false, type: Number })
-  @ApiQuery({ name: "paymentMethod", required: false, type: String })
+  @ApiQuery({
+    name: "paymentMethod",
+    required: false,
+    type: String,
+    description:
+      "Filtrar por método(s) de pagamento. Use vírgula para múltiplos: 'PIX,Transferência'",
+  })
   @ApiQuery({
     name: "date",
     required: false,
@@ -45,7 +51,13 @@ export class IncomeController {
     type: String,
   })
   @ApiQuery({ name: "userId", required: false, type: String })
-  @ApiQuery({ name: "status", required: false, type: String })
+  @ApiQuery({
+    name: "status",
+    required: false,
+    type: String,
+    description:
+      "Filtrar por status. Use vírgula para múltiplos: 'RECEIVED,PENDING'",
+  })
   @ApiQuery({
     name: "init",
     required: false,

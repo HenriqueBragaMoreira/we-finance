@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import type { Prisma } from "@prisma/client";
+import type { IncomeStatus, Prisma } from "@prisma/client";
 import { PrismaService } from "@/utils/prisma.service";
 import { FilterIncomeDto } from "./dtos/filter-income.dto";
 
@@ -31,15 +31,52 @@ export class IncomeRepository {
       }
     }
 
+    let statusCondition: IncomeStatus | { in: IncomeStatus[] } | undefined;
+    if (filters.status) {
+      const statuses = filters.status.split(",").map((status) => status.trim());
+      if (statuses.length === 1) {
+        statusCondition = statuses[0] as IncomeStatus;
+      } else {
+        statusCondition = { in: statuses as IncomeStatus[] };
+      }
+    }
+
+    let paymentMethodCondition:
+      | string
+      | Prisma.StringFilter
+      | { in: string[] }
+      | undefined;
+    if (filters.paymentMethod) {
+      const paymentMethods = filters.paymentMethod
+        .split(",")
+        .map((method) => method.trim());
+      if (paymentMethods.length === 1) {
+        paymentMethodCondition = {
+          contains: paymentMethods[0],
+          mode: "insensitive",
+        };
+      } else {
+        paymentMethodCondition = { in: paymentMethods };
+      }
+    }
+
     const whereClause = {
       name: filters.description
         ? { contains: filters.description, mode: "insensitive" as const }
         : undefined,
       category: categoryFilter,
       amount: filters.amount,
-      paymentMethod: filters.paymentMethod,
-      status: filters.status,
-      createdAt: filters.date ? new Date(filters.date) : undefined,
+      paymentMethod: paymentMethodCondition,
+      status: statusCondition,
+      receivedAt: filters.date
+        ? {
+            gte: new Date(`${filters.date}T00:00:00.000Z`),
+            lt: new Date(
+              new Date(`${filters.date}T00:00:00.000Z`).getTime() +
+                24 * 60 * 60 * 1000
+            ),
+          }
+        : undefined,
       userId: filters.userId,
     };
 
@@ -69,11 +106,11 @@ export class IncomeRepository {
     ]);
 
     const data = rawData.map((income) => {
-      const { categoryId: _, userId: __, category, user, ...rest } = income;
+      const { categoryId: _, userId: __, ...rest } = income;
       return {
         ...rest,
-        user: user.name,
-        category: category.name,
+        user: income.user.name,
+        category: income.category.name,
       };
     });
 

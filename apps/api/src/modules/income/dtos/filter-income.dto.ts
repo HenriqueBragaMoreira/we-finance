@@ -25,12 +25,17 @@ export class FilterIncomeDto {
   amount?: number;
 
   @ApiPropertyOptional({
-    example: "PIX",
-    description: "Filtrar por método de pagamento",
+    example: "PIX,Transferência",
+    description:
+      "Filtrar por método de pagamento. Use vírgula para múltiplos métodos",
   })
   paymentMethod?: string;
 
-  @ApiPropertyOptional({ example: "RECEIVED", enum: ["RECEIVED", "PENDING"] })
+  @ApiPropertyOptional({
+    example: "RECEIVED,PENDING",
+    enum: ["RECEIVED", "PENDING"],
+    description: "Filtrar por status. Use vírgula para múltiplos status",
+  })
   status?: IncomeStatus;
 
   @ApiPropertyOptional({
