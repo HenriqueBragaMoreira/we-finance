@@ -242,7 +242,7 @@ export class IncomeRepository {
     const result = await this.prisma.income.aggregate({
       where: {
         userId,
-        createdAt: {
+        receivedAt: {
           gte: startDate,
           lt: endDate,
         },
@@ -256,7 +256,7 @@ export class IncomeRepository {
       where: {
         userId,
         status: "RECEIVED",
-        createdAt: {
+        receivedAt: {
           gte: startDate,
           lt: endDate,
         },
@@ -270,7 +270,7 @@ export class IncomeRepository {
       where: {
         userId,
         status: "PENDING",
-        createdAt: {
+        receivedAt: {
           gte: startDate,
           lt: endDate,
         },

@@ -17,6 +17,7 @@ import {
 } from "@thallesp/nestjs-better-auth";
 import type { CreateExpenseDto } from "../dtos/create-expense.dto";
 import type { FilterExpenseDto } from "../dtos/filter-expense.dto";
+import type { MonthlyStatsDto } from "../dtos/monthly-stats.dto";
 import type { UpdateExpenseDto } from "../dtos/update-expense.dto";
 import { ExpenseService } from "../services/expense.service";
 
@@ -60,6 +61,56 @@ export class ExpenseController {
   })
   findAll(@Query() filter: FilterExpenseDto) {
     return this.service.findAll(filter);
+  }
+
+  @Get("monthly-stats")
+  @ApiOperation({
+    summary: "Estatísticas mensais de despesas",
+    description:
+      "Retorna o total, pagas e pendentes do mês atual ou mês especificado",
+  })
+  @ApiQuery({
+    name: "month",
+    required: false,
+    type: String,
+    description:
+      "Mês no formato YYYY-MM (ex: 2025-08). Se não informado, usa o mês atual",
+    example: "2025-08",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Estatísticas mensais retornadas com sucesso",
+    schema: {
+      type: "object",
+      properties: {
+        totalExpenses: {
+          type: "number",
+          example: 3000.0,
+          description: "Total de despesas no mês",
+        },
+        paid: {
+          type: "number",
+          example: 1800.0,
+          description: "Total de despesas pagas no mês",
+        },
+        pending: {
+          type: "number",
+          example: 1200.0,
+          description: "Total de despesas pendentes no mês",
+        },
+        month: {
+          type: "string",
+          example: "2025-08",
+          description: "Mês dos dados retornados",
+        },
+      },
+    },
+  })
+  getMonthlyStats(
+    @Query() filter: MonthlyStatsDto,
+    @Session() session: UserSession
+  ) {
+    return this.service.getMonthlyStats(session.user.id, filter);
   }
 
   @Post()

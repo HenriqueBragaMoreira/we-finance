@@ -1,6 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import type { CreateExpenseDto } from "../dtos/create-expense.dto";
 import { FilterExpenseDto } from "../dtos/filter-expense.dto";
+import type {
+  MonthlyStatsDto,
+  MonthlyStatsResponseDto,
+} from "../dtos/monthly-stats.dto";
 import type { UpdateExpenseDto } from "../dtos/update-expense.dto";
 import {
   type ExpenseListResponse,
@@ -107,5 +111,21 @@ export class ExpenseService {
 
   delete(id: string) {
     return this.repo.delete(id);
+  }
+
+  async getMonthlyStats(
+    userId: string,
+    filter: MonthlyStatsDto
+  ): Promise<MonthlyStatsResponseDto> {
+    let month = filter.month;
+
+    if (!month) {
+      const now = new Date();
+      const year = now.getFullYear();
+      const monthNum = (now.getMonth() + 1).toString().padStart(2, "0");
+      month = `${year}-${monthNum}`;
+    }
+
+    return this.repo.getMonthlyStats(userId, month);
   }
 }

@@ -1,6 +1,6 @@
+import { PrismaService } from "@/utils/prisma.service";
 import { Injectable } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
-import { PrismaService } from "@/utils/prisma.service";
 import { FilterInvestmentDto } from "./dtos/filter-investment.dto";
 
 @Injectable()
@@ -74,6 +74,58 @@ export class InvestmentRepository {
 
   async delete(id: string) {
     return this.prisma.investment.delete({ where: { id } });
+  }
+
+  async getMonthlyStats(month: string) {
+    const [year, monthNum] = month.split("-").map(Number);
+
+    const startDate = new Date(year, monthNum - 1, 1);
+    const endDate = new Date(year, monthNum, 1);
+
+    const userInvestments = await this.prisma.investment.groupBy({
+      by: ["userId"],
+      where: {
+        investedAt: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const userIds = userInvestments.map((inv) => inv.userId);
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: {
+          in: userIds,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    const userStats = userInvestments.map((inv) => {
+      const user = users.find((u) => u.id === inv.userId);
+      return {
+        name: user?.name || "Usuário não encontrado",
+        amount: inv._sum.amount?.toNumber() || 0,
+      };
+    });
+
+    const totalInvestments = userStats.reduce(
+      (sum, user) => sum + user.amount,
+      0
+    );
+
+    return {
+      totalInvestments,
+      month,
+      userStats,
+    };
   }
 
   async findOrCreateCategory(

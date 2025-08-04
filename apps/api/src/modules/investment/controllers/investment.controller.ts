@@ -17,6 +17,7 @@ import {
 } from "@thallesp/nestjs-better-auth";
 import type { CreateInvestmentDto } from "../dtos/create-investment.dto";
 import type { FilterInvestmentDto } from "../dtos/filter-investment.dto";
+import type { MonthlyStatsDto } from "../dtos/monthly-stats.dto";
 import type { UpdateInvestmentDto } from "../dtos/update-investment.dto";
 import { InvestmentService } from "../services/investment.service";
 
@@ -51,6 +52,72 @@ export class InvestmentController {
   })
   findAll(@Query() filter: FilterInvestmentDto) {
     return this.service.findAll(filter);
+  }
+
+  @Get("monthly-stats")
+  @ApiOperation({
+    summary: "Estatísticas mensais de investimentos",
+    description:
+      "Retorna o total investido e detalhamento por usuário do mês atual ou mês especificado",
+  })
+  @ApiQuery({
+    name: "month",
+    required: false,
+    type: String,
+    description:
+      "Mês no formato YYYY-MM (ex: 2025-08). Se não informado, usa o mês atual",
+    example: "2025-08",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Estatísticas mensais retornadas com sucesso",
+    schema: {
+      type: "object",
+      properties: {
+        totalInvestments: {
+          type: "number",
+          example: 8000.0,
+          description: "Total investido por todos os usuários no mês",
+        },
+        month: {
+          type: "string",
+          example: "2025-08",
+          description: "Mês dos dados retornados",
+        },
+        userStats: {
+          type: "array",
+          description: "Estatísticas por usuário",
+          items: {
+            type: "object",
+            properties: {
+              name: {
+                type: "string",
+                example: "João Silva",
+                description: "Nome do usuário",
+              },
+              amount: {
+                type: "number",
+                example: 3500.0,
+                description: "Total investido pelo usuário no mês",
+              },
+            },
+          },
+          example: [
+            {
+              name: "João Silva",
+              amount: 4500.0,
+            },
+            {
+              name: "Maria Santos",
+              amount: 3500.0,
+            },
+          ],
+        },
+      },
+    },
+  })
+  getMonthlyStats(@Query() filter: MonthlyStatsDto) {
+    return this.service.getMonthlyStats(filter);
   }
 
   @Post()

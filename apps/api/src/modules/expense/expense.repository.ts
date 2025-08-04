@@ -1,6 +1,6 @@
+import { PrismaService } from "@/utils/prisma.service";
 import { Injectable } from "@nestjs/common";
 import type { ExpenseType, Prisma } from "@prisma/client";
-import { PrismaService } from "@/utils/prisma.service";
 import { FilterExpenseDto } from "./dtos/filter-expense.dto";
 
 interface ExpenseListResponse {
@@ -162,6 +162,65 @@ export class ExpenseRepository {
 
   async delete(id: string) {
     return this.prisma.expense.delete({ where: { id } });
+  }
+
+  async getMonthlyStats(userId: string, month: string) {
+    const [year, monthNum] = month.split("-").map(Number);
+
+    const startDate = new Date(year, monthNum - 1, 1);
+    const endDate = new Date(year, monthNum, 1);
+
+    const result = await this.prisma.expense.aggregate({
+      where: {
+        userId,
+        spentAt: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const paidResult = await this.prisma.expense.aggregate({
+      where: {
+        userId,
+        status: "PAID",
+        spentAt: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const pendingResult = await this.prisma.expense.aggregate({
+      where: {
+        userId,
+        status: "PENDING",
+        spentAt: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const totalExpenses = result._sum.amount?.toNumber() || 0;
+    const paid = paidResult._sum.amount?.toNumber() || 0;
+    const pending = pendingResult._sum.amount?.toNumber() || 0;
+
+    return {
+      totalExpenses,
+      paid,
+      pending,
+      month,
+    };
   }
 
   async findOrCreateCategory(

@@ -28,9 +28,7 @@ export const masks = {
   listedMoney: (value: string): string => {
     if (!value || typeof value !== "string") return "";
 
-    let cleanValue = value?.replace(/[^\d.]/g, "");
-
-    cleanValue = cleanValue?.replace(/^0+/, "");
+    const cleanValue = value?.replace(/[^\d.]/g, "");
 
     if (!cleanValue) return "";
 
