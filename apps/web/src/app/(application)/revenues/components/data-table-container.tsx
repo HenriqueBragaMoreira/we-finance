@@ -1,17 +1,18 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { HandCoins } from "lucide-react";
-import { parseAsString, useQueryStates } from "nuqs";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { Button } from "@/components/ui/button";
 import { incomesServices } from "@/services/incomes";
+import { useQuery } from "@tanstack/react-query";
+import { HandCoins } from "lucide-react";
+import { parseAsString, useQueryStates } from "nuqs";
 import { useColumns } from "./columns";
 
 export function DataTableContainer() {
   const [filters] = useQueryStates({
     description: parseAsString.withDefault(""),
+    incomeType: parseAsString.withDefault(""),
     category: parseAsString.withDefault(""),
     amount: parseAsString.withDefault(""),
     paymentMethod: parseAsString.withDefault(""),
@@ -29,7 +30,7 @@ export function DataTableContainer() {
     },
   });
 
-  const { columns } = useColumns({ incomes: [] });
+  const { columns } = useColumns();
 
   if (!data || isFetching) {
     return <DataTableSkeleton rows={10} columns={8} />;

@@ -1,3 +1,18 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { categoriesServices } from "@/services/categories";
+import type { GetIncomesResponseDataField } from "@/services/incomes/types";
+import { paymentMethodsServices } from "@/services/payment-methods";
+import { usersServices } from "@/services/users";
+import { masks } from "@/utils/masks";
+import { useQueries } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   Banknote,
@@ -10,29 +25,29 @@ import {
   Trash2,
   UserRound,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import type { GetIncomesResponseDataField } from "@/services/incomes/types";
-import { masks } from "@/utils/masks";
 
-type useColumnsProps = {
-  // biome-ignore lint/suspicious/noExplicitAny: <>
-  incomes: any[];
-};
-
-export function useColumns({ incomes }: useColumnsProps) {
-  const uniqueTypes = [...new Set(incomes.map((item) => item.type))];
-
-  const uniquePaymentMethods = [
-    ...new Set(incomes.map((item) => item.paymentMethod)),
-  ];
+export function useColumns() {
+  const [
+    { data: incomeCategories },
+    { data: paymentMethods },
+    { data: users },
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: ["get-income-categories"],
+        queryFn: async () => await categoriesServices.get({ type: "INCOME" }),
+      },
+      {
+        queryKey: ["get-income-payment-methods"],
+        queryFn: async () =>
+          await paymentMethodsServices.get({ isActive: true }),
+      },
+      {
+        queryKey: ["get-users"],
+        queryFn: async () => await usersServices.get(),
+      },
+    ],
+  });
 
   const columns: ColumnDef<GetIncomesResponseDataField>[] = [
     {
@@ -57,15 +72,60 @@ export function useColumns({ incomes }: useColumnsProps) {
       enableColumnFilter: true,
     },
     {
+      id: "incomeType",
+      accessorKey: "incomeType",
+      header: "Tipo de Renda",
+      cell: ({ row }) => {
+        const type = row.original.incomeType;
+
+        const translatedType =
+          {
+            FIXED: "Fixa",
+            VARIABLE: "Variável",
+          }[type] || type;
+
+        return (
+          <Badge className="gap-1.5" variant="outline">
+            <span
+              className={cn(
+                "size-1.5 rounded-full",
+                type === "FIXED" && "bg-blue-300",
+                type === "VARIABLE" && "bg-yellow-300"
+              )}
+              aria-hidden="true"
+            />
+            {translatedType}
+          </Badge>
+        );
+      },
+      meta: {
+        label: "Tipo de Renda",
+        variant: "multiSelect",
+        options: [
+          {
+            label: "Fixa",
+            value: "FIXED",
+          },
+          {
+            label: "Variável",
+            value: "VARIABLE",
+          },
+        ],
+        icon: CircleDashed,
+        filterType: "multiText",
+      },
+      enableColumnFilter: true,
+    },
+    {
       id: "category",
       accessorKey: "category",
       header: "Categoria",
       meta: {
         label: "Categoria",
         variant: "multiSelect",
-        options: uniqueTypes.map((type) => ({
-          label: type,
-          value: type,
+        options: incomeCategories?.data.map((type) => ({
+          label: type.name,
+          value: type.name,
         })),
         icon: CircleDashed,
         filterType: "multiText",
@@ -95,9 +155,9 @@ export function useColumns({ incomes }: useColumnsProps) {
       meta: {
         label: "Método de Pagamento",
         variant: "multiSelect",
-        options: uniquePaymentMethods.map((method) => ({
-          label: method,
-          value: method,
+        options: paymentMethods?.data.map((method) => ({
+          label: method.name,
+          value: method.name,
         })),
         icon: DollarSign,
         filterType: "multiText",
@@ -128,7 +188,11 @@ export function useColumns({ incomes }: useColumnsProps) {
       header: "Pessoa",
       meta: {
         label: "Pessoa",
-        variant: "text",
+        variant: "select",
+        options: users?.data.map((user) => ({
+          label: user.name,
+          value: user.id,
+        })),
         icon: UserRound,
         filterType: "text",
       },

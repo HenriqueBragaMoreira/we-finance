@@ -1,5 +1,6 @@
 export type GetIncomesProps = {
   description?: string;
+  incomeType?: string;
   category?: string;
   amount?: string;
   paymentMethod?: string;
@@ -18,6 +19,7 @@ export type GetIncomesResponse = {
 export type GetIncomesResponseDataField = {
   id: string;
   name: string;
+  incomeType: string;
   amount: string;
   receivedAt: string;
   paymentMethod: string;

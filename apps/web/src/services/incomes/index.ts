@@ -10,6 +10,7 @@ export const incomesServices = {
   async get(data?: GetIncomesProps): Promise<GetIncomesResponse> {
     const { params: searchParams } = queryParamsBuilder([
       { param: "description", value: data?.description },
+      { param: "incomeType", value: data?.incomeType },
       { param: "category", value: data?.category },
       { param: "amount", value: data?.amount },
       { param: "paymentMethod", value: data?.paymentMethod },
@@ -20,7 +21,7 @@ export const incomesServices = {
           data?.date &&
           new Date(Number(data?.date)).toISOString().split("T")[0],
       },
-      { param: "person", value: data?.person },
+      { param: "userId", value: data?.person },
       { param: "init", value: data?.page },
       { param: "limit", value: data?.rowsPerPage },
     ]);
