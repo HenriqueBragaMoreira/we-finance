@@ -16,6 +16,7 @@ import { incomesServices } from "@/services/incomes";
 import type { GetIncomesResponse } from "@/services/incomes/types";
 import { useMutation } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function DeleteRevenueDialog({ incomeId }: { incomeId: string }) {
   const queryClient = getQueryClient();
@@ -23,7 +24,12 @@ export function DeleteRevenueDialog({ incomeId }: { incomeId: string }) {
   const { mutate } = useMutation({
     mutationKey: ["delete-income"],
     mutationFn: () => incomesServices.delete(incomeId),
+    onError: () => {
+      toast.error("Erro ao excluir receita");
+    },
     onSuccess: (data) => {
+      toast.success("Receita excluída com sucesso!");
+
       queryClient.setQueriesData(
         { queryKey: ["get-incomes"], exact: false },
         (oldData: GetIncomesResponse | undefined) => {

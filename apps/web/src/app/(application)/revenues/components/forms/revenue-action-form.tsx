@@ -44,6 +44,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 const revenueSchema = z.object({
@@ -100,7 +101,14 @@ export function RevenueActionForm({ data }: RevenueActionFormProps) {
         });
       }
     },
+    onError: () => {
+      toast.error(data ? "Erro ao editar receita" : "Erro ao criar receita");
+    },
     onSuccess: (newIncome) => {
+      toast.success(
+        data ? "Receita editada com sucesso!" : "Receita criada com sucesso!"
+      );
+
       queryClient.setQueriesData(
         { queryKey: ["get-incomes"], exact: false },
         (oldData: GetIncomesResponse | undefined) => {
@@ -343,12 +351,20 @@ export function RevenueActionForm({ data }: RevenueActionFormProps) {
 
         <DialogFooter className="mt-2 col-span-1 sm:col-span-2">
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button
+              disabled={form.formState.isSubmitting}
+              type="button"
+              variant="outline"
+            >
               Cancelar
             </Button>
           </DialogClose>
 
-          <Button type="submit" variant="success">
+          <Button
+            disabled={form.formState.isSubmitting}
+            type="submit"
+            variant="success"
+          >
             Adicionar
           </Button>
         </DialogFooter>

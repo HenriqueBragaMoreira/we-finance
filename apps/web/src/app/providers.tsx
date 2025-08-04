@@ -1,8 +1,9 @@
 "use client";
 
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { QueryClientProvider } from "@/lib/tanstack-query";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -13,7 +14,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       // disableTransitionOnChange
     >
       <QueryClientProvider>
-        <NuqsAdapter>{children}</NuqsAdapter>
+        <NuqsAdapter>
+          {children}
+          <Toaster richColors={true} />
+        </NuqsAdapter>
       </QueryClientProvider>
     </ThemeProvider>
   );
