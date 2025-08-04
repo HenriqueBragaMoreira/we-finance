@@ -59,6 +59,13 @@ export class IncomeController {
       "Filtrar por status. Use vírgula para múltiplos: 'RECEIVED,PENDING'",
   })
   @ApiQuery({
+    name: "incomeType",
+    required: false,
+    type: String,
+    description:
+      "Filtrar por tipo de receita. Use vírgula para múltiplos: 'FIXED,VARIABLE'",
+  })
+  @ApiQuery({
     name: "init",
     required: false,
     type: String,

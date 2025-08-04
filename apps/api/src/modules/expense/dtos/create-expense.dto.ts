@@ -5,9 +5,21 @@ enum ExpenseStatus {
   PAID = "PAID",
 }
 
+enum ExpenseType {
+  FIXED = "FIXED",
+  VARIABLE = "VARIABLE",
+}
+
 export class CreateExpenseDto {
   @ApiProperty({ example: "Conta de Luz" })
   name!: string;
+
+  @ApiProperty({
+    example: "FIXED",
+    enum: ExpenseType,
+    description: "Tipo da despesa",
+  })
+  expenseType!: ExpenseType;
 
   @ApiProperty({ example: 150.5 })
   amount!: number;

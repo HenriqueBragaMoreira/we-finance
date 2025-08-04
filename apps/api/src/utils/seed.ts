@@ -209,6 +209,7 @@ const prisma = new PrismaClient();
               max: 8000,
               fractionDigits: 2,
             }),
+            incomeType: faker.helpers.arrayElement(["FIXED", "VARIABLE"]),
             receivedAt: faker.date.between({
               from: new Date(2024, 0, 1),
               to: new Date(),
@@ -242,6 +243,7 @@ const prisma = new PrismaClient();
               max: 2000,
               fractionDigits: 2,
             }),
+            expenseType: faker.helpers.arrayElement(["FIXED", "VARIABLE"]),
             spentAt: faker.date.between({
               from: new Date(2024, 0, 1),
               to: new Date(),

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import type { Prisma } from "@prisma/client";
+import type { ExpenseType, Prisma } from "@prisma/client";
 import { PrismaService } from "@/utils/prisma.service";
 import { FilterExpenseDto } from "./dtos/filter-expense.dto";
 
@@ -34,9 +34,22 @@ export class ExpenseRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(filter: FilterExpenseDto): Promise<ExpenseListResponse> {
-    const { init, limit } = filter;
-    const skip = (Number(init) || 0) * (Number(limit) || 10);
-    const pageSize = Number(limit) || 10;
+    const page = Number(filter.init) || 0;
+    const pageSize = filter.limit ? Number(filter.limit) : undefined;
+    const skip = pageSize ? page * pageSize : undefined;
+
+    // Tratamento do filtro expenseType
+    let expenseTypeCondition: ExpenseType | { in: ExpenseType[] } | undefined;
+    if (filter.expenseType) {
+      const expenseTypes = filter.expenseType
+        .split(",")
+        .map((type) => type.trim()) as ExpenseType[];
+      if (expenseTypes.length === 1) {
+        expenseTypeCondition = expenseTypes[0];
+      } else {
+        expenseTypeCondition = { in: expenseTypes };
+      }
+    }
 
     const whereClause = {
       description: filter.description
@@ -52,6 +65,7 @@ export class ExpenseRepository {
           }
         : undefined,
       status: filter.status,
+      expenseType: expenseTypeCondition,
       spentAt: filter.date ? new Date(filter.date) : undefined,
       userId: filter.userId,
       category: filter.category

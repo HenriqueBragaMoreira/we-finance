@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import type { IncomeStatus, Prisma } from "@prisma/client";
+import type { IncomeStatus, IncomeType, Prisma } from "@prisma/client";
 import { PrismaService } from "@/utils/prisma.service";
 import { FilterIncomeDto } from "./dtos/filter-income.dto";
 
@@ -59,6 +59,18 @@ export class IncomeRepository {
       }
     }
 
+    let incomeTypeCondition: IncomeType | { in: IncomeType[] } | undefined;
+    if (filters.incomeType) {
+      const incomeTypes = filters.incomeType
+        .split(",")
+        .map((type) => type.trim()) as IncomeType[];
+      if (incomeTypes.length === 1) {
+        incomeTypeCondition = incomeTypes[0];
+      } else {
+        incomeTypeCondition = { in: incomeTypes };
+      }
+    }
+
     const whereClause = {
       name: filters.description
         ? { contains: filters.description, mode: "insensitive" as const }
@@ -67,6 +79,7 @@ export class IncomeRepository {
       amount: filters.amount,
       paymentMethod: paymentMethodCondition,
       status: statusCondition,
+      incomeType: incomeTypeCondition,
       receivedAt: filters.date
         ? {
             gte: new Date(`${filters.date}T00:00:00.000Z`),

@@ -25,7 +25,16 @@ export class ExpenseService {
       data.paymentMethod
     );
 
-    const { installmentsCount, ...expenseData } = data;
+    const { installmentsCount } = data;
+
+    // Certificar que o expenseType está incluído
+    const expenseCreateData = {
+      name: data.name,
+      amount: data.amount,
+      expenseType: data.expenseType,
+      spentAt: data.spentAt,
+      status: data.status,
+    };
 
     const hasInstallments = installmentsCount && installmentsCount > 1;
 
@@ -60,7 +69,7 @@ export class ExpenseService {
       );
 
       return this.repo.create({
-        ...expenseData,
+        ...expenseCreateData,
         user: { connect: { id: userId } },
         category: { connect: { id: category.id } },
         paymentMethod: { connect: { id: paymentMethod.id } },
@@ -71,7 +80,7 @@ export class ExpenseService {
     }
 
     return this.repo.create({
-      ...expenseData,
+      ...expenseCreateData,
       user: { connect: { id: userId } },
       category: { connect: { id: category.id } },
       paymentMethod: { connect: { id: paymentMethod.id } },

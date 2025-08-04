@@ -6,6 +6,11 @@ enum ExpenseStatus {
   PAID = "PAID",
 }
 
+enum ExpenseType {
+  FIXED = "FIXED",
+  VARIABLE = "VARIABLE",
+}
+
 export class FilterExpenseDto {
   @ApiPropertyOptional({
     example: "Conta de Luz",
@@ -29,8 +34,16 @@ export class FilterExpenseDto {
   })
   paymentMethod?: string;
 
-  @ApiPropertyOptional({ example: "PAID", enum: ["PAID", "PENDING"] })
+  @ApiPropertyOptional({ example: "PAID", enum: ExpenseStatus })
   status?: ExpenseStatus;
+
+  @ApiPropertyOptional({
+    example: "FIXED,VARIABLE",
+    enum: ExpenseType,
+    description:
+      "Filtrar por tipo de despesa. Use vírgula para múltiplos tipos",
+  })
+  expenseType?: ExpenseType;
 
   @ApiPropertyOptional({
     example: "2025-07-01",

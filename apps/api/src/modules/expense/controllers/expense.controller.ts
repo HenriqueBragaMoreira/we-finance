@@ -40,6 +40,13 @@ export class ExpenseController {
   @ApiQuery({ name: "userId", required: false, type: String })
   @ApiQuery({ name: "status", required: false, type: String })
   @ApiQuery({
+    name: "expenseType",
+    required: false,
+    type: String,
+    description:
+      "Filtrar por tipo de despesa. Use vírgula para múltiplos: 'FIXED,VARIABLE'",
+  })
+  @ApiQuery({
     name: "init",
     required: false,
     type: String,

@@ -29,6 +29,7 @@ export class IncomeService {
     return this.repo.create({
       name: data.name,
       amount: data.amount,
+      incomeType: data.incomeType,
       receivedAt: data.receivedAt,
       status: data.status,
       user: { connect: { id: userId } },

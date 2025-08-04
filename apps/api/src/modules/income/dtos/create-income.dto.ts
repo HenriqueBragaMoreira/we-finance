@@ -5,12 +5,24 @@ enum IncomeStatus {
   RECEIVED = "RECEIVED",
 }
 
+enum IncomeType {
+  FIXED = "FIXED",
+  VARIABLE = "VARIABLE",
+}
+
 export class CreateIncomeDto {
   @ApiProperty({ example: "Salário de Julho" })
   name!: string;
 
   @ApiProperty({ example: "category-uuid" })
   category!: string;
+
+  @ApiProperty({
+    example: "FIXED",
+    enum: IncomeType,
+    description: "Tipo da receita",
+  })
+  incomeType!: IncomeType;
 
   @ApiProperty({ example: 4500.0 })
   amount!: number;

@@ -6,6 +6,11 @@ enum IncomeStatus {
   RECEIVED = "RECEIVED",
 }
 
+enum IncomeType {
+  FIXED = "FIXED",
+  VARIABLE = "VARIABLE",
+}
+
 export class FilterIncomeDto {
   @ApiPropertyOptional({
     example: "Salário",
@@ -37,6 +42,14 @@ export class FilterIncomeDto {
     description: "Filtrar por status. Use vírgula para múltiplos status",
   })
   status?: IncomeStatus;
+
+  @ApiPropertyOptional({
+    example: "FIXED,VARIABLE",
+    enum: ["FIXED", "VARIABLE"],
+    description:
+      "Filtrar por tipo de receita. Use vírgula para múltiplos tipos",
+  })
+  incomeType?: IncomeType;
 
   @ApiPropertyOptional({
     example: "2025-07-01",

@@ -75,6 +75,7 @@ model Verification {
 model Income {
   id                String        @id @default(cuid())
   name              String
+  incomeType        IncomeType
   amount            Decimal       @db.Decimal(10, 2)
   receivedAt        DateTime
   paymentMethodId   String
@@ -91,6 +92,7 @@ model Income {
 model Expense {
   id                String          @id @default(cuid())
   name              String
+  expenseType       ExpenseType
   amount            Decimal         @db.Decimal(10, 2)
   spentAt           DateTime
   paymentMethodId   String
@@ -164,4 +166,14 @@ enum CategoryType {
   INCOME
   EXPENSE
   INVESTMENT
+}
+
+enum IncomeType {
+  FIXED
+  VARIABLE
+}
+
+enum ExpenseType {
+  FIXED
+  VARIABLE
 }
