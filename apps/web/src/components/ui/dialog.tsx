@@ -129,6 +129,10 @@ function DialogDescription({
   );
 }
 
+function handleCloseDialog() {
+  document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+}
+
 export {
   Dialog,
   DialogClose,
@@ -140,4 +144,5 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
+  handleCloseDialog,
 };

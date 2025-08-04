@@ -22,9 +22,10 @@ import {
   EllipsisIcon,
   SquarePen,
   Text,
-  Trash2,
   UserRound,
 } from "lucide-react";
+import { DeleteRevenueDialog } from "./delete-revenue-dialog";
+import { RevenueActionDialog } from "./revenue-action-dialog";
 
 export function useColumns() {
   const [
@@ -246,7 +247,7 @@ export function useColumns() {
     {
       id: "action",
       enableHiding: false,
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -255,22 +256,18 @@ export function useColumns() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>
-                <SquarePen
-                  size={16}
-                  className="opacity-60"
-                  aria-hidden="true"
-                />
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Trash2
-                  size={16}
-                  className="text-destructive opacity-60"
-                  aria-hidden="true"
-                />
-                Excluir
-              </DropdownMenuItem>
+              <RevenueActionDialog income={row.original}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <SquarePen
+                    size={16}
+                    className="opacity-60"
+                    aria-hidden="true"
+                  />
+                  Editar
+                </DropdownMenuItem>
+              </RevenueActionDialog>
+
+              <DeleteRevenueDialog incomeId={row.original.id} />
             </DropdownMenuContent>
           </DropdownMenu>
         );

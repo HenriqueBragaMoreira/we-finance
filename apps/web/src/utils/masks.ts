@@ -10,11 +10,12 @@ export const masks = {
 
     let cleanValue = value?.replace(/[^\d]/g, "");
     cleanValue = cleanValue?.replace(/^0+/, "");
+
     if (cleanValue === "") {
       return "";
     }
 
-    const number = Number(cleanValue);
+    const number = Number(cleanValue) / 100;
 
     const formattedValue = new Intl.NumberFormat("pt-BR", {
       style: "currency",

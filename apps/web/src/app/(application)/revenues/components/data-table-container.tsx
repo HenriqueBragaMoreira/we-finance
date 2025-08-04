@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { HandCoins } from "lucide-react";
 import { parseAsString, useQueryStates } from "nuqs";
 import { useColumns } from "./columns";
+import { RevenueActionDialog } from "./revenue-action-dialog";
 
 export function DataTableContainer() {
   const [filters] = useQueryStates({
@@ -42,10 +43,12 @@ export function DataTableContainer() {
       totalLength={data?.totalLength || 0}
       columns={columns}
       action={
-        <Button variant="success" size="sm">
-          <HandCoins />
-          Adicionar receita
-        </Button>
+        <RevenueActionDialog>
+          <Button variant="success" size="sm">
+            <HandCoins />
+            Adicionar receita
+          </Button>
+        </RevenueActionDialog>
       }
     />
   );

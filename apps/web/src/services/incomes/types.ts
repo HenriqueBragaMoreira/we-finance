@@ -1,3 +1,5 @@
+import type { RevenueSchemaType } from "@/app/(application)/revenues/components/forms/revenue-action-form";
+
 export type GetIncomesProps = {
   description?: string;
   incomeType?: string;
@@ -19,16 +21,18 @@ export type GetIncomesResponse = {
 export type GetIncomesResponseDataField = {
   id: string;
   name: string;
-  incomeType: string;
+  incomeType: "FIXED" | "VARIABLE";
   amount: string;
   receivedAt: string;
   paymentMethod: string;
-  status: string;
+  status: "RECEIVED" | "PENDING";
   createdAt: string;
   updatedAt: string;
   user: string;
   category: string;
 };
+
+export type GetIncomesByIdResponse = GetIncomesResponseDataField;
 
 export type GetMonthlyStatsResponse = {
   totalRevenues: number;
@@ -36,3 +40,15 @@ export type GetMonthlyStatsResponse = {
   pending: number;
   month: string;
 };
+
+export type CreateIncomeProps = RevenueSchemaType;
+
+export type CreateIncomeResponse = GetIncomesResponseDataField;
+
+export type UpdateIncomeProps = RevenueSchemaType & {
+  id: string;
+};
+
+export type UpdateIncomeResponse = GetIncomesResponseDataField;
+
+export type DeleteIncomeResponse = GetIncomesResponseDataField;

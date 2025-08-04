@@ -16,6 +16,32 @@ export class IncomeService {
     return this.repo.findAll(filter);
   }
 
+  async findById(id: string) {
+    const income = await this.repo.findById(id);
+
+    if (!income) {
+      return null;
+    }
+
+    const {
+      categoryId: _,
+      userId: __,
+      paymentMethodId: ___,
+      category,
+      user,
+      paymentMethod,
+      ...rest
+    } = income;
+
+    return {
+      ...rest,
+      amount: income.amount.toNumber(),
+      user: user?.name,
+      category: category?.name,
+      paymentMethod: paymentMethod?.name,
+    };
+  }
+
   async create(data: CreateIncomeDto, userId: string) {
     const category = await this.repo.findOrCreateCategory(
       data.category,
@@ -26,7 +52,7 @@ export class IncomeService {
       data.paymentMethod
     );
 
-    return this.repo.create({
+    const createdIncome = await this.repo.create({
       name: data.name,
       amount: data.amount,
       incomeType: data.incomeType,
@@ -36,10 +62,21 @@ export class IncomeService {
       category: { connect: { id: category.id } },
       paymentMethod: { connect: { id: paymentMethod.id } },
     });
+
+    return this.findById(createdIncome.id);
   }
 
   async update(id: string, data: UpdateIncomeDto) {
-    const { categoryId, paymentMethod, ...updateData } = data;
+    const { category, paymentMethod, ...updateData } = data;
+
+    let categoryConnect: { connect: { id: string } } | undefined;
+    if (category) {
+      const foundCategory = await this.repo.findOrCreateCategory(
+        category,
+        "INCOME"
+      );
+      categoryConnect = { connect: { id: foundCategory.id } };
+    }
 
     let paymentMethodConnect: { connect: { id: string } } | undefined;
     if (paymentMethod) {
@@ -48,11 +85,13 @@ export class IncomeService {
       paymentMethodConnect = { connect: { id: foundPaymentMethod.id } };
     }
 
-    return this.repo.update(id, {
+    await this.repo.update(id, {
       ...updateData,
-      ...(categoryId && { category: { connect: { id: categoryId } } }),
+      ...(categoryConnect && { category: categoryConnect }),
       ...(paymentMethodConnect && { paymentMethod: paymentMethodConnect }),
     });
+
+    return this.findById(id);
   }
 
   delete(id: string) {
@@ -63,8 +102,8 @@ export class IncomeService {
     userId: string,
     filter: MonthlyStatsDto
   ): Promise<MonthlyStatsResponseDto> {
-    // Se não foi passado mês, usa o mês atual
     let month = filter.month;
+
     if (!month) {
       const now = new Date();
       const year = now.getFullYear();

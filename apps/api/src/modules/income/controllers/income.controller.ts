@@ -81,54 +81,6 @@ export class IncomeController {
     return this.service.findAll(filter);
   }
 
-  @Post()
-  @ApiOperation({ summary: "Cria uma nova receita" })
-  @ApiBody({
-    description: "Dados para criar uma nova receita",
-    schema: {
-      type: "object",
-      properties: {
-        name: {
-          type: "string",
-          example: "Salário de Julho",
-          description: "Nome da receita",
-        },
-        category: {
-          type: "string",
-          example: "category-uuid",
-          description: "ID da categoria",
-        },
-        amount: {
-          type: "number",
-          example: 4500.0,
-          description: "Valor da receita",
-        },
-        paymentMethod: {
-          type: "string",
-          example: "PIX",
-          description:
-            "Nome do método de pagamento (será criado se não existir)",
-        },
-        status: {
-          type: "string",
-          enum: ["PENDING", "RECEIVED"],
-          example: "RECEIVED",
-          description: "Status da receita",
-        },
-        receivedAt: {
-          type: "string",
-          example: "2025-07-01T14:30:00Z",
-          description: "Data de recebimento",
-        },
-      },
-      required: ["name", "amount", "status", "receivedAt", "category"],
-    },
-  })
-  @ApiResponse({ status: 201, description: "Receita criada com sucesso" })
-  create(@Body() data: CreateIncomeDto, @Session() session: UserSession) {
-    return this.service.create(data, session.user.id);
-  }
-
   @Get("monthly-stats")
   @ApiOperation({
     summary: "Estatísticas mensais de receitas",
@@ -179,6 +131,101 @@ export class IncomeController {
     return this.service.getMonthlyStats(session.user.id, filter);
   }
 
+  @Get(":id")
+  @ApiOperation({
+    summary: "Busca uma receita específica por ID",
+    description:
+      "Retorna os dados de uma receita específica incluindo categoria, método de pagamento e usuário",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Receita encontrada com sucesso",
+    schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", example: "income-uuid-123" },
+        name: { type: "string", example: "Salário de Julho" },
+        amount: { type: "number", example: 4500.0 },
+        incomeType: {
+          type: "string",
+          example: "FIXED",
+          enum: ["FIXED", "VARIABLE"],
+        },
+        status: {
+          type: "string",
+          example: "RECEIVED",
+          enum: ["PENDING", "RECEIVED"],
+        },
+        receivedAt: { type: "string", example: "2025-07-01T14:30:00.000Z" },
+        user: { type: "string", example: "João Silva" },
+        category: { type: "string", example: "Salário" },
+        paymentMethod: { type: "string", example: "PIX" },
+        createdAt: { type: "string", example: "2025-08-04T10:00:00.000Z" },
+        updatedAt: { type: "string", example: "2025-08-04T10:00:00.000Z" },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Receita não encontrada",
+  })
+  findById(@Param("id") id: string) {
+    return this.service.findById(id);
+  }
+
+  @Post()
+  @ApiOperation({ summary: "Cria uma nova receita" })
+  @ApiBody({
+    description: "Dados para criar uma nova receita",
+    schema: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          example: "Salário de Julho",
+          description: "Nome da receita",
+        },
+        incomeType: {
+          type: "string",
+          example: "FIXED",
+          description: "Tipo de receita",
+        },
+        category: {
+          type: "string",
+          example: "Salário",
+          description: "Nome da categoria (será criada se não existir)",
+        },
+        amount: {
+          type: "number",
+          example: 4500.0,
+          description: "Valor da receita",
+        },
+        paymentMethod: {
+          type: "string",
+          example: "PIX",
+          description:
+            "Nome do método de pagamento (será criado se não existir)",
+        },
+        status: {
+          type: "string",
+          enum: ["PENDING", "RECEIVED"],
+          example: "RECEIVED",
+          description: "Status da receita",
+        },
+        receivedAt: {
+          type: "string",
+          example: "2025-07-01T14:30:00Z",
+          description: "Data de recebimento",
+        },
+      },
+      required: ["name", "amount", "status", "receivedAt", "category"],
+    },
+  })
+  @ApiResponse({ status: 201, description: "Receita criada com sucesso" })
+  create(@Body() data: CreateIncomeDto, @Session() session: UserSession) {
+    return this.service.create(data, session.user.id);
+  }
+
   @Patch(":id")
   @ApiOperation({ summary: "Atualiza uma receita existente" })
   @ApiBody({
@@ -215,8 +262,9 @@ export class IncomeController {
         },
         category: {
           type: "string",
-          example: "category-uuid",
-          description: "ID da categoria (opcional)",
+          example: "Salário",
+          description:
+            "Nome da categoria (opcional - será criada se não existir)",
         },
       },
     },

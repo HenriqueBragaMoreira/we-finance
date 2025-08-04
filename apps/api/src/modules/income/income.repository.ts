@@ -1,6 +1,6 @@
+import { PrismaService } from "@/utils/prisma.service";
 import { Injectable } from "@nestjs/common";
 import type { IncomeStatus, IncomeType, Prisma } from "@prisma/client";
-import { PrismaService } from "@/utils/prisma.service";
 import { FilterIncomeDto } from "./dtos/filter-income.dto";
 
 @Injectable()
@@ -94,7 +94,10 @@ export class IncomeRepository {
 
     const findManyOptions = {
       where: whereClause,
-      orderBy: { createdAt: "desc" as const },
+      orderBy: [
+        { receivedAt: "desc" as const },
+        { createdAt: "desc" as const },
+      ],
       include: {
         category: {
           select: {
@@ -152,7 +155,26 @@ export class IncomeRepository {
   }
 
   async findById(id: string) {
-    return this.prisma.income.findUnique({ where: { id } });
+    return this.prisma.income.findUnique({
+      where: { id },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        paymentMethod: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
   }
 
   async update(id: string, data: Prisma.IncomeUpdateInput) {
@@ -211,13 +233,10 @@ export class IncomeRepository {
   }
 
   async getMonthlyStats(userId: string, month: string) {
-    // Parse do mês (formato YYYY-MM)
     const [year, monthNum] = month.split("-").map(Number);
 
-    // Primeiro dia do mês
     const startDate = new Date(year, monthNum - 1, 1);
 
-    // Primeiro dia do próximo mês
     const endDate = new Date(year, monthNum, 1);
 
     const result = await this.prisma.income.aggregate({

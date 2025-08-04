@@ -1,9 +1,16 @@
 import { api } from "@/lib/ky";
+import { masks } from "@/utils/masks";
 import { queryParamsBuilder } from "@/utils/query-params-builder";
 import type {
+  CreateIncomeProps,
+  CreateIncomeResponse,
+  DeleteIncomeResponse,
+  GetIncomesByIdResponse,
   GetIncomesProps,
   GetIncomesResponse,
   GetMonthlyStatsResponse,
+  UpdateIncomeProps,
+  UpdateIncomeResponse,
 } from "./types";
 
 export const incomesServices = {
@@ -30,8 +37,38 @@ export const incomesServices = {
 
     return response.json();
   },
+  async getById(id: string): Promise<GetIncomesByIdResponse> {
+    const response = await api.get(`incomes/${id}`);
+
+    return response.json();
+  },
   async getMonthlyStats(): Promise<GetMonthlyStatsResponse> {
     const response = await api.get("incomes/monthly-stats");
+
+    return response.json();
+  },
+  async create(data: CreateIncomeProps): Promise<CreateIncomeResponse> {
+    const response = await api.post("incomes", {
+      json: {
+        ...data,
+        amount: masks.removeMask(data.amount),
+      },
+    });
+
+    return response.json();
+  },
+  async update(data: UpdateIncomeProps): Promise<UpdateIncomeResponse> {
+    const response = await api.patch(`incomes/${data.id}`, {
+      json: {
+        ...data,
+        amount: masks.removeMask(data.amount),
+      },
+    });
+
+    return response.json();
+  },
+  async delete(id: string): Promise<DeleteIncomeResponse> {
+    const response = await api.delete(`incomes/${id}`);
 
     return response.json();
   },

@@ -14,7 +14,7 @@ export class CreateIncomeDto {
   @ApiProperty({ example: "Salário de Julho" })
   name!: string;
 
-  @ApiProperty({ example: "category-uuid" })
+  @ApiProperty({ example: "Salário", description: "Nome da categoria" })
   category!: string;
 
   @ApiProperty({
