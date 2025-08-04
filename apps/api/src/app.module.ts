@@ -8,6 +8,7 @@ import { ExpenseModule } from "./modules/expense/expense.module";
 import { IncomeModule } from "./modules/income/income.module";
 import { InvestmentModule } from "./modules/investment/investment.module";
 import { PaymentMethodModule } from "./modules/payment-method/payment-method.module";
+import { UserModule } from "./modules/user/user.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PaymentMethodModule } from "./modules/payment-method/payment-method.mod
     CategoryModule,
     InvestmentModule,
     PaymentMethodModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
