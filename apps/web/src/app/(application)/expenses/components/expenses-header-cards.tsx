@@ -1,22 +1,22 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { incomesServices } from "@/services/incomes";
+import { expenseServices } from "@/services/expense";
 import { masks } from "@/utils/masks";
 import { useQuery } from "@tanstack/react-query";
-import { TrendingUp } from "lucide-react";
-import { RevenuesHeaderCardsSkeleton } from "./revenues-header-cards-skeleton";
+import { TrendingDown } from "lucide-react";
+import { ExpensesHeaderCardsSkeleton } from "./expenses-header-cards-skeleton";
 
-export function RevenuesHeaderCards() {
+export function ExpensesHeaderCards() {
   const { data, isFetching } = useQuery({
-    queryKey: ["income-monthly-stats"],
+    queryKey: ["expense-monthly-stats"],
     queryFn: async () => {
-      return await incomesServices.getMonthlyStats();
+      return await expenseServices.getMonthlyStats();
     },
   });
 
   if (isFetching) {
-    return <RevenuesHeaderCardsSkeleton />;
+    return <ExpensesHeaderCardsSkeleton />;
   }
 
   return (
@@ -24,25 +24,25 @@ export function RevenuesHeaderCards() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Total de Receitas
+            Total de Despesas
           </CardTitle>
-          <TrendingUp className="size-6 text-green-600" />
+          <TrendingDown className="size-6 text-red-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-600">
-            {masks.listedMoney(String(data?.totalRevenues))}
+          <div className="text-2xl font-bold text-red-600">
+            {masks.listedMoney(String(data?.totalExpenses))}
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Recebidas</CardTitle>
-          <TrendingUp className="size-6 text-green-600" />
+          <CardTitle className="text-sm font-medium">Pagas</CardTitle>
+          <TrendingDown className="size-6 text-red-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-600">
-            {masks.listedMoney(String(data?.received))}
+          <div className="text-2xl font-bold text-red-600">
+            {masks.listedMoney(String(data?.paid))}
           </div>
         </CardContent>
       </Card>
@@ -50,10 +50,10 @@ export function RevenuesHeaderCards() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
-          <TrendingUp className="size-6 text-red-600" />
+          <TrendingDown className="size-6 text-amber-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-red-600">
+          <div className="text-2xl font-bold text-amber-600">
             {masks.listedMoney(String(data?.pending))}
           </div>
         </CardContent>

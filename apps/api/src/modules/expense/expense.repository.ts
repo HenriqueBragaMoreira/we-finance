@@ -3,6 +3,12 @@ import { Injectable } from "@nestjs/common";
 import type { ExpenseType, Prisma } from "@prisma/client";
 import { FilterExpenseDto } from "./dtos/filter-expense.dto";
 
+// Import ExpenseStatus from the DTO file
+enum ExpenseStatus {
+  PENDING = "PENDING",
+  PAID = "PAID",
+}
+
 interface ExpenseListResponse {
   data: Array<{
     id: string;
@@ -38,7 +44,6 @@ export class ExpenseRepository {
     const pageSize = filter.limit ? Number(filter.limit) : undefined;
     const skip = pageSize ? page * pageSize : undefined;
 
-    // Tratamento do filtro expenseType
     let expenseTypeCondition: ExpenseType | { in: ExpenseType[] } | undefined;
     if (filter.expenseType) {
       const expenseTypes = filter.expenseType
@@ -51,8 +56,18 @@ export class ExpenseRepository {
       }
     }
 
+    let statusCondition: ExpenseStatus | { in: ExpenseStatus[] } | undefined;
+    if (filter.status) {
+      const statuses = filter.status.split(",").map((status) => status.trim());
+      if (statuses.length === 1) {
+        statusCondition = statuses[0] as ExpenseStatus;
+      } else {
+        statusCondition = { in: statuses as ExpenseStatus[] };
+      }
+    }
+
     const whereClause = {
-      description: filter.description
+      name: filter.description
         ? { contains: filter.description, mode: "insensitive" as const }
         : undefined,
       amount: filter.amount,
@@ -64,9 +79,14 @@ export class ExpenseRepository {
             },
           }
         : undefined,
-      status: filter.status,
+      status: statusCondition,
       expenseType: expenseTypeCondition,
-      spentAt: filter.date ? new Date(filter.date) : undefined,
+      spentAt: filter.date
+        ? {
+            gte: new Date(`${filter.date}T00:00:00.000Z`),
+            lt: new Date(`${filter.date}T23:59:59.999Z`),
+          }
+        : undefined,
       userId: filter.userId,
       category: filter.category
         ? {

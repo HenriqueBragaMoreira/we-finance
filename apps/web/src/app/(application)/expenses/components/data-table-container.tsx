@@ -1,19 +1,46 @@
 "use client";
 
-import { CreditCard } from "lucide-react";
 import { DataTable } from "@/components/data-table/data-table";
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { Button } from "@/components/ui/button";
-import { expenses } from "../data/expenses";
+import { expenseServices } from "@/services/expense";
+import { useQuery } from "@tanstack/react-query";
+import { CreditCard } from "lucide-react";
+import { parseAsString, useQueryStates } from "nuqs";
 import { useColumns } from "./columns";
 
 export function DataTableContainer() {
-  const { columns } = useColumns({ expenses });
+  const [filters] = useQueryStates({
+    description: parseAsString.withDefault(""),
+    expenseType: parseAsString.withDefault(""),
+    category: parseAsString.withDefault(""),
+    amount: parseAsString.withDefault(""),
+    paymentMethod: parseAsString.withDefault(""),
+    status: parseAsString.withDefault(""),
+    date: parseAsString.withDefault(""),
+    person: parseAsString.withDefault(""),
+    page: parseAsString.withDefault("0"),
+    rowsPerPage: parseAsString.withDefault("10"),
+  });
+
+  const { data, isFetching } = useQuery({
+    queryKey: ["get-expense", filters],
+    queryFn: async () => {
+      return expenseServices.get(filters);
+    },
+  });
+
+  const { columns } = useColumns();
+
+  if (!data || isFetching) {
+    return <DataTableSkeleton rows={10} columns={8} />;
+  }
 
   return (
     <DataTable
-      data={expenses}
+      data={data.data}
       columns={columns}
-      totalLength={expenses.length}
+      totalLength={data.total}
       action={
         <Button variant="destructive" size="sm">
           <CreditCard />

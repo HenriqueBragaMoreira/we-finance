@@ -35,11 +35,11 @@ export function useColumns() {
   ] = useQueries({
     queries: [
       {
-        queryKey: ["get-income-categories"],
+        queryKey: ["get-categories", "INCOME"],
         queryFn: async () => await categoriesServices.get({ type: "INCOME" }),
       },
       {
-        queryKey: ["get-income-payment-methods"],
+        queryKey: ["get-payment-methods"],
         queryFn: async () =>
           await paymentMethodsServices.get({ isActive: true }),
       },

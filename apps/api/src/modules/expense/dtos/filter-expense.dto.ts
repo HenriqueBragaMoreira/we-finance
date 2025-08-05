@@ -34,7 +34,12 @@ export class FilterExpenseDto {
   })
   paymentMethod?: string;
 
-  @ApiPropertyOptional({ example: "PAID", enum: ExpenseStatus })
+  @ApiPropertyOptional({
+    example: "PAID,PENDING",
+    enum: ExpenseStatus,
+    description:
+      "Filtrar por status. Use vírgula para múltiplos status: 'PAID,PENDING'",
+  })
   status?: ExpenseStatus;
 
   @ApiPropertyOptional({

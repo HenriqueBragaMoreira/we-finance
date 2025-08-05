@@ -69,10 +69,10 @@ export function RevenueActionForm({ data }: RevenueActionFormProps) {
   const queryClient = getQueryClient();
 
   const categories: GetCategoriesResponse | undefined =
-    queryClient.getQueryData(["get-income-categories"]);
+    queryClient.getQueryData(["get-categories", "INCOME"]);
 
   const paymentMethods: GetPaymentMethodsResponse | undefined =
-    queryClient.getQueryData(["get-income-payment-methods"]);
+    queryClient.getQueryData(["get-payment-methods"]);
 
   const form = useForm<RevenueSchemaType>({
     resolver: zodResolver(revenueSchema),
@@ -138,7 +138,7 @@ export function RevenueActionForm({ data }: RevenueActionFormProps) {
         }
       );
 
-      queryClient.invalidateQueries({ queryKey: ["monthly-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["income-monthly-stats"] });
 
       handleCloseDialog();
     },

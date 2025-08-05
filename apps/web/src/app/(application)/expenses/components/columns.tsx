@@ -1,3 +1,18 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { categoriesServices } from "@/services/categories";
+import type { GetExpenseResponseDataField } from "@/services/expense/types";
+import { paymentMethodsServices } from "@/services/payment-methods";
+import { usersServices } from "@/services/users";
+import { masks } from "@/utils/masks";
+import { useQueries } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   Banknote,
@@ -10,28 +25,31 @@ import {
   Trash2,
   UserRound,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import { masks } from "@/utils/masks";
-import type { ExpenseType } from "../data/expenses";
 
-export function useColumns({ expenses }: { expenses: ExpenseType[] }) {
-  const uniqueCategories = [...new Set(expenses.map((item) => item.category))];
+export function useColumns() {
+  const [
+    { data: expenseCategories },
+    { data: paymentMethods },
+    { data: users },
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: ["get-categories", "EXPENSE"],
+        queryFn: async () => await categoriesServices.get({ type: "EXPENSE" }),
+      },
+      {
+        queryKey: ["get-payment-methods"],
+        queryFn: async () =>
+          await paymentMethodsServices.get({ isActive: true }),
+      },
+      {
+        queryKey: ["get-users"],
+        queryFn: async () => await usersServices.get(),
+      },
+    ],
+  });
 
-  const uniquePaymentMethods = [
-    ...new Set(expenses.map((item) => item.paymentMethod)),
-  ];
-
-  const uniqueStatus = [...new Set(expenses.map((item) => item.status))];
-
-  const columns: ColumnDef<ExpenseType>[] = [
+  const columns: ColumnDef<GetExpenseResponseDataField>[] = [
     {
       id: "description",
       accessorKey: "name",
@@ -45,15 +63,60 @@ export function useColumns({ expenses }: { expenses: ExpenseType[] }) {
       enableColumnFilter: true,
     },
     {
+      id: "expenseType",
+      accessorKey: "expenseType",
+      header: "Tipo de Despesa",
+      cell: ({ row }) => {
+        const type = row.original.expenseType;
+
+        const translatedType =
+          {
+            FIXED: "Fixa",
+            VARIABLE: "Variável",
+          }[type] || type;
+
+        return (
+          <Badge className="gap-1.5" variant="outline">
+            <span
+              className={cn(
+                "size-1.5 rounded-full",
+                type === "FIXED" && "bg-blue-300",
+                type === "VARIABLE" && "bg-yellow-300"
+              )}
+              aria-hidden="true"
+            />
+            {translatedType}
+          </Badge>
+        );
+      },
+      meta: {
+        label: "Tipo de Despesa",
+        variant: "multiSelect",
+        options: [
+          {
+            label: "Fixa",
+            value: "FIXED",
+          },
+          {
+            label: "Variável",
+            value: "VARIABLE",
+          },
+        ],
+        icon: CircleDashed,
+        filterType: "multiText",
+      },
+      enableColumnFilter: true,
+    },
+    {
       id: "category",
       accessorKey: "category",
       header: "Categoria",
       meta: {
         label: "Categoria",
         variant: "multiSelect",
-        options: uniqueCategories.map((category) => ({
-          label: category,
-          value: category,
+        options: expenseCategories?.data.map((type) => ({
+          label: type.name,
+          value: type.name,
         })),
         icon: CircleDashed,
         filterType: "multiText",
@@ -61,8 +124,8 @@ export function useColumns({ expenses }: { expenses: ExpenseType[] }) {
       enableColumnFilter: true,
     },
     {
-      id: "value",
-      accessorKey: "value",
+      id: "amount",
+      accessorKey: "amount",
       header: "Valor",
       cell: ({ row }) => {
         const value = row.original.amount;
@@ -82,9 +145,9 @@ export function useColumns({ expenses }: { expenses: ExpenseType[] }) {
       meta: {
         label: "Método de Pagamento",
         variant: "multiSelect",
-        options: uniquePaymentMethods.map((method) => ({
-          label: method,
-          value: method,
+        options: paymentMethods?.data.map((method) => ({
+          label: method.name,
+          value: method.name,
         })),
         icon: DollarSign,
         filterType: "multiText",
@@ -95,7 +158,8 @@ export function useColumns({ expenses }: { expenses: ExpenseType[] }) {
       accessorKey: "date",
       header: "Data",
       cell: ({ row }) => {
-        const date = row.original.date;
+        const date = row.original.spentAt;
+
         return <span>{new Date(date).toLocaleDateString("pt-BR")}</span>;
       },
       meta: {
@@ -107,11 +171,16 @@ export function useColumns({ expenses }: { expenses: ExpenseType[] }) {
       enableColumnFilter: true,
     },
     {
-      accessorKey: "person",
+      id: "person",
+      accessorFn: (row) => row.user,
       header: "Pessoa",
       meta: {
         label: "Pessoa",
-        variant: "text",
+        variant: "select",
+        options: users?.data.map((user) => ({
+          label: user.name,
+          value: user.id,
+        })),
         icon: UserRound,
         filterType: "text",
       },
@@ -123,27 +192,39 @@ export function useColumns({ expenses }: { expenses: ExpenseType[] }) {
       cell: ({ row }) => {
         const status = row.original.status;
 
+        const translatedStatus =
+          {
+            PAID: "Pago",
+            PENDING: "Pendente",
+          }[status] || status;
+
         return (
           <Badge className="gap-1.5" variant="outline">
             <span
               className={cn(
                 "size-1.5 rounded-full",
-                status === "Pago" && "bg-emerald-500",
-                status === "Pendente" && "bg-amber-500"
+                status === "PAID" && "bg-emerald-500",
+                status === "PENDING" && "bg-amber-500"
               )}
               aria-hidden="true"
             />
-            {status}
+            {translatedStatus}
           </Badge>
         );
       },
       meta: {
         label: "Status",
         variant: "multiSelect",
-        options: uniqueStatus.map((status) => ({
-          label: status,
-          value: status,
-        })),
+        options: [
+          {
+            label: "Pago",
+            value: "PAID",
+          },
+          {
+            label: "Pendente",
+            value: "PENDING",
+          },
+        ],
         icon: CircleDashed,
         filterType: "multiText",
       },

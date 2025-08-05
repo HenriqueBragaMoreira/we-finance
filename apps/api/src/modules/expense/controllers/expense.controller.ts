@@ -39,7 +39,13 @@ export class ExpenseController {
     type: String,
   })
   @ApiQuery({ name: "userId", required: false, type: String })
-  @ApiQuery({ name: "status", required: false, type: String })
+  @ApiQuery({
+    name: "status",
+    required: false,
+    type: String,
+    description:
+      "Filtrar por status. Use vírgula para múltiplos: 'PAID,PENDING'",
+  })
   @ApiQuery({
     name: "expenseType",
     required: false,
