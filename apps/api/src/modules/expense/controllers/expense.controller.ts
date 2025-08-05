@@ -174,7 +174,38 @@ export class ExpenseController {
       ],
     },
   })
-  @ApiResponse({ status: 201, description: "Gasto criado com sucesso" })
+  @ApiResponse({
+    status: 201,
+    description: "Gasto criado com sucesso",
+    schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", example: "clx123456789" },
+        name: { type: "string", example: "Conta de Luz" },
+        amount: { type: "number", example: 150.5 },
+        status: { type: "string", example: "PENDING" },
+        spentAt: { type: "string", format: "date-time" },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" },
+        category: { type: "string", example: "Utilidades" },
+        user: { type: "string", example: "João Silva" },
+        paymentMethod: { type: "string", example: "Cartão de Crédito" },
+        installments: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              amount: { type: "number" },
+              dueDate: { type: "string", format: "date-time" },
+              number: { type: "number" },
+              status: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+  })
   create(@Body() data: CreateExpenseDto, @Session() session: UserSession) {
     return this.service.create(data, session.user.id);
   }
@@ -212,10 +243,48 @@ export class ExpenseController {
           example: "2025-08-01T14:30:00Z",
           description: "Data do gasto (opcional)",
         },
-        categoryId: {
+        category: {
           type: "string",
-          example: "category-uuid",
-          description: "ID da categoria (opcional)",
+          example: "Utilidades",
+          description: "Nome da categoria (opcional)",
+        },
+        expenseType: {
+          type: "string",
+          enum: ["FIXED", "VARIABLE"],
+          example: "FIXED",
+          description: "Tipo da despesa (opcional)",
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Gasto atualizado com sucesso",
+    schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", example: "clx123456789" },
+        name: { type: "string", example: "Conta de Luz - Agosto" },
+        amount: { type: "number", example: 175.0 },
+        status: { type: "string", example: "PAID" },
+        spentAt: { type: "string", format: "date-time" },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" },
+        category: { type: "string", example: "Utilidades" },
+        user: { type: "string", example: "João Silva" },
+        paymentMethod: { type: "string", example: "PIX" },
+        installments: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              amount: { type: "number" },
+              dueDate: { type: "string", format: "date-time" },
+              number: { type: "number" },
+              status: { type: "string" },
+            },
+          },
         },
       },
     },
@@ -226,6 +295,38 @@ export class ExpenseController {
 
   @Delete(":id")
   @ApiOperation({ summary: "Remove um gasto" })
+  @ApiResponse({
+    status: 200,
+    description: "Gasto removido com sucesso",
+    schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", example: "clx123456789" },
+        name: { type: "string", example: "Conta de Luz" },
+        amount: { type: "number", example: 150.5 },
+        status: { type: "string", example: "PENDING" },
+        spentAt: { type: "string", format: "date-time" },
+        createdAt: { type: "string", format: "date-time" },
+        updatedAt: { type: "string", format: "date-time" },
+        category: { type: "string", example: "Utilidades" },
+        user: { type: "string", example: "João Silva" },
+        paymentMethod: { type: "string", example: "Cartão de Crédito" },
+        installments: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              amount: { type: "number" },
+              dueDate: { type: "string", format: "date-time" },
+              number: { type: "number" },
+              status: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+  })
   delete(@Param("id") id: string) {
     return this.service.delete(id);
   }

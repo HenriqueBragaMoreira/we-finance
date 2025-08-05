@@ -19,10 +19,10 @@ export type GetExpenseResponse = {
 export type GetExpenseResponseDataField = {
   id: string;
   name: string;
-  expenseType: string;
+  expenseType: "FIXED" | "VARIABLE";
   amount: number;
   spentAt: string;
-  status: string;
+  status: "PAID" | "PENDING";
   createdAt: string;
   updatedAt: string;
   installments: GetExpenseResponseInstallmentField[];
@@ -45,3 +45,37 @@ export type GetExpenseMonthlyStatsResponse = {
   pending: number;
   month: string;
 };
+
+export type CreateExpenseProps = {
+  name: string;
+  expenseType: "FIXED" | "VARIABLE";
+  amount: string;
+  spentAt: Date;
+  status: "PAID" | "PENDING";
+  category: string;
+  paymentMethod: string;
+  installmentsCount?: string;
+};
+
+export type CreateExpenseResponse = {
+  id: string;
+  name: string;
+  expenseType: "FIXED" | "VARIABLE";
+  amount: number;
+  spentAt: string;
+  status: "PAID" | "PENDING";
+  createdAt: string;
+  updatedAt: string;
+  installments: GetExpenseResponseInstallmentField[];
+  user: string;
+  category: string;
+  paymentMethod: string;
+};
+
+export type UpdateExpenseProps = CreateExpenseProps & {
+  id: string;
+};
+
+export type UpdateExpenseResponse = CreateExpenseResponse;
+
+export type DeleteExpenseResponse = CreateExpenseResponse;

@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CreditCard } from "lucide-react";
 import { parseAsString, useQueryStates } from "nuqs";
 import { useColumns } from "./columns";
+import { ExpensesActionDialog } from "./expenses-action-dialog";
 
 export function DataTableContainer() {
   const [filters] = useQueryStates({
@@ -42,10 +43,12 @@ export function DataTableContainer() {
       columns={columns}
       totalLength={data.total}
       action={
-        <Button variant="destructive" size="sm">
-          <CreditCard />
-          Adicionar despesa
-        </Button>
+        <ExpensesActionDialog>
+          <Button variant="destructive" size="sm">
+            <CreditCard />
+            Adicionar despesa
+          </Button>
+        </ExpensesActionDialog>
       }
     />
   );

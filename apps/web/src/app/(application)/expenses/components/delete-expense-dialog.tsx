@@ -12,27 +12,27 @@ import {
 } from "@/components/ui/dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { getQueryClient } from "@/lib/tanstack-query";
-import { incomesServices } from "@/services/incomes";
-import type { GetIncomesResponse } from "@/services/incomes/types";
+import { expenseServices } from "@/services/expense";
+import type { GetExpenseResponse } from "@/services/expense/types";
 import { useMutation } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-export function DeleteRevenueDialog({ incomeId }: { incomeId: string }) {
+export function DeleteExpenseDialog({ expenseId }: { expenseId: string }) {
   const queryClient = getQueryClient();
 
   const { mutate } = useMutation({
-    mutationKey: ["delete-income"],
-    mutationFn: () => incomesServices.delete(incomeId),
+    mutationKey: ["delete-expense"],
+    mutationFn: () => expenseServices.delete(expenseId),
     onError: () => {
-      toast.error("Erro ao excluir receita");
+      toast.error("Erro ao excluir despesa");
     },
     onSuccess: (data) => {
-      toast.success("Receita excluída com sucesso!");
+      toast.success("Despesa excluída com sucesso!");
 
       queryClient.setQueriesData(
-        { queryKey: ["get-incomes"], exact: false },
-        (oldData: GetIncomesResponse | undefined) => {
+        { queryKey: ["get-expense"], exact: false },
+        (oldData: GetExpenseResponse | undefined) => {
           if (!oldData) return oldData;
 
           const updatedData = oldData.data.filter(
@@ -46,7 +46,7 @@ export function DeleteRevenueDialog({ incomeId }: { incomeId: string }) {
         }
       );
 
-      queryClient.invalidateQueries({ queryKey: ["income-monthly-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["expense-monthly-stats"] });
 
       handleCloseDialog();
     },
@@ -66,9 +66,9 @@ export function DeleteRevenueDialog({ incomeId }: { incomeId: string }) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Excluir Receita</DialogTitle>
+          <DialogTitle>Excluir Despesa</DialogTitle>
           <DialogDescription>
-            Tem certeza de que deseja excluir esta receita? Esta ação não pode
+            Tem certeza de que deseja excluir esta despesa? Esta ação não pode
             ser desfeita.
           </DialogDescription>
         </DialogHeader>

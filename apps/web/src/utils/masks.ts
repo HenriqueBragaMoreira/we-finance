@@ -1,4 +1,9 @@
 export const masks = {
+  onlyNumbers: (value: string) => {
+    if (!value || typeof value !== "string") return "";
+
+    return value.replace(/[^0-9]/g, "");
+  },
   money: (value: string | number) => {
     if (!value || (typeof value !== "string" && typeof value !== "number")) {
       return "";

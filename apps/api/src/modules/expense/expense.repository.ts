@@ -33,7 +33,27 @@ interface ExpenseListResponse {
   count: number;
 }
 
-export type { ExpenseListResponse };
+interface ExpenseResponse {
+  id: string;
+  name: string;
+  amount: number;
+  status: string;
+  spentAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  category: string;
+  user: string;
+  paymentMethod?: string;
+  installments: Array<{
+    id: string;
+    amount: number;
+    dueDate: Date;
+    number: number;
+    status: string;
+  }>;
+}
+
+export type { ExpenseListResponse, ExpenseResponse };
 
 @Injectable()
 export class ExpenseRepository {
@@ -172,16 +192,102 @@ export class ExpenseRepository {
     };
   }
 
-  async create(data: Prisma.ExpenseCreateInput) {
-    return this.prisma.expense.create({ data });
+  async create(data: Prisma.ExpenseCreateInput): Promise<ExpenseResponse> {
+    const expense = await this.prisma.expense.create({ data });
+    return this.findOneWithRelations(expense.id);
   }
 
-  async update(id: string, data: Prisma.ExpenseUpdateInput) {
-    return this.prisma.expense.update({ where: { id }, data });
+  async findById(id: string): Promise<ExpenseResponse> {
+    return this.findOneWithRelations(id);
   }
 
-  async delete(id: string) {
-    return this.prisma.expense.delete({ where: { id } });
+  private async findOneWithRelations(id: string): Promise<ExpenseResponse> {
+    const expense = await this.prisma.expense.findUnique({
+      where: { id },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        paymentMethod: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+        installments: {
+          select: {
+            id: true,
+            amount: true,
+            dueDate: true,
+            number: true,
+            status: true,
+          },
+          orderBy: {
+            number: "asc",
+          },
+        },
+      },
+    });
+
+    if (!expense) {
+      throw new Error("Expense not found");
+    }
+
+    const {
+      categoryId: _,
+      userId: __,
+      paymentMethodId: ___,
+      category,
+      user,
+      paymentMethod,
+      ...rest
+    } = expense;
+
+    return {
+      ...rest,
+      amount: expense.amount.toNumber(),
+      user: user.name,
+      category: category.name,
+      paymentMethod: paymentMethod?.name,
+      installments: expense.installments.map((installment) => ({
+        ...installment,
+        amount: installment.amount.toNumber(),
+      })),
+    };
+  }
+
+  async update(
+    id: string,
+    data: Prisma.ExpenseUpdateInput
+  ): Promise<ExpenseResponse> {
+    await this.prisma.expense.update({ where: { id }, data });
+    return this.findOneWithRelations(id);
+  }
+
+  async delete(id: string): Promise<ExpenseResponse> {
+    return this.prisma.$transaction(async (prisma) => {
+      // Primeiro, buscar os dados da expense antes de excluir
+      const expenseToDelete = await this.findOneWithRelations(id);
+
+      // Excluir todos os installments associados à expense
+      await prisma.installment.deleteMany({
+        where: { expenseId: id },
+      });
+
+      // Excluir a expense
+      await prisma.expense.delete({
+        where: { id },
+      });
+
+      // Retornar os dados da expense que foi excluída
+      return expenseToDelete;
+    });
   }
 
   async getMonthlyStats(userId: string, month: string) {

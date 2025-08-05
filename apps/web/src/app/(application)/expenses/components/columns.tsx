@@ -22,9 +22,10 @@ import {
   EllipsisIcon,
   SquarePen,
   Text,
-  Trash2,
   UserRound,
 } from "lucide-react";
+import { DeleteExpenseDialog } from "./delete-expense-dialog";
+import { ExpensesActionDialog } from "./expenses-action-dialog";
 
 export function useColumns() {
   const [
@@ -129,7 +130,7 @@ export function useColumns() {
       header: "Valor",
       cell: ({ row }) => {
         const value = row.original.amount;
-        return <span>{masks.money(String(value))}</span>;
+        return <span>{masks.listedMoney(String(value))}</span>;
       },
       meta: {
         label: "Valor",
@@ -233,7 +234,7 @@ export function useColumns() {
     {
       id: "action",
       enableHiding: false,
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -242,22 +243,18 @@ export function useColumns() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>
-                <SquarePen
-                  size={16}
-                  className="opacity-60"
-                  aria-hidden="true"
-                />
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Trash2
-                  size={16}
-                  className="text-destructive opacity-60"
-                  aria-hidden="true"
-                />
-                Excluir
-              </DropdownMenuItem>
+              <ExpensesActionDialog expense={row.original}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <SquarePen
+                    size={16}
+                    className="opacity-60"
+                    aria-hidden="true"
+                  />
+                  Editar
+                </DropdownMenuItem>
+              </ExpensesActionDialog>
+
+              <DeleteExpenseDialog expenseId={row.original.id} />
             </DropdownMenuContent>
           </DropdownMenu>
         );

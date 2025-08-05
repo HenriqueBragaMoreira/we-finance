@@ -9,6 +9,7 @@ import type { UpdateExpenseDto } from "../dtos/update-expense.dto";
 import {
   type ExpenseListResponse,
   ExpenseRepository,
+  type ExpenseResponse,
 } from "../expense.repository";
 
 @Injectable()
@@ -19,7 +20,10 @@ export class ExpenseService {
     return this.repo.findAll(filter);
   }
 
-  async create(data: CreateExpenseDto, userId: string) {
+  async create(
+    data: CreateExpenseDto,
+    userId: string
+  ): Promise<ExpenseResponse> {
     const category = await this.repo.findOrCreateCategory(
       data.category,
       "EXPENSE"
@@ -91,13 +95,17 @@ export class ExpenseService {
     });
   }
 
-  async update(id: string, data: UpdateExpenseDto) {
-    const { categoryId, paymentMethod, ...updateData } = data;
+  async update(id: string, data: UpdateExpenseDto): Promise<ExpenseResponse> {
+    const { category, paymentMethod, installmentsCount, ...updateData } = data;
 
     const updatePayload: Record<string, unknown> = { ...updateData };
 
-    if (categoryId) {
-      updatePayload.category = { connect: { id: categoryId } };
+    if (category) {
+      const categoryRecord = await this.repo.findOrCreateCategory(
+        category,
+        "EXPENSE"
+      );
+      updatePayload.category = { connect: { id: categoryRecord.id } };
     }
 
     if (paymentMethod) {
@@ -106,10 +114,67 @@ export class ExpenseService {
       updatePayload.paymentMethod = { connect: { id: paymentMethodRecord.id } };
     }
 
+    // Se installmentsCount foi fornecido, precisamos recriar os installments
+    if (installmentsCount !== undefined && installmentsCount > 0) {
+      const hasInstallments = installmentsCount > 1;
+
+      if (hasInstallments) {
+        // Buscar os dados atuais da expense se amount ou spentAt não foram fornecidos
+        let amount = updateData.amount;
+        let spentAt = updateData.spentAt;
+
+        if (!amount || !spentAt) {
+          const currentExpense = await this.repo.findById(id);
+          amount = amount || currentExpense.amount;
+          spentAt = spentAt || currentExpense.spentAt;
+        }
+
+        const installmentAmount = Number(
+          (amount / installmentsCount).toFixed(2)
+        );
+
+        const lastInstallmentAmount = Number(
+          (amount - installmentAmount * (installmentsCount - 1)).toFixed(2)
+        );
+
+        const installments = Array.from(
+          { length: installmentsCount },
+          (_, index) => {
+            const installmentNumber = index + 1;
+            const installmentAmountValue =
+              installmentNumber === installmentsCount
+                ? lastInstallmentAmount
+                : installmentAmount;
+
+            const dueDate = new Date(spentAt);
+            dueDate.setMonth(dueDate.getMonth() + index);
+
+            return {
+              number: installmentNumber,
+              amount: installmentAmountValue,
+              dueDate,
+              status: "PENDING" as const,
+            };
+          }
+        );
+
+        // Primeiro deletar todos os installments existentes, depois recriar
+        updatePayload.installments = {
+          deleteMany: {},
+          create: installments,
+        };
+      } else {
+        // Se installmentsCount for 1 ou 0, remover todos os installments
+        updatePayload.installments = {
+          deleteMany: {},
+        };
+      }
+    }
+
     return this.repo.update(id, updatePayload);
   }
 
-  delete(id: string) {
+  delete(id: string): Promise<ExpenseResponse> {
     return this.repo.delete(id);
   }
 
