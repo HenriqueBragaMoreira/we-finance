@@ -23,3 +23,14 @@ export type GetInvestmentResponseDataField = {
   user: string;
   category: string;
 };
+
+export type GetInvestmentMonthlyStatsResponse = {
+  totalInvestments: number;
+  month: string;
+  userStats: GetInvestmentMonthlyStatsResponseUserStatsField[];
+};
+
+export type GetInvestmentMonthlyStatsResponseUserStatsField = {
+  name: string;
+  amount: number;
+};

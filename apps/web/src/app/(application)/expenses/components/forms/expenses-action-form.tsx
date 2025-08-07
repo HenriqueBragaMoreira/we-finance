@@ -138,7 +138,7 @@ export function ExpensesActionForm({ data }: ExpensesActionFormProps) {
         }
       );
 
-      queryClient.invalidateQueries({ queryKey: ["income-monthly-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["expense-monthly-stats"] });
 
       handleCloseDialog();
     },

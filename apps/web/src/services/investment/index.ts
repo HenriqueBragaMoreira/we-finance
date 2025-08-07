@@ -1,6 +1,10 @@
 import { api } from "@/lib/ky";
 import { queryParamsBuilder } from "@/utils/query-params-builder";
-import type { GetInvestmentResponse, GetInvestmentsProps } from "./types";
+import type {
+  GetInvestmentMonthlyStatsResponse,
+  GetInvestmentResponse,
+  GetInvestmentsProps,
+} from "./types";
 
 export const investmentServices = {
   get: async (params?: GetInvestmentsProps): Promise<GetInvestmentResponse> => {
@@ -20,6 +24,11 @@ export const investmentServices = {
     ]);
 
     const response = api.get("investments", { searchParams });
+
+    return response.json();
+  },
+  getMonthlyStats: async (): Promise<GetInvestmentMonthlyStatsResponse> => {
+    const response = api.get("investments/monthly-stats");
 
     return response.json();
   },
