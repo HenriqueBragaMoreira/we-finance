@@ -290,15 +290,15 @@ export class ExpenseRepository {
     });
   }
 
-  async getMonthlyStats(userId: string, month: string) {
+  async getMonthlyStats(month: string) {
     const [year, monthNum] = month.split("-").map(Number);
 
     const startDate = new Date(year, monthNum - 1, 1);
     const endDate = new Date(year, monthNum, 1);
 
+    // Total de despesas de todos os usuários no mês
     const result = await this.prisma.expense.aggregate({
       where: {
-        userId,
         spentAt: {
           gte: startDate,
           lt: endDate,
@@ -309,9 +309,9 @@ export class ExpenseRepository {
       },
     });
 
+    // Total pago de todos os usuários no mês
     const paidResult = await this.prisma.expense.aggregate({
       where: {
-        userId,
         status: "PAID",
         spentAt: {
           gte: startDate,
@@ -323,9 +323,9 @@ export class ExpenseRepository {
       },
     });
 
+    // Total pendente de todos os usuários no mês
     const pendingResult = await this.prisma.expense.aggregate({
       where: {
-        userId,
         status: "PENDING",
         spentAt: {
           gte: startDate,

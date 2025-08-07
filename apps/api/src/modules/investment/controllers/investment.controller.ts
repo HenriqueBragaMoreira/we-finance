@@ -56,9 +56,9 @@ export class InvestmentController {
 
   @Get("monthly-stats")
   @ApiOperation({
-    summary: "Estatísticas mensais de investimentos",
+    summary: "Estatísticas mensais de investimentos de todos os usuários",
     description:
-      "Retorna o total investido e detalhamento por usuário do mês atual ou mês especificado",
+      "Retorna o total investido e detalhamento por usuário do mês atual ou mês especificado para todos os usuários do sistema",
   })
   @ApiQuery({
     name: "month",

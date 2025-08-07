@@ -83,9 +83,9 @@ export class IncomeController {
 
   @Get("monthly-stats")
   @ApiOperation({
-    summary: "Estatísticas mensais de receitas",
+    summary: "Estatísticas mensais de receitas de todos os usuários",
     description:
-      "Retorna o total, recebidas e pendentes do mês atual ou mês especificado",
+      "Retorna o total, recebidas e pendentes do mês atual ou mês especificado para todos os usuários do sistema",
   })
   @ApiQuery({
     name: "month",
@@ -103,18 +103,20 @@ export class IncomeController {
       properties: {
         totalRevenues: {
           type: "number",
-          example: 5000.0,
-          description: "Total de receitas no mês",
+          example: 15000.0,
+          description: "Total de receitas de todos os usuários no mês",
         },
         received: {
           type: "number",
-          example: 3000.0,
-          description: "Total de receitas recebidas no mês",
+          example: 10000.0,
+          description:
+            "Total de receitas recebidas por todos os usuários no mês",
         },
         pending: {
           type: "number",
-          example: 2000.0,
-          description: "Total de receitas pendentes no mês",
+          example: 5000.0,
+          description:
+            "Total de receitas pendentes de todos os usuários no mês",
         },
         month: {
           type: "string",
@@ -124,11 +126,8 @@ export class IncomeController {
       },
     },
   })
-  getMonthlyStats(
-    @Query() filter: MonthlyStatsDto,
-    @Session() session: UserSession
-  ) {
-    return this.service.getMonthlyStats(session.user.id, filter);
+  getMonthlyStats(@Query() filter: MonthlyStatsDto) {
+    return this.service.getMonthlyStats(filter);
   }
 
   @Get(":id")

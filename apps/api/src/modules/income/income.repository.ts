@@ -232,16 +232,15 @@ export class IncomeRepository {
     });
   }
 
-  async getMonthlyStats(userId: string, month: string) {
+  async getMonthlyStats(month: string) {
     const [year, monthNum] = month.split("-").map(Number);
 
     const startDate = new Date(year, monthNum - 1, 1);
-
     const endDate = new Date(year, monthNum, 1);
 
+    // Total de receitas de todos os usuários no mês
     const result = await this.prisma.income.aggregate({
       where: {
-        userId,
         receivedAt: {
           gte: startDate,
           lt: endDate,
@@ -252,9 +251,9 @@ export class IncomeRepository {
       },
     });
 
+    // Total recebido de todos os usuários no mês
     const receivedResult = await this.prisma.income.aggregate({
       where: {
-        userId,
         status: "RECEIVED",
         receivedAt: {
           gte: startDate,
@@ -266,9 +265,9 @@ export class IncomeRepository {
       },
     });
 
+    // Total pendente de todos os usuários no mês
     const pendingResult = await this.prisma.income.aggregate({
       where: {
-        userId,
         status: "PENDING",
         receivedAt: {
           gte: startDate,

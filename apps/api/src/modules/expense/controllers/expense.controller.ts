@@ -71,9 +71,9 @@ export class ExpenseController {
 
   @Get("monthly-stats")
   @ApiOperation({
-    summary: "Estatísticas mensais de despesas",
+    summary: "Estatísticas mensais de despesas de todos os usuários",
     description:
-      "Retorna o total, pagas e pendentes do mês atual ou mês especificado",
+      "Retorna o total, pagas e pendentes do mês atual ou mês especificado para todos os usuários do sistema",
   })
   @ApiQuery({
     name: "month",
@@ -91,18 +91,19 @@ export class ExpenseController {
       properties: {
         totalExpenses: {
           type: "number",
-          example: 3000.0,
-          description: "Total de despesas no mês",
+          example: 25000.0,
+          description: "Total de despesas de todos os usuários no mês",
         },
         paid: {
           type: "number",
-          example: 1800.0,
-          description: "Total de despesas pagas no mês",
+          example: 18000.0,
+          description: "Total de despesas pagas por todos os usuários no mês",
         },
         pending: {
           type: "number",
-          example: 1200.0,
-          description: "Total de despesas pendentes no mês",
+          example: 7000.0,
+          description:
+            "Total de despesas pendentes de todos os usuários no mês",
         },
         month: {
           type: "string",
@@ -112,11 +113,8 @@ export class ExpenseController {
       },
     },
   })
-  getMonthlyStats(
-    @Query() filter: MonthlyStatsDto,
-    @Session() session: UserSession
-  ) {
-    return this.service.getMonthlyStats(session.user.id, filter);
+  getMonthlyStats(@Query() filter: MonthlyStatsDto) {
+    return this.service.getMonthlyStats(filter);
   }
 
   @Post()

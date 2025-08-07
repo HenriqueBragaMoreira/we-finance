@@ -99,7 +99,6 @@ export class IncomeService {
   }
 
   async getMonthlyStats(
-    userId: string,
     filter: MonthlyStatsDto
   ): Promise<MonthlyStatsResponseDto> {
     let month = filter.month;
@@ -111,6 +110,6 @@ export class IncomeService {
       month = `${year}-${monthNum}`;
     }
 
-    return this.repo.getMonthlyStats(userId, month);
+    return this.repo.getMonthlyStats(month);
   }
 }
