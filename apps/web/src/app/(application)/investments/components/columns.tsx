@@ -1,16 +1,3 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import {
-  Banknote,
-  CalendarIcon,
-  CircleDashed,
-  DollarSign,
-  EllipsisIcon,
-  SquarePen,
-  Text,
-  Trash2,
-  UserRound,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,23 +5,60 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { categoriesServices } from "@/services/categories";
+import type { GetInvestmentResponseDataField } from "@/services/investment/types";
+import { usersServices } from "@/services/users";
 import { masks } from "@/utils/masks";
-import type { InvestmentType } from "../data/investments";
+import { useQueries } from "@tanstack/react-query";
+import type { ColumnDef } from "@tanstack/react-table";
+import {
+  Banknote,
+  CalendarIcon,
+  CircleDashed,
+  EllipsisIcon,
+  SquarePen,
+  Trash2,
+  UserRound,
+} from "lucide-react";
 
-export function useColumns({ investments }: { investments: InvestmentType[] }) {
-  const uniqueTypes = [...new Set(investments.map((item) => item.type))];
+export function useColumns() {
+  const [{ data: investmentCategories }, { data: users }] = useQueries({
+    queries: [
+      {
+        queryKey: ["get-categories", "INVESTMENT"],
+        queryFn: async () =>
+          await categoriesServices.get({ type: "INVESTMENT" }),
+      },
+      {
+        queryKey: ["get-users"],
+        queryFn: async () => await usersServices.get(),
+      },
+    ],
+  });
 
-  const columns: ColumnDef<InvestmentType>[] = [
+  const columns: ColumnDef<GetInvestmentResponseDataField>[] = [
     {
-      id: "type",
-      accessorKey: "type",
-      header: "Tipo",
+      id: "notes",
+      accessorKey: "notes",
+      header: "Descrição",
       meta: {
-        label: "Tipo",
+        label: "Descrição",
+        variant: "text",
+        icon: CircleDashed,
+        filterType: "text",
+      },
+      enableColumnFilter: true,
+    },
+    {
+      id: "categoryId",
+      accessorKey: "category",
+      header: "Categoria",
+      meta: {
+        label: "Categoria",
         variant: "multiSelect",
-        options: uniqueTypes.map((type) => ({
-          label: type,
-          value: type,
+        options: investmentCategories?.data.map((category) => ({
+          label: category.name,
+          value: category.id,
         })),
         icon: CircleDashed,
         filterType: "multiText",
@@ -42,12 +66,13 @@ export function useColumns({ investments }: { investments: InvestmentType[] }) {
       enableColumnFilter: true,
     },
     {
-      accessorKey: "investedAmount",
+      id: "amount",
+      accessorKey: "amount",
       header: "Valor Investido",
       cell: ({ row }) => {
         return (
           <span className="text-purple-600 font-semibold">
-            {masks.money(row.original.investedAmount)}
+            {masks.money(row.original.amount)}
           </span>
         );
       },
@@ -60,11 +85,16 @@ export function useColumns({ investments }: { investments: InvestmentType[] }) {
       enableColumnFilter: true,
     },
     {
-      accessorKey: "date",
+      id: "investedAt",
+      accessorKey: "investedAt",
       header: "Data",
       cell: ({ row }) => {
-        const date = row.original.date;
-        return <span>{new Date(date).toLocaleDateString("pt-BR")}</span>;
+        const date = row.original.investedAt;
+        return (
+          <span>
+            {new Date(date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
+          </span>
+        );
       },
       meta: {
         label: "Data",
@@ -75,41 +105,18 @@ export function useColumns({ investments }: { investments: InvestmentType[] }) {
       enableColumnFilter: true,
     },
     {
-      accessorKey: "expectedReturn",
-      header: "Retorno Esperado",
-      cell: ({ row }) => {
-        return (
-          <Badge variant="outline" className="text-green-600">
-            {row.original.expectedReturn}
-          </Badge>
-        );
-      },
-      meta: {
-        label: "Retorno Esperado",
-        variant: "text",
-        icon: DollarSign,
-        filterType: "text",
-      },
-      enableColumnFilter: true,
-    },
-    {
-      accessorKey: "person",
+      id: "person",
+      accessorFn: (row) => row.user,
+      accessorKey: "user",
       header: "Pessoa",
       meta: {
         label: "Pessoa",
-        variant: "text",
+        variant: "select",
+        options: users?.data.map((user) => ({
+          label: user.name,
+          value: user.id,
+        })),
         icon: UserRound,
-        filterType: "text",
-      },
-      enableColumnFilter: true,
-    },
-    {
-      accessorKey: "notes",
-      header: "Observações",
-      meta: {
-        label: "Observações",
-        variant: "text",
-        icon: Text,
         filterType: "text",
       },
       enableColumnFilter: true,

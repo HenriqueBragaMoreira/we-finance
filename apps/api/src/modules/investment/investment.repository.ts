@@ -16,7 +16,12 @@ export class InvestmentRepository {
 
     const whereClause = {
       amount: filters.amount,
-      investedAt: filters.investedAt ? new Date(filters.investedAt) : undefined,
+      investedAt: filters.investedAt
+        ? {
+            gte: new Date(`${filter.investedAt}T00:00:00.000Z`),
+            lt: new Date(`${filter.investedAt}T23:59:59.999Z`),
+          }
+        : undefined,
       notes: filters.notes
         ? { contains: filters.notes, mode: "insensitive" as const }
         : undefined,

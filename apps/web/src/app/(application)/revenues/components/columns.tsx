@@ -172,7 +172,11 @@ export function useColumns() {
       cell: ({ row }) => {
         const date = row.original.receivedAt;
 
-        return <span>{new Date(date).toLocaleDateString("pt-BR")}</span>;
+        return (
+          <span>
+            {new Date(date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
+          </span>
+        );
       },
       meta: {
         label: "Data",
