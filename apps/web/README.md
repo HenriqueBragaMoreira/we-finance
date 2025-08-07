@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🖥️ Frontend – WeFinance (apps/web)
 
-## Getting Started
+Aplicação web construída em **Next.js 15 + React 19** focada em experiência fluida, acessível e performática para gestão financeira.
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📂 Estrutura Geral
+```
+apps/web/
+├── src/
+│   ├── app/                # Estrutura App Router (layout, providers, routes)
+│   ├── components/         # Componentes reutilizáveis + domínio
+│   │   ├── data-table/     # Infraestrutura da tabela (TanStack)
+│   │   └── ui/             # Base shadcn (design system)
+│   ├── constants/          # Constantes (ex: auth, enums front)
+│   ├── hooks/              # Hooks reutilizáveis
+│   ├── lib/                # Config/client libs (ky, query, auth helpers)
+│   ├── routes/             # Definições de rotas centralizadas
+│   ├── services/           # Acesso à API (por entidade)
+│   ├── styles/             # Estilos globais (Tailwind layer)
+│   └── utils/              # Funções auxiliares (masks, builders)
+└── ...configs
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🧩 Principais Tecnologias
+| Área | Tecnologia | Uso |
+|------|------------|-----|
+| Framework | Next.js 15 | App Router, SSR/Streaming |
+| UI | React 19 | Componentização |
+| Estilo | Tailwind CSS 4 | Atomic styling |
+| Design System | shadcn/ui | Componentes acessíveis |
+| Formulários | React Hook Form | Controle e validação |
+| Schemas | Zod | Validação client-side |
+| Estado Server | TanStack Query | Cache de requisições HTTP |
+| Tabelas | TanStack Table | Listagens dinâmicas |
+| Gráficos | Recharts | Visualizações analíticas |
+| HTTP | ky | Cliente leve com interceptors |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧱 Padrões Arquiteturais
+- App Router com segmentação por contexto: `(auth)`, `(application)`
+- Componentes separados por função: `ui` (base), `data-table` (infra), específicos de domínio
+- Services encapsulam chamadas HTTP (ky) e retornam dados tipados
+- Hooks expressam comportamento (ex: `usePagination`, `useMobile`)
+- Sem estado global complexo: rely em TanStack Query + estado local
+- Tipos derivados de schemas Zod sempre que possível
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔐 Autenticação no Frontend
+- Middleware (`src/middleware.ts`) protege rotas privadas
+- Token/session gerenciado via cookies HTTP (servidor + client aware)
+- Helpers em `lib/auth.ts`
+- Redirecionamento automático se não autenticado
 
-## Learn More
+## 🌐 Comunicação com API
+- Cliente HTTP: `lib/ky.ts` com baseURL de `NEXT_PUBLIC_API_URL`
+- Interceptors para headers e tratamento de erros
+- Services organizados por entidade: `services/<entidade>/index.ts`
+- Revalidação automática via TanStack Query em mutações
 
-To learn more about Next.js, take a look at the following resources:
+## 📊 Tabelas e Filtros
+- Infra em `components/data-table/`
+- Filtro composável (`data-table-filter.tsx`)
+- Paginação controlada (`usePagination` + server-driven params)
+- Sort e filter sincronizados com query params (`utils/query-params-builder.ts`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎨 UI/UX Padrões
+- Componentes base shadcn adaptados
+- Dark/Light mode via `ThemeProvider`
+- Ícones Lucide centralizados
+- Responsividade mobile-first
+- Feedback: toasts (futuro), estados de loading skeleton
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧪 Qualidade
+- Lint/format: Biome
+- Tipagem estrita TypeScript (`noUncheckedIndexedAccess` recomendado futuramente)
+- Componentes puros e previsíveis
+- PRs devem manter acessibilidade (aria-labels, roles)
 
-## Deploy on Vercel
+## 🗂️ Convenções de Nome
+| Tipo | Convenção |
+|------|-----------|
+| Componentes | PascalCase (`ExpenseForm.tsx`) |
+| Hooks | `useX` (`usePagination.ts`) |
+| Services | `plural` (`expenses/index.ts`) |
+| Utils | `kebab-case` (`query-params-builder.ts`) |
+| Pastas domínio | `kebab-case` |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔄 Fluxo de Dados (Exemplo)
+1. Usuário abre página de despesas
+2. Hook de listagem dispara query -> service `services/expense/list`
+3. Ky requisita API com query params construídos
+4. Resposta cacheada em TanStack Query
+5. Tabela renderiza com colDefs e filtros
+6. Ações (editar/excluir) disparam mutations -> invalidação de cache
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🪝 Hooks Internos
+| Hook | Função |
+|------|--------|
+| `useMobile` | Detecta breakpoint para UI adaptativa |
+| `usePagination` | Gerencia estado de paginação + sync URL |
+
+## 🧪 Testes (Planejado)
+- Componentes críticos (forms, tables) com React Testing Library
+- Hooks isolados com mocks
+- Snapshot mínimo (somente layout crítico)
+
+## 🚀 Scripts
+```bash
+pnpm run dev       # Desenvolvimento
+pnpm run build     # Build produção
+pnpm run start     # Servir build
+pnpm run type-check
+pnpm run lint
+pnpm run format
+```
+
+## 🔧 Variáveis de Ambiente
+Arquivo `.env`:
+```
+NEXT_PUBLIC_API_URL=http://localhost:3333
+```
+
+## 🤝 Contribuindo no Frontend
+- Evite lógica pesada em componentes: extraia para hooks ou utils
+- Reuse componentes base antes de criar novos
+- Sincronize estado de filtros com URL para compartilhamento
+- Mantenha serviços sem lógica de apresentação
+
+## 📜 Licença
+MIT (ver README raiz).
