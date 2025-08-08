@@ -34,3 +34,29 @@ export type GetInvestmentMonthlyStatsResponseUserStatsField = {
   name: string;
   amount: number;
 };
+
+export type CreateInvestmentProps = {
+  notes: string;
+  amount: string;
+  investedAt: string;
+  category: string;
+};
+
+export type CreateInvestmentResponse = {
+  id: string;
+  amount: string;
+  investedAt: string;
+  notes: string;
+  user: string;
+  category: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateInvestmentProps = CreateInvestmentProps & {
+  id: string;
+};
+
+export type UpdateInvestmentResponse = DeleteInvestmentResponse;
+
+export type DeleteInvestmentResponse = CreateInvestmentResponse;

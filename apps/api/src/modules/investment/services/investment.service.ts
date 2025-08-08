@@ -30,14 +30,24 @@ export class InvestmentService {
   }
 
   async update(id: string, data: UpdateInvestmentDto) {
-    const { categoryId, ...updateData } = data;
+    const { category, ...updateData } = data;
+
+    let categoryConnection: { connect: { id: string } } | undefined;
+
+    if (category) {
+      // Se foi fornecido um nome de categoria, busca ou cria a categoria
+      const categoryEntity = await this.repo.findOrCreateCategory(
+        category,
+        "INVESTMENT"
+      );
+      categoryConnection = { connect: { id: categoryEntity.id } };
+    }
 
     return this.repo.update(id, {
       ...updateData,
-      ...(categoryId && { category: { connect: { id: categoryId } } }),
+      ...(categoryConnection && { category: categoryConnection }),
     });
   }
-
   delete(id: string) {
     return this.repo.delete(id);
   }

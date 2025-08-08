@@ -5,7 +5,7 @@ import type { FilterUserDto } from "../dtos/filter-user.dto";
 import type { GetUserByIdDto } from "../dtos/get-user-by-id.dto";
 import { UserService } from "../services/user.service";
 
-@ApiTags("users")
+@ApiTags("Users")
 @Controller("users")
 @UseGuards(AuthGuard)
 export class UserController {

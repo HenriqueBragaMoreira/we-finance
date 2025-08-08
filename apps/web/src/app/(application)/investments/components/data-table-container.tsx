@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PiggyBank } from "lucide-react";
 import { parseAsString, useQueryStates } from "nuqs";
 import { useColumns } from "./columns";
+import { InvestmentActionDialog } from "./investment-action-dialog";
 
 export function DataTableContainer() {
   const [filters] = useQueryStates({
@@ -39,13 +40,15 @@ export function DataTableContainer() {
       totalLength={data.totalLength || 0}
       columns={columns}
       action={
-        <Button
-          className="bg-purple-600 hover:bg-purple-600/90 text-white"
-          size="sm"
-        >
-          <PiggyBank />
-          Adicionar investimento
-        </Button>
+        <InvestmentActionDialog>
+          <Button
+            className="bg-purple-600 hover:bg-purple-600/90 text-white"
+            size="sm"
+          >
+            <PiggyBank />
+            Adicionar investimento
+          </Button>
+        </InvestmentActionDialog>
       }
     />
   );

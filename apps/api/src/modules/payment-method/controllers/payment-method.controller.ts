@@ -22,7 +22,7 @@ import type { FilterPaymentMethodDto } from "../dtos/filter-payment-method.dto";
 import type { UpdatePaymentMethodDto } from "../dtos/update-payment-method.dto";
 import { PaymentMethodService } from "../services/payment-method.service";
 
-@ApiTags("payment-methods")
+@ApiTags("Payment Methods")
 @Controller("payment-methods")
 @UseGuards(AuthGuard)
 export class PaymentMethodController {

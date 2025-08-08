@@ -70,15 +70,79 @@ export class InvestmentRepository {
   }
 
   async create(data: Prisma.InvestmentCreateInput) {
-    return this.prisma.investment.create({ data });
+    const investment = await this.prisma.investment.create({
+      data,
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    const { categoryId: _, userId: __, category, user, ...rest } = investment;
+    return {
+      ...rest,
+      user: user.name,
+      category: category.name,
+    };
   }
 
   async update(id: string, data: Prisma.InvestmentUpdateInput) {
-    return this.prisma.investment.update({ where: { id }, data });
+    const investment = await this.prisma.investment.update({
+      where: { id },
+      data,
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    const { categoryId: _, userId: __, category, user, ...rest } = investment;
+    return {
+      ...rest,
+      user: user.name,
+      category: category.name,
+    };
   }
 
   async delete(id: string) {
-    return this.prisma.investment.delete({ where: { id } });
+    const investment = await this.prisma.investment.delete({
+      where: { id },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    const { categoryId: _, userId: __, category, user, ...rest } = investment;
+    return {
+      ...rest,
+      user: user.name,
+      category: category.name,
+    };
   }
 
   async getMonthlyStats(month: string) {

@@ -17,9 +17,10 @@ import {
   CircleDashed,
   EllipsisIcon,
   SquarePen,
-  Trash2,
   UserRound,
 } from "lucide-react";
+import { DeleteInvestmentDialog } from "./delete-investment-dialog";
+import { InvestmentActionDialog } from "./investment-action-dialog";
 
 export function useColumns() {
   const [{ data: investmentCategories }, { data: users }] = useQueries({
@@ -72,7 +73,7 @@ export function useColumns() {
       cell: ({ row }) => {
         return (
           <span className="text-purple-600 font-semibold">
-            {masks.money(row.original.amount)}
+            {masks.listedMoney(row.original.amount)}
           </span>
         );
       },
@@ -124,7 +125,7 @@ export function useColumns() {
     {
       id: "action",
       enableHiding: false,
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -133,22 +134,17 @@ export function useColumns() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>
-                <SquarePen
-                  size={16}
-                  className="opacity-60"
-                  aria-hidden="true"
-                />
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Trash2
-                  size={16}
-                  className="text-destructive opacity-60"
-                  aria-hidden="true"
-                />
-                Excluir
-              </DropdownMenuItem>
+              <InvestmentActionDialog investment={row.original}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <SquarePen
+                    size={16}
+                    className="opacity-60"
+                    aria-hidden="true"
+                  />
+                  Editar
+                </DropdownMenuItem>
+              </InvestmentActionDialog>
+              <DeleteInvestmentDialog investmentId={row.original.id} />
             </DropdownMenuContent>
           </DropdownMenu>
         );

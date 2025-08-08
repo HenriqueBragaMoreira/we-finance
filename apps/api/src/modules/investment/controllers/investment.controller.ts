@@ -178,12 +178,14 @@ export class InvestmentController {
           example: "Investimento atualizado",
           description: "Observações sobre o investimento (opcional)",
         },
-        categoryId: {
+        category: {
           type: "string",
-          example: "category-uuid",
-          description: "ID da categoria (opcional)",
+          example: "Ações",
+          description:
+            "Nome da categoria - será criada se não existir (opcional)",
         },
       },
+      additionalProperties: false,
     },
   })
   update(@Param("id") id: string, @Body() data: UpdateInvestmentDto) {
