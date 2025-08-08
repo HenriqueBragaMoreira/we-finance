@@ -4,6 +4,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { auth } from "./lib/auth";
 import { CategoryModule } from "./modules/category/category.module";
+import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { ExpenseModule } from "./modules/expense/expense.module";
 import { IncomeModule } from "./modules/income/income.module";
 import { InvestmentModule } from "./modules/investment/investment.module";
@@ -13,6 +14,7 @@ import { UserModule } from "./modules/user/user.module";
 @Module({
   imports: [
     AuthModule.forRoot(auth),
+    DashboardModule,
     IncomeModule,
     ExpenseModule,
     CategoryModule,
