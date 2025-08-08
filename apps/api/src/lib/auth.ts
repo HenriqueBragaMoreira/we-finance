@@ -12,16 +12,13 @@ export const auth = betterAuth({
     enabled: true,
   },
   advanced: {
-    cookies: {
-      config: {
-        attributes: {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "none",
-          path: "/",
-          maxAge: 60 * 60 * 24 * 7,
-        },
-      },
+    defaultCookieAttributes: {
+      sameSite: process.env.NODE_ENV === "production" ? "lax" : "none",
+      secure: true,
+      domain:
+        process.env.NODE_ENV === "production"
+          ? process.env.CLIENT_ORIGIN
+          : undefined,
     },
   },
   trustedOrigins: [process.env.CLIENT_ORIGIN || "http://localhost:3000"],

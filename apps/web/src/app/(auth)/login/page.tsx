@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
@@ -23,6 +24,8 @@ const loginSchema = z.object({
 type LoginFormType = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const form = useForm<LoginFormType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -32,11 +35,17 @@ export default function LoginPage() {
   });
 
   async function handleSubmit(data: LoginFormType) {
-    await authClient.signIn.email({
-      email: data.email,
-      password: data.password,
-      callbackURL: "/dashboard",
-    });
+    await authClient.signIn.email(
+      {
+        email: data.email,
+        password: data.password,
+      },
+      {
+        onSuccess() {
+          router.push("/dashboard");
+        },
+      }
+    );
   }
 
   return (
