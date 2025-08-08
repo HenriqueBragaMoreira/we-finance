@@ -132,8 +132,9 @@ export class DashboardController {
 
   @Get("revenues-vs-expenses")
   @ApiOperation({
-    summary: "Receitas vs Despesas (gráfico de barras)",
-    description: "Compara os totais de receitas e despesas do período",
+    summary: "Receitas vs Despesas por mês (gráfico de barras)",
+    description:
+      "Retorna dados de receitas e despesas agrupados por mês para gráficos",
   })
   @ApiQuery({
     name: "userId",
@@ -156,23 +157,40 @@ export class DashboardController {
   })
   @ApiResponse({
     status: 200,
-    description: "Comparação de receitas vs despesas retornada com sucesso",
+    description: "Dados de receitas vs despesas por mês retornados com sucesso",
     schema: {
       type: "object",
       properties: {
-        revenues: {
-          type: "number",
-          example: 15000.0,
-          description: "Total de receitas do período",
-        },
-        expenses: {
-          type: "number",
-          example: 8000.0,
-          description: "Total de despesas do período",
+        data: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              month: {
+                type: "string",
+                example: "Janeiro",
+                description: "Nome do mês",
+              },
+              revenues: {
+                type: "number",
+                example: 5000.0,
+                description: "Total de receitas do mês",
+              },
+              expenses: {
+                type: "number",
+                example: 3000.0,
+                description: "Total de despesas do mês",
+              },
+            },
+          },
+          example: [
+            { month: "Janeiro", revenues: 5000, expenses: 3000 },
+            { month: "Fevereiro", revenues: 6000, expenses: 3500 },
+          ],
         },
         period: {
           type: "string",
-          example: "Agosto 2025",
+          example: "Janeiro - Fevereiro 2025",
           description: "Período dos dados retornados",
         },
       },

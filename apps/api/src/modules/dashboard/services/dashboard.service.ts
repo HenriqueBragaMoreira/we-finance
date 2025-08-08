@@ -52,26 +52,40 @@ export class DashboardService {
       }
     }
 
-    if (years.length === 1 && months.length === 1) {
-      const monthNames = {
-        1: "Janeiro",
-        2: "Fevereiro",
-        3: "Março",
-        4: "Abril",
-        5: "Maio",
-        6: "Junho",
-        7: "Julho",
-        8: "Agosto",
-        9: "Setembro",
-        10: "Outubro",
-        11: "Novembro",
-        12: "Dezembro",
-      };
-      return `${monthNames[months[0] as keyof typeof monthNames]} ${years[0]}`;
-    }
+    const monthNames = {
+      1: "Janeiro",
+      2: "Fevereiro",
+      3: "Março",
+      4: "Abril",
+      5: "Maio",
+      6: "Junho",
+      7: "Julho",
+      8: "Agosto",
+      9: "Setembro",
+      10: "Outubro",
+      11: "Novembro",
+      12: "Dezembro",
+    };
 
     if (years.length === 1) {
-      return `Ano ${years[0]}`;
+      const year = years[0];
+
+      if (months.length === 1) {
+        return `${monthNames[months[0] as keyof typeof monthNames]} ${year}`;
+      }
+
+      if (months.length > 1) {
+        const sortedMonths = [...months].sort((a, b) => a - b);
+        const firstMonth =
+          monthNames[sortedMonths[0] as keyof typeof monthNames];
+        const lastMonth =
+          monthNames[
+            sortedMonths[sortedMonths.length - 1] as keyof typeof monthNames
+          ];
+        return `${firstMonth} - ${lastMonth} ${year}`;
+      }
+
+      return `${monthNames[months[0] as keyof typeof monthNames]} ${year}`;
     }
 
     return `Período selecionado`;
@@ -100,7 +114,7 @@ export class DashboardService {
     const data = await this.repo.getRevenuesVsExpenses(filter);
 
     return {
-      ...data,
+      data,
       period: this.formatPeriod(filter),
     };
   }

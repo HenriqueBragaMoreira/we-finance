@@ -11,40 +11,40 @@ import type {
 
 export const dashboardServices = {
   getSummaryCards: async (
-    filter: DashboardRoutesFilters
+    filter?: DashboardRoutesFilters
   ): Promise<GetSummaryCardsResponse> => {
     const { params: searchParams } = queryParamsBuilder([
-      { param: "userId", value: filter.userId },
-      { param: "month", value: filter.month },
-      { param: "year", value: filter.year },
+      { param: "userId", value: filter?.person },
+      { param: "month", value: filter?.month },
+      { param: "year", value: filter?.year },
     ]);
 
-    const response = await api.get("/dashboard/summary", { searchParams });
+    const response = await api.get("dashboard/summary", { searchParams });
 
     return response.json();
   },
   getExpensesByCategory: async (
-    filter: DashboardRoutesFilters
+    filter?: DashboardRoutesFilters
   ): Promise<GetExpensesByCategoryResponse[]> => {
     const { params: searchParams } = queryParamsBuilder([
-      { param: "userId", value: filter.userId },
-      { param: "month", value: filter.month },
-      { param: "year", value: filter.year },
+      { param: "userId", value: filter?.person },
+      { param: "month", value: filter?.month },
+      { param: "year", value: filter?.year },
     ]);
 
-    const response = await api.get("/dashboard/expenses-by-category", {
+    const response = await api.get("dashboard/expenses-by-category", {
       searchParams,
     });
 
     return response.json();
   },
   getRevenuesVsExpenses: async (
-    filter: DashboardRoutesFilters
+    filter?: DashboardRoutesFilters
   ): Promise<GetRevenuesVsExpensesResponse> => {
     const { params: searchParams } = queryParamsBuilder([
-      { param: "userId", value: filter.userId },
-      { param: "month", value: filter.month },
-      { param: "year", value: filter.year },
+      { param: "userId", value: filter?.person },
+      { param: "month", value: filter?.month },
+      { param: "year", value: filter?.year },
     ]);
 
     const response = await api.get("dashboard/revenues-vs-expenses", {
@@ -54,14 +54,14 @@ export const dashboardServices = {
     return response.json();
   },
   getLastTransactions: async (
-    filter: GetLastTransactionsProps
+    filter?: GetLastTransactionsProps
   ): Promise<GetLastTransactionsResponse> => {
     const { params: searchParams } = queryParamsBuilder([
-      { param: "init", value: filter.init },
-      { param: "limit", value: filter.limit },
-      { param: "userId", value: filter.userId },
-      { param: "month", value: filter.month },
-      { param: "year", value: filter.year },
+      { param: "init", value: filter?.init ?? "0" },
+      { param: "limit", value: filter?.limit ?? "10" },
+      { param: "userId", value: filter?.person },
+      { param: "month", value: filter?.month },
+      { param: "year", value: filter?.year },
     ]);
 
     const response = await api.get("dashboard/transactions", {

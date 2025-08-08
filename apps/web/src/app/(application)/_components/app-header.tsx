@@ -1,7 +1,5 @@
 "use client";
 
-import { CalendarDays, History, UsersRound } from "lucide-react";
-import { usePathname } from "next/navigation";
 import {
   DashboardFilters,
   type FilterOptionsType,
@@ -17,51 +15,65 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { routes } from "@/routes/routes";
+import { usersServices } from "@/services/users";
+import { useQuery } from "@tanstack/react-query";
+import { CalendarDays, History, UsersRound } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { ModeToggle } from "./mode-toggle";
-
-const filterOptions: FilterOptionsType[] = [
-  {
-    label: "Pessoa",
-    value: "person",
-    icon: <UsersRound className="size-4" />,
-    variant: "select",
-    options: [
-      { value: "all", label: "Todos" },
-      { value: "henrique", label: "Henrique" },
-      { value: "gislaine", label: "Gislaine" },
-    ],
-  },
-  {
-    label: "Mês",
-    value: "month",
-    icon: <CalendarDays className="size-4" />,
-    variant: "multiSelect",
-    options: [
-      { value: "janeiro", label: "Janeiro" },
-      { value: "fevereiro", label: "Fevereiro" },
-      { value: "março", label: "Março" },
-      { value: "abril", label: "Abril" },
-      { value: "maio", label: "Maio" },
-      { value: "junho", label: "Junho" },
-      { value: "julho", label: "Julho" },
-    ],
-  },
-  {
-    label: "Ano",
-    value: "year",
-    icon: <History className="size-4" />,
-    variant: "multiSelect",
-    options: [
-      { value: "2024", label: "2024" },
-      { value: "2025", label: "2025" },
-    ],
-  },
-];
 
 export function AppHeader() {
   const currentPath = usePathname();
 
+  const { data } = useQuery({
+    queryKey: ["get-users"],
+    queryFn: async () => await usersServices.get(),
+    enabled: currentPath === "/dashboard",
+  });
+
   const currentRoute = routes.find((route) => route.path === currentPath);
+
+  const filterOptions: FilterOptionsType[] = [
+    {
+      label: "Pessoa",
+      value: "person",
+      icon: <UsersRound className="size-4" />,
+      variant: "select",
+      options: data?.data.map((user) => ({
+        label: user.name,
+        value: user.id,
+      })),
+    },
+    {
+      label: "Mês",
+      value: "month",
+      icon: <CalendarDays className="size-4" />,
+      variant: "multiSelect",
+      options: [
+        { value: "janeiro", label: "Janeiro" },
+        { value: "fevereiro", label: "Fevereiro" },
+        { value: "março", label: "Março" },
+        { value: "abril", label: "Abril" },
+        { value: "maio", label: "Maio" },
+        { value: "junho", label: "Junho" },
+        { value: "julho", label: "Julho" },
+        { value: "agosto", label: "Agosto" },
+        { value: "setembro", label: "Setembro" },
+        { value: "outubro", label: "Outubro" },
+        { value: "novembro", label: "Novembro" },
+        { value: "dezembro", label: "Dezembro" },
+      ],
+    },
+    {
+      label: "Ano",
+      value: "year",
+      icon: <History className="size-4" />,
+      variant: "multiSelect",
+      options: [
+        { value: "2024", label: "2024" },
+        { value: "2025", label: "2025" },
+      ],
+    },
+  ];
 
   return (
     <header className="flex flex-wrap gap-3 min-h-20 py-4 shrink-0 items-center transition-all ease-linear border-b">

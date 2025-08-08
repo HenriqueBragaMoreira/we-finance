@@ -1,5 +1,5 @@
 export type DashboardRoutesFilters = {
-  userId?: string;
+  person?: string;
   month?: string;
   year?: string;
 };
@@ -24,9 +24,14 @@ export type GetExpensesByCategoryResponse = {
 };
 
 export type GetRevenuesVsExpensesResponse = {
+  data: GetRevenuesVsExpensesResponseDataField[];
+  period: string;
+};
+
+export type GetRevenuesVsExpensesResponseDataField = {
+  month: string;
   revenues: number;
   expenses: number;
-  period: string;
 };
 
 export type GetLastTransactionsResponse = {

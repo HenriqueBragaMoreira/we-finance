@@ -1,13 +1,9 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -17,15 +13,11 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartData = [
-  { month: "Janeiro", revenues: 186, expenses: 80 },
-  { month: "Fevereiro", revenues: 305, expenses: 200 },
-  { month: "Março", revenues: 237, expenses: 120 },
-  { month: "Abril", revenues: 73, expenses: 190 },
-  { month: "Maio", revenues: 209, expenses: 130 },
-  { month: "Junho", revenues: 214, expenses: 140 },
-];
+import { dashboardServices } from "@/services/dashboard";
+import { useQuery } from "@tanstack/react-query";
+import { parseAsString, useQueryStates } from "nuqs";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { ChartBarMultipleSkeleton } from "./chart-bar-multiple-skeleton";
 
 const chartConfig = {
   revenues: {
@@ -39,15 +31,32 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ChartBarMultiple() {
+  const [filters] = useQueryStates({
+    person: parseAsString.withDefault(""),
+    month: parseAsString.withDefault(""),
+    year: parseAsString.withDefault(""),
+  });
+
+  const { data, isFetching } = useQuery({
+    queryKey: ["dashboard-revenues-vs-expenses", filters],
+    queryFn: async () => {
+      return await dashboardServices.getRevenuesVsExpenses(filters);
+    },
+  });
+
+  if (isFetching) {
+    return <ChartBarMultipleSkeleton />;
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Receitas vs Despesas</CardTitle>
-        <CardDescription>Janeiro - Junho 2025</CardDescription>
+        <CardDescription>{data?.period}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
+          <BarChart accessibilityLayer data={data?.data}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
@@ -65,14 +74,6 @@ export function ChartBarMultiple() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 leading-none font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
     </Card>
   );
 }

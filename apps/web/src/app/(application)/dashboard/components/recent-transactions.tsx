@@ -1,5 +1,4 @@
-import { PiggyBank, TrendingDown, TrendingUp } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+"use client";
 import {
   Card,
   CardContent,
@@ -7,79 +6,58 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { dashboardServices } from "@/services/dashboard";
+import { useQuery } from "@tanstack/react-query";
+import { PiggyBank, TrendingDown, TrendingUp } from "lucide-react";
+import { parseAsString, useQueryStates } from "nuqs";
+import { RecentTransactionsSkeleton } from "./recent-transactions-skeleton";
 
 export function RecentTransactions() {
+  const [filters] = useQueryStates({
+    person: parseAsString.withDefault(""),
+    month: parseAsString.withDefault(""),
+    year: parseAsString.withDefault(""),
+  });
+
+  const { data, isFetching } = useQuery({
+    queryKey: ["get-last-transactions", filters],
+    queryFn: async () => {
+      return await dashboardServices.getLastTransactions(filters);
+    },
+  });
+
+  if (isFetching) {
+    return <RecentTransactionsSkeleton />;
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Transações Recentes</CardTitle>
         <CardDescription>Últimas movimentações financeiras</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="max-h-96 overflow-y-auto no-scrollbar">
         <div className="space-y-4">
-          {[
-            {
-              tipo: "receita",
-              descricao: "Salário Henrique",
-              valor: 4500,
-              data: "01/03/2024",
-              pessoa: "Henrique",
-              status: "Recebido",
-            },
-            {
-              tipo: "despesa",
-              descricao: "Supermercado",
-              valor: 350,
-              data: "02/03/2024",
-              pessoa: "Gislaine",
-              status: "Pago",
-            },
-            {
-              tipo: "receita",
-              descricao: "Freelance",
-              valor: 800,
-              data: "03/03/2024",
-              pessoa: "Henrique",
-              status: "Pendente",
-            },
-            {
-              tipo: "despesa",
-              descricao: "Conta de Luz",
-              valor: 180,
-              data: "05/03/2024",
-              pessoa: "Henrique",
-              status: "Pendente",
-            },
-            {
-              tipo: "investimento",
-              descricao: "Tesouro Direto",
-              valor: 500,
-              data: "10/03/2024",
-              pessoa: "Henrique",
-              status: "Aplicado",
-            },
-          ].map((transacao, index) => (
+          {data?.data.map((transaction) => (
             <div
-              // biome-ignore lint/suspicious/noArrayIndexKey: <>
-              key={index}
+              key={transaction.id}
               className="flex flex-col gap-3 sm:flex-row items-center sm:justify-between py-2 sm:p-3 border rounded-lg"
             >
               <div className="flex items-center gap-3">
                 <div
                   className={`p-1.5 sm:p-2 rounded-full ${
-                    transacao.tipo === "receita"
+                    transaction.type === "INCOME"
                       ? "bg-green-100"
-                      : transacao.tipo === "despesa"
+                      : transaction.type === "EXPENSE"
                         ? "bg-red-100"
                         : "bg-purple-100"
                   }`}
                 >
-                  {transacao.tipo === "receita" ? (
+                  {transaction.type === "INCOME" ? (
                     <TrendingUp
-                      className={`size-3.5 sm:size-4 ${transacao.tipo === "receita" ? "text-green-600" : ""}`}
+                      className={`size-3.5 sm:size-4 ${transaction.type === "INCOME" ? "text-green-600" : ""}`}
                     />
-                  ) : transacao.tipo === "despesa" ? (
+                  ) : transaction.type === "EXPENSE" ? (
                     <TrendingDown className="size-3.5 sm:size-4 text-red-600" />
                   ) : (
                     <PiggyBank className="size-3.5 sm:size-4 text-purple-600" />
@@ -87,10 +65,13 @@ export function RecentTransactions() {
                 </div>
                 <div>
                   <p className="text-sm sm:text-base font-medium">
-                    {transacao.descricao}
+                    {transaction.name}
                   </p>
                   <p className="text-xs sm:text-sm text-muted-foreground">
-                    {transacao.pessoa} • {transacao.data}
+                    {transaction.user} •{" "}
+                    {new Date(transaction.date).toLocaleDateString("pt-BR", {
+                      timeZone: "UTC",
+                    })}
                   </p>
                 </div>
               </div>
@@ -98,18 +79,18 @@ export function RecentTransactions() {
               <div className="flex gap-2 items-center text-right">
                 <p
                   className={`font-semibold ${
-                    transacao.tipo === "receita"
+                    transaction.type === "INCOME"
                       ? "text-green-600"
-                      : transacao.tipo === "despesa"
+                      : transaction.type === "EXPENSE"
                         ? "text-red-600"
                         : "text-purple-600"
                   }`}
                 >
-                  {transacao.tipo === "receita" ? "+" : "-"}R${" "}
-                  {transacao.valor.toLocaleString("pt-BR")}
+                  {transaction.type === "INCOME" ? "+" : "-"}R${" "}
+                  {transaction.amount.toLocaleString("pt-BR")}
                 </p>
 
-                <Badge className="gap-1.5" variant="outline">
+                {/* <Badge className="gap-1.5" variant="outline">
                   <span
                     className={cn(
                       "size-1.5 rounded-full",
@@ -121,7 +102,7 @@ export function RecentTransactions() {
                     aria-hidden="true"
                   />
                   {transacao.status}
-                </Badge>
+                </Badge> */}
               </div>
             </div>
           ))}

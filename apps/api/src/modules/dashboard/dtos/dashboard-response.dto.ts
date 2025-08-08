@@ -13,8 +13,11 @@ export interface ExpensesByCategoryResponseDto {
 }
 
 export interface RevenuesVsExpensesResponseDto {
-  revenues: number;
-  expenses: number;
+  data: {
+    month: string;
+    revenues: number;
+    expenses: number;
+  }[];
   period: string;
 }
 

@@ -1,13 +1,9 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import { Pie, PieChart } from "recharts";
-
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -17,39 +13,82 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { dashboardServices } from "@/services/dashboard";
+import { useQuery } from "@tanstack/react-query";
+import { parseAsString, useQueryStates } from "nuqs";
+import { useMemo } from "react";
+import { Pie, PieChart } from "recharts";
+import { ChartPieSimpleSkeleton } from "./chart-pie-simple-skeleton";
 
-const chartData = [
-  { browser: "Alimentação", visitors: 275, fill: "var(--color-food)" },
-  { browser: "Moradia", visitors: 200, fill: "var(--color-housing)" },
-  { browser: "Transporte", visitors: 187, fill: "var(--color-transport)" },
-  { browser: "Saúde", visitors: 173, fill: "var(--color-health)" },
-  { browser: "Outros", visitors: 90, fill: "var(--color-other)" },
+const CHART_COLORS = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+  "hsl(12, 76%, 61%)",
+  "hsl(173, 58%, 39%)",
+  "hsl(197, 37%, 24%)",
+  "hsl(43, 74%, 66%)",
+  "hsl(27, 87%, 67%)",
+  "hsl(215, 28%, 17%)",
+  "hsl(358, 75%, 59%)",
 ];
 
-const chartConfig = {
-  food: {
-    label: "Alimentação",
-    color: "var(--chart-1)",
-  },
-  housing: {
-    label: "Moradia",
-    color: "var(--chart-2)",
-  },
-  transport: {
-    label: "Transporte",
-    color: "var(--chart-3)",
-  },
-  health: {
-    label: "Saúde",
-    color: "var(--chart-4)",
-  },
-  other: {
-    label: "Outros",
-    color: "var(--chart-5)",
-  },
-} satisfies ChartConfig;
-
 export function ChartPieSimple() {
+  const [filters] = useQueryStates({
+    person: parseAsString.withDefault(""),
+    month: parseAsString.withDefault(""),
+    year: parseAsString.withDefault(""),
+  });
+
+  const { data, isFetching } = useQuery({
+    queryKey: ["dashboard-expenses-by-category", filters],
+    queryFn: async () => {
+      return await dashboardServices.getExpensesByCategory(filters);
+    },
+  });
+
+  const { chartConfig, chartData, dynamicStyles } = useMemo(() => {
+    if (!data || data.length === 0) {
+      return { chartConfig: {}, chartData: [], dynamicStyles: {} };
+    }
+
+    const config: ChartConfig = {};
+    const styles: Record<string, string> = {};
+    const formattedData = data.map((item, index) => {
+      const colorKey = item.categoryName
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-");
+      const color = CHART_COLORS[index % CHART_COLORS.length];
+
+      config[colorKey] = {
+        label: item.categoryName,
+        color: color,
+      };
+
+      styles[`--color-${colorKey}`] = color;
+
+      return {
+        categoryName: item.categoryName,
+        percentage: item.percentage,
+        percentageDisplay: `${item.percentage}%`,
+        amount: item.amount,
+        fill: `var(--color-${colorKey})`,
+      };
+    });
+
+    return {
+      chartConfig: config,
+      chartData: formattedData,
+      dynamicStyles: styles,
+    };
+  }, [data]);
+
+  if (isFetching) {
+    return <ChartPieSimpleSkeleton />;
+  }
+
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
@@ -60,24 +99,17 @@ export function ChartPieSimple() {
         <ChartContainer
           config={chartConfig}
           className="mx-auto aspect-square max-h-[400px]"
+          style={dynamicStyles}
         >
           <PieChart>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent hideLabel className="percentage" />}
             />
-            <Pie data={chartData} dataKey="visitors" nameKey="browser" />
+            <Pie data={chartData} dataKey="percentage" nameKey="categoryName" />
           </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 leading-none font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
     </Card>
   );
 }

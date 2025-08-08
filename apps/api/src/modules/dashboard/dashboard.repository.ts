@@ -1,6 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import type { Prisma } from "@prisma/client";
 import { PrismaService } from "@/utils/prisma.service";
+import { Injectable } from "@nestjs/common";
 import type { DashboardFilterDto } from "./dtos/dashboard-filter.dto";
 import type { TransactionsFilterDto } from "./dtos/transactions-filter.dto";
 
@@ -81,12 +80,26 @@ export class DashboardRepository {
     const dateCondition = this.buildDateConditions(filter);
     const userCondition = filter.userId ? { userId: filter.userId } : {};
 
+    // Construir condições where corretas para múltiplas datas
+    const buildWhereCondition = (dateField: string) => {
+      if ("OR" in dateCondition) {
+        return {
+          ...userCondition,
+          OR: dateCondition.OR.map((condition) => ({
+            [dateField]: condition,
+          })),
+        };
+      } else {
+        return {
+          ...userCondition,
+          [dateField]: dateCondition,
+        };
+      }
+    };
+
     // Total de receitas
     const revenuesResult = await this.prisma.income.aggregate({
-      where: {
-        ...userCondition,
-        receivedAt: dateCondition as Prisma.DateTimeFilter,
-      },
+      where: buildWhereCondition("receivedAt"),
       _sum: {
         amount: true,
       },
@@ -94,10 +107,7 @@ export class DashboardRepository {
 
     // Total de despesas
     const expensesResult = await this.prisma.expense.aggregate({
-      where: {
-        ...userCondition,
-        spentAt: dateCondition as Prisma.DateTimeFilter,
-      },
+      where: buildWhereCondition("spentAt"),
       _sum: {
         amount: true,
       },
@@ -105,10 +115,7 @@ export class DashboardRepository {
 
     // Total de investimentos
     const investmentsResult = await this.prisma.investment.aggregate({
-      where: {
-        ...userCondition,
-        investedAt: dateCondition as Prisma.DateTimeFilter,
-      },
+      where: buildWhereCondition("investedAt"),
       _sum: {
         amount: true,
       },
@@ -131,10 +138,24 @@ export class DashboardRepository {
     const dateCondition = this.buildDateConditions(filter);
     const userCondition = filter.userId ? { userId: filter.userId } : {};
 
-    const whereClause = {
-      ...userCondition,
-      spentAt: dateCondition as Prisma.DateTimeFilter,
+    // Construir condições where corretas para múltiplas datas
+    const buildWhereCondition = () => {
+      if ("OR" in dateCondition) {
+        return {
+          ...userCondition,
+          OR: dateCondition.OR.map((condition) => ({
+            spentAt: condition,
+          })),
+        };
+      } else {
+        return {
+          ...userCondition,
+          spentAt: dateCondition,
+        };
+      }
     };
+
+    const whereClause = buildWhereCondition();
 
     // Total de despesas para calcular percentuais
     const totalExpensesResult = await this.prisma.expense.aggregate({
@@ -187,34 +208,88 @@ export class DashboardRepository {
   }
 
   async getRevenuesVsExpenses(filter: DashboardFilterDto) {
-    const dateCondition = this.buildDateConditions(filter);
-    const userCondition = filter.userId ? { userId: filter.userId } : {};
+    const now = new Date();
+    let years = [now.getFullYear()];
+    let months = [now.getMonth() + 1];
 
-    const [revenuesResult, expensesResult] = await Promise.all([
-      this.prisma.income.aggregate({
-        where: {
-          ...userCondition,
-          receivedAt: dateCondition as Prisma.DateTimeFilter,
-        },
-        _sum: {
-          amount: true,
-        },
-      }),
-      this.prisma.expense.aggregate({
-        where: {
-          ...userCondition,
-          spentAt: dateCondition as Prisma.DateTimeFilter,
-        },
-        _sum: {
-          amount: true,
-        },
-      }),
-    ]);
+    if (filter.year) {
+      years = filter.year.split(",").map((y) => Number(y.trim()));
+    }
 
-    return {
-      revenues: revenuesResult._sum?.amount?.toNumber() || 0,
-      expenses: expensesResult._sum?.amount?.toNumber() || 0,
+    if (filter.month) {
+      months = filter.month
+        .split(",")
+        .map((m) => this.getMonthNumber(m.trim()))
+        .filter((m) => m > 0);
+    }
+
+    const monthNames = {
+      1: "Janeiro",
+      2: "Fevereiro",
+      3: "Março",
+      4: "Abril",
+      5: "Maio",
+      6: "Junho",
+      7: "Julho",
+      8: "Agosto",
+      9: "Setembro",
+      10: "Outubro",
+      11: "Novembro",
+      12: "Dezembro",
     };
+
+    const userCondition = filter.userId ? { userId: filter.userId } : {};
+    const data: { month: string; revenues: number; expenses: number }[] = [];
+
+    // Para cada ano e mês, buscar os dados
+    for (const year of years) {
+      for (const month of months) {
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 1);
+
+        const whereCondition = {
+          gte: startDate,
+          lt: endDate,
+        };
+
+        const [revenuesResult, expensesResult] = await Promise.all([
+          this.prisma.income.aggregate({
+            where: {
+              ...userCondition,
+              receivedAt: whereCondition,
+            },
+            _sum: {
+              amount: true,
+            },
+          }),
+          this.prisma.expense.aggregate({
+            where: {
+              ...userCondition,
+              spentAt: whereCondition,
+            },
+            _sum: {
+              amount: true,
+            },
+          }),
+        ]);
+
+        data.push({
+          month: monthNames[month as keyof typeof monthNames],
+          revenues: revenuesResult._sum?.amount?.toNumber() || 0,
+          expenses: expensesResult._sum?.amount?.toNumber() || 0,
+        });
+      }
+    }
+
+    // Ordenar por mês se for o mesmo ano
+    if (years.length === 1) {
+      data.sort((a, b) => {
+        const monthOrder = Object.values(monthNames);
+        return monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month);
+      });
+    }
+
+    return data;
   }
 
   async getLastTransactions(filter: TransactionsFilterDto) {
@@ -227,12 +302,26 @@ export class DashboardRepository {
     const dateCondition = this.buildDateConditions(filters);
     const userCondition = filters.userId ? { userId: filters.userId } : {};
 
+    // Construir condições where corretas para múltiplas datas
+    const buildWhereCondition = (dateField: string) => {
+      if ("OR" in dateCondition) {
+        return {
+          ...userCondition,
+          OR: dateCondition.OR.map((condition) => ({
+            [dateField]: condition,
+          })),
+        };
+      } else {
+        return {
+          ...userCondition,
+          [dateField]: dateCondition,
+        };
+      }
+    };
+
     // Buscar receitas
     const incomes = await this.prisma.income.findMany({
-      where: {
-        ...userCondition,
-        receivedAt: dateCondition as Prisma.DateTimeFilter,
-      },
+      where: buildWhereCondition("receivedAt"),
       include: {
         category: { select: { name: true } },
         paymentMethod: { select: { name: true } },
@@ -243,10 +332,7 @@ export class DashboardRepository {
 
     // Buscar despesas
     const expenses = await this.prisma.expense.findMany({
-      where: {
-        ...userCondition,
-        spentAt: dateCondition as Prisma.DateTimeFilter,
-      },
+      where: buildWhereCondition("spentAt"),
       include: {
         category: { select: { name: true } },
         paymentMethod: { select: { name: true } },
@@ -257,10 +343,7 @@ export class DashboardRepository {
 
     // Buscar investimentos
     const investments = await this.prisma.investment.findMany({
-      where: {
-        ...userCondition,
-        investedAt: dateCondition as Prisma.DateTimeFilter,
-      },
+      where: buildWhereCondition("investedAt"),
       include: {
         category: { select: { name: true } },
         user: { select: { name: true } },
@@ -317,7 +400,7 @@ export class DashboardRepository {
       ...normalizedIncomes,
       ...normalizedExpenses,
       ...normalizedInvestments,
-    ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    ].sort((a, b) => b.date.getTime() - a.date.getTime());
 
     const totalLength = allTransactions.length;
     const paginatedData = allTransactions.slice(skip, skip + pageSize);
