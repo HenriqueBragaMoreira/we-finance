@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/suspicious/noConsole: <> */
+
 import { faker } from "@faker-js/faker";
 import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/auth";

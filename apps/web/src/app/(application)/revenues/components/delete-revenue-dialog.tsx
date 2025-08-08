@@ -1,3 +1,6 @@
+import { useMutation } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,9 +17,6 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { getQueryClient } from "@/lib/tanstack-query";
 import { incomesServices } from "@/services/incomes";
 import type { GetIncomesResponse } from "@/services/incomes/types";
-import { useMutation } from "@tanstack/react-query";
-import { Trash2 } from "lucide-react";
-import { toast } from "sonner";
 
 export function DeleteRevenueDialog({ incomeId }: { incomeId: string }) {
   const queryClient = getQueryClient();

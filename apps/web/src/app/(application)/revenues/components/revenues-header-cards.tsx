@@ -1,10 +1,10 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { incomesServices } from "@/services/incomes";
 import { masks } from "@/utils/masks";
-import { useQuery } from "@tanstack/react-query";
-import { TrendingUp } from "lucide-react";
 import { RevenuesHeaderCardsSkeleton } from "./revenues-header-cards-skeleton";
 
 export function RevenuesHeaderCards() {

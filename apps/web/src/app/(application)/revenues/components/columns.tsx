@@ -1,3 +1,15 @@
+import { useQueries } from "@tanstack/react-query";
+import type { ColumnDef } from "@tanstack/react-table";
+import {
+  Banknote,
+  CalendarIcon,
+  CircleDashed,
+  DollarSign,
+  EllipsisIcon,
+  SquarePen,
+  Text,
+  UserRound,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,18 +24,6 @@ import type { GetIncomesResponseDataField } from "@/services/incomes/types";
 import { paymentMethodsServices } from "@/services/payment-methods";
 import { usersServices } from "@/services/users";
 import { masks } from "@/utils/masks";
-import { useQueries } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
-import {
-  Banknote,
-  CalendarIcon,
-  CircleDashed,
-  DollarSign,
-  EllipsisIcon,
-  SquarePen,
-  Text,
-  UserRound,
-} from "lucide-react";
 import { DeleteRevenueDialog } from "./delete-revenue-dialog";
 import { RevenueActionDialog } from "./revenue-action-dialog";
 

@@ -1,11 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { PiggyBank, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { investmentServices } from "@/services/investment";
 import { masks } from "@/utils/masks";
-import { useQuery } from "@tanstack/react-query";
-import { PiggyBank, TrendingUp } from "lucide-react";
 import { InvestmentsHeaderCardsSkeleton } from "./investments-header-cards-skeleton";
 
 export function InvestmentsHeaderCards() {
