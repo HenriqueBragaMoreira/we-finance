@@ -1,5 +1,8 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { parseAsString, useQueryStates } from "nuqs";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -14,9 +17,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { dashboardServices } from "@/services/dashboard";
-import { useQuery } from "@tanstack/react-query";
-import { parseAsString, useQueryStates } from "nuqs";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { ChartBarMultipleSkeleton } from "./chart-bar-multiple-skeleton";
 
 const chartConfig = {

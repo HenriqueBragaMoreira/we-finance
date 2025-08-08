@@ -1,5 +1,9 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { parseAsString, useQueryStates } from "nuqs";
+import { useMemo } from "react";
+import { Pie, PieChart } from "recharts";
 import {
   Card,
   CardContent,
@@ -14,10 +18,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { dashboardServices } from "@/services/dashboard";
-import { useQuery } from "@tanstack/react-query";
-import { parseAsString, useQueryStates } from "nuqs";
-import { useMemo } from "react";
-import { Pie, PieChart } from "recharts";
 import { ChartPieSimpleSkeleton } from "./chart-pie-simple-skeleton";
 
 const CHART_COLORS = [

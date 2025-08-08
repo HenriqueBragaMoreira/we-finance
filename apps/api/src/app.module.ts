@@ -6,6 +6,7 @@ import { auth } from "./lib/auth";
 import { CategoryModule } from "./modules/category/category.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { ExpenseModule } from "./modules/expense/expense.module";
+import { HealthModule } from "./modules/health/health.module";
 import { IncomeModule } from "./modules/income/income.module";
 import { InvestmentModule } from "./modules/investment/investment.module";
 import { PaymentMethodModule } from "./modules/payment-method/payment-method.module";
@@ -14,6 +15,7 @@ import { UserModule } from "./modules/user/user.module";
 @Module({
   imports: [
     AuthModule.forRoot(auth),
+    HealthModule,
     DashboardModule,
     IncomeModule,
     ExpenseModule,

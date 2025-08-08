@@ -1,5 +1,8 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { CalendarDays, History, UsersRound } from "lucide-react";
+import { usePathname } from "next/navigation";
 import {
   DashboardFilters,
   type FilterOptionsType,
@@ -16,9 +19,6 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { routes } from "@/routes/routes";
 import { usersServices } from "@/services/users";
-import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, History, UsersRound } from "lucide-react";
-import { usePathname } from "next/navigation";
 import { ModeToggle } from "./mode-toggle";
 
 export function AppHeader() {

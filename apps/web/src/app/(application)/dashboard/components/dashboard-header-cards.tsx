@@ -1,10 +1,10 @@
 "use client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { dashboardServices } from "@/services/dashboard";
-import { masks } from "@/utils/masks";
 import { useQuery } from "@tanstack/react-query";
 import { DollarSign, PiggyBank, TrendingDown, TrendingUp } from "lucide-react";
 import { parseAsString, useQueryStates } from "nuqs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { dashboardServices } from "@/services/dashboard";
+import { masks } from "@/utils/masks";
 import { DashboardHeaderCardsSkeleton } from "./dashboard-header-cards-skeleton";
 
 export function DashboardHeaderCards() {

@@ -1,4 +1,7 @@
 "use client";
+import { useQuery } from "@tanstack/react-query";
+import { PiggyBank, TrendingDown, TrendingUp } from "lucide-react";
+import { parseAsString, useQueryStates } from "nuqs";
 import {
   Card,
   CardContent,
@@ -7,9 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { dashboardServices } from "@/services/dashboard";
-import { useQuery } from "@tanstack/react-query";
-import { PiggyBank, TrendingDown, TrendingUp } from "lucide-react";
-import { parseAsString, useQueryStates } from "nuqs";
 import { RecentTransactionsSkeleton } from "./recent-transactions-skeleton";
 
 export function RecentTransactions() {
