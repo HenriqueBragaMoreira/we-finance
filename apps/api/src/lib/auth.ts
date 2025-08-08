@@ -11,5 +11,18 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  advanced: {
+    cookies: {
+      config: {
+        attributes: {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "none",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 7,
+        },
+      },
+    },
+  },
   trustedOrigins: [process.env.CLIENT_ORIGIN || "http://localhost:3000"],
 });
