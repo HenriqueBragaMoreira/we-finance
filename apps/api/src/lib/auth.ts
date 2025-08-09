@@ -16,6 +16,16 @@ export const auth = betterAuth({
     defaultCookieAttributes: {
       sameSite: "none",
       secure: true,
+      domain:
+        process.env.NODE_ENV === "production"
+          ? "we-finance-api.onrender.com"
+          : undefined,
+      path: "/",
+      partitioned: true,
+    },
+    crossSubDomainCookies: {
+      enabled: true,
+      domain: "we-finance-api.onrender.com",
     },
   },
   trustedOrigins: [process.env.CLIENT_ORIGIN || "http://localhost:3000"],
