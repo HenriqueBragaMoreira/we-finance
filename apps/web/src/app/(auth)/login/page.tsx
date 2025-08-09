@@ -41,6 +41,7 @@ export default function LoginPage() {
         password: data.password,
       },
       {
+        credentials: "include",
         onSuccess() {
           router.push("/dashboard");
         },
