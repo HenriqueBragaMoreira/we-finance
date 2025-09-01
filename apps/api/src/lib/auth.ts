@@ -5,6 +5,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 const prisma = new PrismaClient();
 
 export const auth = betterAuth({
+  secret: process.env.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -13,10 +14,18 @@ export const auth = betterAuth({
   },
   advanced: {
     useSecureCookies: true,
-    defaultCookieAttributes: {
+    crossSubDomainCookies: {
+      enabled: true,
+    },
+    cookie: {
       sameSite: "none",
       secure: true,
       path: "/",
+      partitioned: true,
+    },
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
       partitioned: true,
     },
   },
