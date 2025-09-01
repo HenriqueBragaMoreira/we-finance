@@ -23,6 +23,15 @@ export const auth = betterAuth({
       path: "/",
       partitioned: true,
     },
+    cookies: {
+      sessionToken: {
+        attributes: {
+          sameSite: "none",
+          secure: true,
+          partitioned: true, // New browser standards will mandate this for foreign cookies
+        },
+      },
+    },
     defaultCookieAttributes: {
       sameSite: "none",
       secure: true,
