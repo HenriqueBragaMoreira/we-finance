@@ -13,29 +13,14 @@ export const auth = betterAuth({
     enabled: true,
   },
   advanced: {
-    useSecureCookies: true,
-    crossSubDomainCookies: {
+    crossOriginCookies: {
       enabled: true,
-    },
-    cookie: {
-      sameSite: "none",
-      secure: true,
-      path: "/",
-      partitioned: true,
-    },
-    cookies: {
-      sessionToken: {
-        attributes: {
-          sameSite: "none",
-          secure: true,
-          partitioned: true, // New browser standards will mandate this for foreign cookies
-        },
-      },
+      autoSecure: true, // Automatically set secure=true for SameSite=None
+      allowLocalhostUnsecure: true, // Allow unsecure cookies on localhost for development
     },
     defaultCookieAttributes: {
-      sameSite: "none",
-      secure: true,
-      partitioned: true,
+      sameSite: "none", // Required for cross-domain cookies
+      partitioned: true, // Recommended for modern browsers
     },
   },
   trustedOrigins: [process.env.CLIENT_ORIGIN || "http://localhost:3000"],
