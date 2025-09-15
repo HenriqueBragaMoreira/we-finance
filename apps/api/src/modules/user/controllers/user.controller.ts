@@ -1,13 +1,11 @@
-import { Controller, Get, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { AuthGuard } from "@thallesp/nestjs-better-auth";
 import type { FilterUserDto } from "../dtos/filter-user.dto";
 import type { GetUserByIdDto } from "../dtos/get-user-by-id.dto";
 import { UserService } from "../services/user.service";
 
 @ApiTags("Users")
 @Controller("users")
-@UseGuards(AuthGuard)
 export class UserController {
   constructor(private readonly service: UserService) {}
 

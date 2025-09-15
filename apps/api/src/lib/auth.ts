@@ -13,14 +13,20 @@ export const auth = betterAuth({
     enabled: true,
   },
   advanced: {
-    crossOriginCookies: {
-      enabled: true,
-      autoSecure: true, // Automatically set secure=true for SameSite=None
-      allowLocalhostUnsecure: true, // Allow unsecure cookies on localhost for development
+    useSecureCookies: true,
+    cookies: {
+      sessionToken: {
+        attributes: {
+          sameSite: "none",
+          secure: true,
+          partitioned: true,
+        },
+      },
     },
     defaultCookieAttributes: {
-      sameSite: "none", // Required for cross-domain cookies
-      partitioned: true, // Recommended for modern browsers
+      sameSite: "none",
+      secure: true,
+      partitioned: true,
     },
   },
   trustedOrigins: [process.env.CLIENT_ORIGIN || "http://localhost:3000"],

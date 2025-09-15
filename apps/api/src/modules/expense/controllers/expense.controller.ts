@@ -6,14 +6,12 @@ import {
   Param,
   Patch,
   Post,
-  Query,
-  UseGuards,
+  Query
 } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import {
-  AuthGuard,
   Session,
-  type UserSession,
+  type UserSession
 } from "@thallesp/nestjs-better-auth";
 import type { CreateExpenseDto } from "../dtos/create-expense.dto";
 import type { FilterExpenseDto } from "../dtos/filter-expense.dto";
@@ -22,7 +20,6 @@ import type { UpdateExpenseDto } from "../dtos/update-expense.dto";
 import { ExpenseService } from "../services/expense.service";
 
 @Controller("expenses")
-@UseGuards(AuthGuard)
 export class ExpenseController {
   constructor(private readonly service: ExpenseService) {}
 

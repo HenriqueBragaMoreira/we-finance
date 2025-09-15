@@ -7,14 +7,9 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
-import {
-  AuthGuard,
-  Session,
-  type UserSession,
-} from "@thallesp/nestjs-better-auth";
+import { Session, type UserSession } from "@thallesp/nestjs-better-auth";
 import type { CreateIncomeDto } from "../dtos/create-income.dto";
 import type { FilterIncomeDto } from "../dtos/filter-income.dto";
 import type { MonthlyStatsDto } from "../dtos/monthly-stats.dto";
@@ -22,7 +17,6 @@ import type { UpdateIncomeDto } from "../dtos/update-income.dto";
 import { IncomeService } from "../services/income.service";
 
 @Controller("incomes")
-@UseGuards(AuthGuard)
 export class IncomeController {
   constructor(private readonly service: IncomeService) {}
 

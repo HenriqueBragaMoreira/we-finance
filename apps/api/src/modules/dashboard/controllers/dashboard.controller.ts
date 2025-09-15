@@ -1,12 +1,10 @@
-import { Controller, Get, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { AuthGuard } from "@thallesp/nestjs-better-auth";
 import type { DashboardFilterDto } from "../dtos/dashboard-filter.dto";
 import type { TransactionsFilterDto } from "../dtos/transactions-filter.dto";
 import { DashboardService } from "../services/dashboard.service";
 
 @Controller("dashboard")
-@UseGuards(AuthGuard)
 @ApiTags("Dashboard")
 export class DashboardController {
   constructor(private readonly service: DashboardService) {}

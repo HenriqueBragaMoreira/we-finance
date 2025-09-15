@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
-import { AuthModule } from "@thallesp/nestjs-better-auth";
+import { APP_GUARD } from "@nestjs/core";
+import { AuthGuard, AuthModule } from "@thallesp/nestjs-better-auth";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { auth } from "./lib/auth";
@@ -25,6 +26,12 @@ import { UserModule } from "./modules/user/user.module";
     UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}

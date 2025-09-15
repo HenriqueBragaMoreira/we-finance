@@ -7,14 +7,9 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
-import {
-  AuthGuard,
-  Session,
-  type UserSession,
-} from "@thallesp/nestjs-better-auth";
+import { Session, type UserSession } from "@thallesp/nestjs-better-auth";
 import type { CreateInvestmentDto } from "../dtos/create-investment.dto";
 import type { FilterInvestmentDto } from "../dtos/filter-investment.dto";
 import type { MonthlyStatsDto } from "../dtos/monthly-stats.dto";
@@ -22,7 +17,6 @@ import type { UpdateInvestmentDto } from "../dtos/update-investment.dto";
 import { InvestmentService } from "../services/investment.service";
 
 @Controller("investments")
-@UseGuards(AuthGuard)
 export class InvestmentController {
   constructor(private readonly service: InvestmentService) {}
 
