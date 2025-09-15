@@ -16,4 +16,7 @@ export class CreateCategoryDto {
     description: "Tipo da categoria",
   })
   type!: CategoryType;
+
+  @ApiProperty({ example: "#123456" })
+  color!: string;
 }

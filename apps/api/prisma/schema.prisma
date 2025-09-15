@@ -135,6 +135,8 @@ model Category {
   id           String         @id @default(cuid())
   name         String
   type         CategoryType
+  color        String         @unique
+  isActive     Boolean        @default(true)
   incomes      Income[]
   expenses     Expense[]
   investments  Investment[]

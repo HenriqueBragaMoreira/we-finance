@@ -1,8 +1,8 @@
 /** biome-ignore-all lint/suspicious/noConsole: <> */
 
+import { auth } from "@/lib/auth";
 import { faker } from "@faker-js/faker";
 import { PrismaClient } from "@prisma/client";
-import { auth } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -70,24 +70,28 @@ const prisma = new PrismaClient();
         data: {
           name: "Salário",
           type: "INCOME",
+          color: "#000000",
         },
       }),
       prisma.category.create({
         data: {
           name: "Freelance",
           type: "INCOME",
+          color: "#123456",
         },
       }),
       prisma.category.create({
         data: {
           name: "Vendas",
           type: "INCOME",
+          color: "#111111",
         },
       }),
       prisma.category.create({
         data: {
           name: "Rendimentos",
           type: "INCOME",
+          color: "#222222",
         },
       }),
     ]);
@@ -97,36 +101,42 @@ const prisma = new PrismaClient();
         data: {
           name: "Alimentação",
           type: "EXPENSE",
+          color: "#333333",
         },
       }),
       prisma.category.create({
         data: {
           name: "Transporte",
           type: "EXPENSE",
+          color: "#444444",
         },
       }),
       prisma.category.create({
         data: {
           name: "Moradia",
           type: "EXPENSE",
+          color: "#555555",
         },
       }),
       prisma.category.create({
         data: {
           name: "Saúde",
           type: "EXPENSE",
+          color: "#666666",
         },
       }),
       prisma.category.create({
         data: {
           name: "Lazer",
           type: "EXPENSE",
+          color: "#777777",
         },
       }),
       prisma.category.create({
         data: {
           name: "Educação",
           type: "EXPENSE",
+          color: "#888888",
         },
       }),
     ]);
@@ -136,24 +146,28 @@ const prisma = new PrismaClient();
         data: {
           name: "Ações",
           type: "INVESTMENT",
+          color: "#999999",
         },
       }),
       prisma.category.create({
         data: {
           name: "Renda Fixa",
           type: "INVESTMENT",
+          color: "#aaaaaa",
         },
       }),
       prisma.category.create({
         data: {
           name: "Fundos Imobiliários",
           type: "INVESTMENT",
+          color: "#bbbbbb",
         },
       }),
       prisma.category.create({
         data: {
           name: "Criptomoedas",
           type: "INVESTMENT",
+          color: "#cccccc",
         },
       }),
     ]);

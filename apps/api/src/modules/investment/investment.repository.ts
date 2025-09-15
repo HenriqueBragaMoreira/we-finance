@@ -1,6 +1,6 @@
+import { PrismaService } from "@/utils/prisma.service";
 import { Injectable } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
-import { PrismaService } from "@/utils/prisma.service";
 import { FilterInvestmentDto } from "./dtos/filter-investment.dto";
 
 @Injectable()
@@ -199,7 +199,8 @@ export class InvestmentRepository {
 
   async findOrCreateCategory(
     name: string,
-    type: "INCOME" | "EXPENSE" | "INVESTMENT"
+    type: "INCOME" | "EXPENSE" | "INVESTMENT",
+    color?: string
   ) {
     const existingCategory = await this.prisma.category.findFirst({
       where: {
@@ -219,6 +220,7 @@ export class InvestmentRepository {
       data: {
         name,
         type,
+        color: color || "",
       },
     });
   }
