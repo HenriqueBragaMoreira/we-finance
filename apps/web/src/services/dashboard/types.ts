@@ -21,6 +21,7 @@ export type GetExpensesByCategoryResponse = {
   categoryName: string;
   amount: number;
   percentage: number;
+  categoryColor: string;
 };
 
 export type GetRevenuesVsExpensesResponse = {

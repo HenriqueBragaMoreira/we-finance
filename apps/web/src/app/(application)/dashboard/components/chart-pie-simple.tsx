@@ -20,20 +20,14 @@ import {
 import { dashboardServices } from "@/services/dashboard";
 import { ChartPieSimpleSkeleton } from "./chart-pie-simple-skeleton";
 
-const CHART_COLORS = [
-  "var(--chart-1)",
-  "var(--chart-2)",
-  "var(--chart-3)",
-  "var(--chart-4)",
-  "var(--chart-5)",
-  "hsl(12, 76%, 61%)",
-  "hsl(173, 58%, 39%)",
-  "hsl(197, 37%, 24%)",
-  "hsl(43, 74%, 66%)",
-  "hsl(27, 87%, 67%)",
-  "hsl(215, 28%, 17%)",
-  "hsl(358, 75%, 59%)",
-];
+function sanitizeCategoryName(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "")
+    .replace(/\s+/g, "");
+}
 
 export function ChartPieSimple() {
   const [filters] = useQueryStates({
@@ -49,39 +43,32 @@ export function ChartPieSimple() {
     },
   });
 
-  const { chartConfig, chartData, dynamicStyles } = useMemo(() => {
+  const { chartConfig, chartData } = useMemo(() => {
     if (!data || data.length === 0) {
-      return { chartConfig: {}, chartData: [], dynamicStyles: {} };
+      return { chartConfig: {}, chartData: [] };
     }
 
     const config: ChartConfig = {};
-    const styles: Record<string, string> = {};
-    const formattedData = data.map((item, index) => {
-      const colorKey = item.categoryName
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, "-");
-      const color = CHART_COLORS[index % CHART_COLORS.length];
+    const formattedData = data.map((item) => {
+      const sanitizedName = sanitizeCategoryName(item.categoryName);
 
-      config[colorKey] = {
+      config[sanitizedName] = {
         label: item.categoryName,
-        color: color,
+        color: item.categoryColor,
       };
-
-      styles[`--color-${colorKey}`] = color;
 
       return {
         categoryName: item.categoryName,
         percentage: item.percentage,
         percentageDisplay: `${item.percentage}%`,
         amount: item.amount,
-        fill: `var(--color-${colorKey})`,
+        fill: `var(--color-${sanitizedName})`,
       };
     });
 
     return {
       chartConfig: config,
       chartData: formattedData,
-      dynamicStyles: styles,
     };
   }, [data]);
 
@@ -99,7 +86,6 @@ export function ChartPieSimple() {
         <ChartContainer
           config={chartConfig}
           className="mx-auto aspect-square max-h-[400px]"
-          style={dynamicStyles}
         >
           <PieChart>
             <ChartTooltip

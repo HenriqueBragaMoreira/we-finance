@@ -6,13 +6,10 @@ import {
   Param,
   Patch,
   Post,
-  Query
+  Query,
 } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
-import {
-  Session,
-  type UserSession
-} from "@thallesp/nestjs-better-auth";
+import { Session, type UserSession } from "@thallesp/nestjs-better-auth";
 import type { CreateExpenseDto } from "../dtos/create-expense.dto";
 import type { FilterExpenseDto } from "../dtos/filter-expense.dto";
 import type { MonthlyStatsDto } from "../dtos/monthly-stats.dto";

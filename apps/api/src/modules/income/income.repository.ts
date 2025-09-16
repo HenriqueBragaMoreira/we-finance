@@ -1,6 +1,6 @@
-import { PrismaService } from "@/utils/prisma.service";
 import { Injectable } from "@nestjs/common";
 import type { IncomeStatus, IncomeType, Prisma } from "@prisma/client";
+import { PrismaService } from "@/utils/prisma.service";
 import { FilterIncomeDto } from "./dtos/filter-income.dto";
 
 @Injectable()

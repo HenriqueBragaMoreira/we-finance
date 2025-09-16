@@ -10,6 +10,7 @@ export interface ExpensesByCategoryResponseDto {
   categoryName: string;
   amount: number;
   percentage: number;
+  categoryColor: string;
 }
 
 export interface RevenuesVsExpensesResponseDto {

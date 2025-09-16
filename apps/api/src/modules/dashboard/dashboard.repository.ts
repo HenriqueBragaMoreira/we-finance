@@ -189,10 +189,13 @@ export class DashboardRepository {
       select: {
         id: true,
         name: true,
+        color: true,
       },
     });
 
-    const categoryMap = new Map(categories.map((cat) => [cat.id, cat.name]));
+    const categoryMap = new Map(
+      categories.map((cat) => [cat.id, { name: cat.name, color: cat.color }])
+    );
 
     return expensesByCategory.map((item) => {
       const amount = item._sum?.amount?.toNumber() || 0;
@@ -200,9 +203,10 @@ export class DashboardRepository {
 
       return {
         categoryName:
-          categoryMap.get(item.categoryId) || "Categoria não encontrada",
+          categoryMap.get(item.categoryId)?.name || "Categoria não encontrada",
         amount,
         percentage: Math.round(percentage * 100) / 100,
+        categoryColor: categoryMap.get(item.categoryId)?.color || "",
       };
     });
   }

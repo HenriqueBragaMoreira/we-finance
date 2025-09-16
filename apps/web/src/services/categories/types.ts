@@ -16,6 +16,7 @@ export type GetCategoriesResponseDataField = {
   id: string;
   name: string;
   type: CategoriesType;
+  color: string;
   createdAt: string;
   updatedAt: string;
 };
