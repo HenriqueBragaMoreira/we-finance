@@ -37,7 +37,39 @@ export class CategoryController {
   @ApiResponse({
     status: 200,
     description:
-      "Lista paginada de categorias com total de registros e contadores de uso",
+      "Lista paginada de categorias com total de registros, contadores de categorias ativas e inativas",
+    schema: {
+      type: "object",
+      properties: {
+        data: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              name: { type: "string" },
+              type: {
+                type: "string",
+                enum: ["INCOME", "EXPENSE", "INVESTMENT"],
+              },
+              color: { type: "string" },
+              isActive: { type: "boolean" },
+              createdAt: { type: "string" },
+              updatedAt: { type: "string" },
+            },
+          },
+        },
+        totalLength: { type: "number", description: "Total de categorias" },
+        activeCount: {
+          type: "number",
+          description: "Total de categorias ativas",
+        },
+        inactiveCount: {
+          type: "number",
+          description: "Total de categorias inativas",
+        },
+      },
+    },
   })
   findAll(@Query() filter: FilterCategoryDto) {
     return this.service.findAll(filter);
@@ -60,6 +92,11 @@ export class CategoryController {
           enum: ["INCOME", "EXPENSE", "INVESTMENT"],
           example: "INCOME",
           description: "Tipo da categoria",
+        },
+        color: {
+          type: "string",
+          example: "#123456",
+          description: "Cor da categoria",
         },
       },
       required: ["name", "type"],
@@ -91,6 +128,11 @@ export class CategoryController {
           enum: ["INCOME", "EXPENSE", "INVESTMENT"],
           example: "INCOME",
           description: "Tipo da categoria (opcional)",
+        },
+        color: {
+          type: "string",
+          example: "#123456",
+          description: "Cor da categoria (opcional)",
         },
       },
     },
