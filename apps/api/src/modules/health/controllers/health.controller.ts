@@ -1,9 +1,11 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
+import { Public } from "@thallesp/nestjs-better-auth";
 import { HealthService } from "../services/health.service";
 import { PingService } from "../services/ping.service";
 
 @ApiExcludeController()
+@Public()
 @Controller("health")
 export class HealthController {
   constructor(
