@@ -1,14 +1,8 @@
 import { isServer } from "@tanstack/react-query";
 import ky from "ky";
-import { authToken } from "@/constants/auth";
 
 async function getServerCookies() {
   const { cookies } = await import("next/headers");
-  const { getCookie } = await import("cookies-next/server");
-
-  const token = await getCookie(authToken, { cookies });
-
-  if (!token) return null;
 
   const cookieStore = await cookies();
   const allCookies = cookieStore.getAll();
@@ -19,17 +13,18 @@ async function getServerCookies() {
 }
 
 async function setCookieHeaders(request: Request) {
-  if (!isServer) return;
+  if (!isServer) {
+    return;
+  }
 
-  const cookieHeader = await getServerCookies();
-
-  if (cookieHeader) {
-    request.headers.set("Cookie", cookieHeader);
+  const serverCookies = await getServerCookies();
+  if (serverCookies) {
+    request.headers.set("Cookie", serverCookies);
   }
 }
 
 export const api = ky.create({
-  prefixUrl: process.env.NEXT_PUBLIC_API_URL,
+  prefixUrl: "/api",
   credentials: "include",
   hooks: {
     beforeRequest: [setCookieHeaders],
