@@ -12,7 +12,7 @@ export class PingService {
       this.logger.log("Executando ping automático para manter API ativa...");
 
       const baseUrl = process.env.BASE_URL || "http://localhost:3333";
-      const response = await fetch(`${baseUrl}/health/ping`);
+      const response = await fetch(`${baseUrl}/api/health/ping`);
 
       if (response.ok) {
         const data = await response.json();
