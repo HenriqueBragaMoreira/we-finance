@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { apiReference } from "@scalar/nestjs-api-reference";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
@@ -26,7 +27,14 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("docs", app, document);
+
+  app.use(
+    "/docs",
+    apiReference({
+      sources: [{ title: "WeFinance API", content: document }],
+      theme: "default",
+    })
+  );
 
   await app.listen(process.env.PORT ?? 3000);
 }
