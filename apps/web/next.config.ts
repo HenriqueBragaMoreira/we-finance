@@ -4,7 +4,6 @@ const nextConfig: NextConfig = {
   rewrites: async () => {
     return {
       beforeFiles: [
-        // api/auth to backend_url
         {
           source: "/api/:path*",
           destination: new URL(
