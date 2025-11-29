@@ -11,6 +11,7 @@ catalog:
   tailwind-merge: ^3.3.1
   tailwindcss: ^4.1.11
   tailwindcss-motion: ^1.1.1
+  better-auth: ^1.4.3
 
 onlyBuiltDependencies:
   - '@biomejs/biome'
