@@ -1,13 +1,3 @@
-import { useQueries } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
-import {
-  Banknote,
-  CalendarIcon,
-  CircleDashed,
-  EllipsisIcon,
-  SquarePen,
-  UserRound,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,6 +9,17 @@ import { categoriesServices } from "@/services/categories";
 import type { GetInvestmentResponseDataField } from "@/services/investment/types";
 import { usersServices } from "@/services/users";
 import { masks } from "@/utils/masks";
+import { useQueries } from "@tanstack/react-query";
+import type { ColumnDef } from "@tanstack/react-table";
+import {
+  Banknote,
+  CalendarIcon,
+  CircleDashed,
+  EllipsisIcon,
+  SquarePen,
+  UserRound,
+} from "lucide-react";
+import { useMemo } from "react";
 import { DeleteInvestmentDialog } from "./delete-investment-dialog";
 import { InvestmentActionDialog } from "./investment-action-dialog";
 
@@ -37,7 +38,8 @@ export function useColumns() {
     ],
   });
 
-  const columns: ColumnDef<GetInvestmentResponseDataField>[] = [
+  const columns: ColumnDef<GetInvestmentResponseDataField>[] = useMemo(
+    () => [
     {
       id: "notes",
       accessorKey: "notes",
@@ -150,7 +152,9 @@ export function useColumns() {
         );
       },
     },
-  ];
+  ],
+    [investmentCategories?.data, users?.data]
+  );
 
   return { columns };
 }

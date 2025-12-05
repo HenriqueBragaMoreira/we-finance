@@ -10,6 +10,7 @@ import {
   Text,
   UserRound,
 } from "lucide-react";
+import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,7 +51,8 @@ export function useColumns() {
     ],
   });
 
-  const columns: ColumnDef<GetExpenseResponseDataField>[] = [
+  const columns: ColumnDef<GetExpenseResponseDataField>[] = useMemo(
+    () => [
     {
       id: "description",
       accessorKey: "name",
@@ -264,7 +266,9 @@ export function useColumns() {
         );
       },
     },
-  ];
+  ],
+    [expenseCategories?.data, paymentMethods?.data, users?.data]
+  );
 
   return { columns };
 }

@@ -48,11 +48,9 @@ export function DataTableFilter<TData>({
   align = "start",
   ...props
 }: DataTableFilterProps<TData>) {
-  const columns = useMemo(() => {
-    return table
-      .getAllColumns()
-      .filter((column) => column.columnDef.enableColumnFilter);
-  }, [table]);
+  const columns = table
+    .getAllColumns()
+    .filter((column) => column.columnDef.enableColumnFilter);
 
   const filterTypeMapping = useMemo(
     () => ({
