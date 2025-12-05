@@ -1,12 +1,11 @@
 "use client";
 
+import { DataTable } from "@/components/data-table/data-table";
+import { Button } from "@/components/ui/button";
+import { expenseServices } from "@/services/expense";
 import { useQuery } from "@tanstack/react-query";
 import { CreditCard } from "lucide-react";
 import { parseAsString, useQueryStates } from "nuqs";
-import { DataTable } from "@/components/data-table/data-table";
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { Button } from "@/components/ui/button";
-import { expenseServices } from "@/services/expense";
 import { useColumns } from "./columns";
 import { ExpensesActionDialog } from "./expenses-action-dialog";
 
@@ -24,7 +23,7 @@ export function DataTableContainer() {
     rowsPerPage: parseAsString.withDefault("10"),
   });
 
-  const { data, isFetching } = useQuery({
+  const { data } = useQuery({
     queryKey: ["get-expense", filters],
     queryFn: async () => {
       return expenseServices.get(filters);
@@ -33,15 +32,11 @@ export function DataTableContainer() {
 
   const { columns } = useColumns();
 
-  if (!data || isFetching) {
-    return <DataTableSkeleton rows={10} columns={8} />;
-  }
-
   return (
     <DataTable
-      data={data.data}
+      data={data?.data}
       columns={columns}
-      totalLength={data.total}
+      totalLength={data?.total || 0}
       action={
         <ExpensesActionDialog>
           <Button variant="destructive" size="sm">
