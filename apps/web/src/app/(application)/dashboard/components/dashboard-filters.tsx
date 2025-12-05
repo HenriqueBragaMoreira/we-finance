@@ -1,14 +1,14 @@
 "use client";
 
-import { BadgeCheck, Check, Funnel, Text, X } from "lucide-react";
-import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
-import { type JSX, useCallback, useState } from "react";
+import {
+  FilterValueSelector,
+  type FilterValueSelectorProps,
+} from "@/components/filter-value-selector";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
-  CommandGroup,
+  CommandEmpty,
   CommandInput,
   CommandItem,
   CommandList,
@@ -18,28 +18,89 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { usersServices } from "@/services/users";
+import { useQuery } from "@tanstack/react-query";
+import { CalendarDays, Funnel, History, UsersRound, X } from "lucide-react";
+import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
+import { useCallback, useState } from "react";
 
-export type FilterOptionsType = {
+interface FilterOptionsType
+  extends Omit<FilterValueSelectorProps, "value" | "onSelect"> {
   label: string;
   value: string;
-  icon: JSX.Element;
-  variant: "boolean" | "select" | "multiSelect" | "date" | "dateRange" | "text";
-  options?: { value: string; label: string; icon?: JSX.Element }[];
-};
+  icon: React.ReactNode;
+}
 
-type DashboardFiltersProps = {
-  filterOptions: FilterOptionsType[];
-};
-
-export function DashboardFilters({ filterOptions }: DashboardFiltersProps) {
+export function DashboardFilters() {
   const [open, setOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
-  const [inputValue, setInputValue] = useState("");
   const [filters, setFilters] = useQueryStates({
     person: parseAsString.withDefault(""),
     month: parseAsArrayOf(parseAsString).withDefault([]),
     year: parseAsArrayOf(parseAsString).withDefault([]),
   });
+
+  const { data } = useQuery({
+    queryKey: ["get-users"],
+    queryFn: async () => await usersServices.get(),
+  });
+
+  const filterOptions: FilterOptionsType[] = [
+    {
+      label: "Pessoa",
+      value: "person",
+      icon: <UsersRound className="size-4" />,
+      variant: "select",
+      options: data?.data.map((user) => ({
+        label: user.name,
+        value: user.id,
+      })),
+    },
+    {
+      label: "Mês",
+      value: "month",
+      icon: <CalendarDays className="size-4" />,
+      variant: "multiSelect",
+      options: [
+        { value: "janeiro", label: "Janeiro" },
+        { value: "fevereiro", label: "Fevereiro" },
+        { value: "março", label: "Março" },
+        { value: "abril", label: "Abril" },
+        { value: "maio", label: "Maio" },
+        { value: "junho", label: "Junho" },
+        { value: "julho", label: "Julho" },
+        { value: "agosto", label: "Agosto" },
+        { value: "setembro", label: "Setembro" },
+        { value: "outubro", label: "Outubro" },
+        { value: "novembro", label: "Novembro" },
+        { value: "dezembro", label: "Dezembro" },
+      ],
+    },
+    {
+      label: "Ano",
+      value: "year",
+      icon: <History className="size-4" />,
+      variant: "multiSelect",
+      options: [
+        { value: "2024", label: "2024" },
+        { value: "2025", label: "2025" },
+      ],
+    },
+  ];
+
+  function handleClearFilters() {
+    setFilters({
+      person: null,
+      month: [],
+      year: [],
+    });
+  }
+
+  function lengthOfFilters() {
+    return Object.values(filters).filter((v) =>
+      Array.isArray(v) ? v.length > 0 : v !== ""
+    ).length;
+  }
 
   const onOpenChange = useCallback((open: boolean) => {
     setOpen(open);
@@ -47,7 +108,6 @@ export function DashboardFilters({ filterOptions }: DashboardFiltersProps) {
     if (!open) {
       setTimeout(() => {
         setSelectedFilter("");
-        setInputValue("");
       }, 100);
     }
   }, []);
@@ -58,20 +118,11 @@ export function DashboardFilters({ filterOptions }: DashboardFiltersProps) {
         <PopoverTrigger asChild>
           <Button variant="outline" className="gap-2 bg-transparent">
             <Funnel className="size-[1.2rem]" />
-            {Object.values(filters).filter((v) =>
-              Array.isArray(v) ? v.length > 0 : v !== ""
-            ).length > 0
-              ? null
-              : "Filtros"}
-            {Object.values(filters).filter((v) =>
-              Array.isArray(v) ? v.length > 0 : v !== ""
-            ).length > 0 && (
+            {lengthOfFilters() > 0 ? null : "Filtros"}
+
+            {lengthOfFilters() > 0 && (
               <Badge variant="outline" className="size-5 rounded-full">
-                {
-                  Object.values(filters).filter((v) =>
-                    Array.isArray(v) ? v.length > 0 : v !== ""
-                  ).length
-                }
+                {lengthOfFilters()}
               </Badge>
             )}
           </Button>
@@ -79,11 +130,8 @@ export function DashboardFilters({ filterOptions }: DashboardFiltersProps) {
 
         <PopoverContent className="w-40 p-0" align="end">
           <Command>
-            <CommandInput
-              placeholder="Buscar filtros..."
-              value={inputValue}
-              onValueChange={setInputValue}
-            />
+            <CommandInput placeholder="Buscar filtros..." />
+            <CommandEmpty>Nenhum filtro encontrado.</CommandEmpty>
             <CommandList>
               {selectedFilter
                 ? (() => {
@@ -91,21 +139,16 @@ export function DashboardFilters({ filterOptions }: DashboardFiltersProps) {
                       (opt) => opt.value === selectedFilter
                     );
                     if (!selectedOption) return null;
+                    const filterValue =
+                      filters[selectedFilter as keyof typeof filters];
+
                     return (
                       <FilterValueSelector
                         variant={selectedOption.variant}
                         value={
                           selectedOption.variant === "multiSelect"
-                            ? (filters[
-                                selectedFilter as keyof typeof filters
-                              ] as string[])
-                            : selectedOption.variant === "select"
-                              ? (filters[
-                                  selectedFilter as keyof typeof filters
-                                ] as string)
-                              : (filters[
-                                  selectedFilter as keyof typeof filters
-                                ] as string)
+                            ? (filterValue as string[]) || []
+                            : (filterValue as string) || ""
                         }
                         options={selectedOption.options}
                         onSelect={(value) => {
@@ -129,7 +172,6 @@ export function DashboardFilters({ filterOptions }: DashboardFiltersProps) {
 
                             setTimeout(() => {
                               setSelectedFilter("");
-                              setInputValue("");
                             }, 100);
                           }
                         }}
@@ -154,7 +196,6 @@ export function DashboardFilters({ filterOptions }: DashboardFiltersProps) {
                         className="flex items-center gap-2"
                         onSelect={() => {
                           setSelectedFilter(option.value);
-                          setInputValue("");
                         }}
                       >
                         {option.icon}
@@ -175,114 +216,16 @@ export function DashboardFilters({ filterOptions }: DashboardFiltersProps) {
         </PopoverContent>
       </Popover>
 
-      {Object.values(filters).filter((v) =>
-        Array.isArray(v) ? v.length > 0 : v !== ""
-      ).length > 0 && (
+      {lengthOfFilters() > 0 && (
         <Button
           aria-label="Reset all filters"
           variant="outline"
           size="icon"
-          onClick={() =>
-            setFilters({
-              person: null,
-              month: [],
-              year: [],
-            })
-          }
+          onClick={() => handleClearFilters()}
         >
           <X className="size-[1.2rem]" />
         </Button>
       )}
     </div>
   );
-}
-
-interface FilterValueSelectorProps {
-  variant: "boolean" | "select" | "multiSelect" | "date" | "dateRange" | "text";
-  value: string | string[];
-  onSelect: (value: string) => void;
-  options?: { value: string; label: string; icon?: JSX.Element }[];
-}
-
-function FilterValueSelector({
-  value,
-  variant,
-  options,
-  onSelect,
-}: FilterValueSelectorProps) {
-  switch (variant) {
-    case "boolean":
-      return (
-        <CommandGroup>
-          <CommandItem value="true" onSelect={() => onSelect("true")}>
-            True
-          </CommandItem>
-          <CommandItem value="false" onSelect={() => onSelect("false")}>
-            False
-          </CommandItem>
-        </CommandGroup>
-      );
-
-    case "select":
-    case "multiSelect":
-      return (
-        <CommandGroup>
-          {options?.map((option) => (
-            <CommandItem
-              key={option.value}
-              value={option.value}
-              onSelect={() => onSelect(option.value)}
-            >
-              {option.icon && option.icon}
-              <span className="truncate">{option.label}</span>
-              {value.includes(option.value) && (
-                <Check className="ml-auto size-3" strokeWidth={3} />
-              )}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      );
-
-    case "date":
-    case "dateRange":
-      return (
-        <Calendar
-          mode="single"
-          captionLayout="dropdown"
-          selected={
-            typeof value === "string" && value ? new Date(value) : undefined
-          }
-          onSelect={(date) => onSelect(date?.getTime().toString() ?? "")}
-        />
-      );
-
-    default: {
-      const stringValue = typeof value === "string" ? value : "";
-      const isEmpty = !stringValue.trim();
-
-      return (
-        <CommandGroup>
-          <CommandItem
-            value={stringValue}
-            onSelect={() => onSelect(stringValue)}
-            disabled={isEmpty}
-          >
-            {isEmpty ? (
-              <>
-                <Text />
-                <span>Type to add filter...</span>
-              </>
-            ) : (
-              <>
-                <BadgeCheck />
-                <span className="truncate">
-                  Filter by &quot;{stringValue}&quot;
-                </span>
-              </>
-            )}
-          </CommandItem>
-        </CommandGroup>
-      );
-    }
-  }
 }

@@ -1,12 +1,8 @@
 "use client";
 
-import type { Column, Table } from "@tanstack/react-table";
-import { BadgeCheck, Check, Funnel, Text, X } from "lucide-react";
-import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
-import { type JSX, useCallback, useMemo, useState } from "react";
+import { FilterValueSelector } from "@/components/filter-value-selector";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -20,6 +16,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import type { Column, Table } from "@tanstack/react-table";
+import { Funnel, X } from "lucide-react";
+import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
+import { useCallback, useMemo, useState } from "react";
 
 declare module "@tanstack/react-table" {
   // biome-ignore lint: Generic types needed for module augmentation
@@ -34,17 +34,9 @@ declare module "@tanstack/react-table" {
       | "text";
     filterType?: "text" | "multiText";
     icon?: React.ComponentType;
-    options?: { value: string; label: string; icon?: JSX.Element }[];
+    options?: { value: string; label: string; icon?: React.JSX.Element }[];
   }
 }
-
-export type FilterOptionsType = {
-  label: string;
-  value: string;
-  icon: JSX.Element;
-  variant: "boolean" | "select" | "multiSelect" | "date" | "dateRange" | "text";
-  options?: { value: string; label: string; icon?: JSX.Element }[];
-};
 
 interface DataTableFilterProps<TData>
   extends React.ComponentProps<typeof PopoverContent> {
@@ -180,10 +172,15 @@ export function DataTableFilter<TData>({
             <CommandList>
               {selectedColumn ? (
                 <FilterValueSelector
-                  column={selectedColumn}
+                  variant={selectedColumn.columnDef.meta?.variant ?? "text"}
                   value={inputValue}
+                  options={selectedColumn.columnDef.meta?.options}
+                  currentValues={
+                    selectedColumn.id
+                      ? (filters[selectedColumn.id] as string[]) || []
+                      : undefined
+                  }
                   onSelect={(value) => onFilterAdd(selectedColumn, value)}
-                  currentFilters={filters}
                   onRemove={(value) => {
                     const columnId = selectedColumn.id;
                     const filterType =
@@ -282,112 +279,4 @@ export function DataTableFilter<TData>({
       )}
     </div>
   );
-}
-
-interface FilterValueSelectorProps<TData> {
-  column: Column<TData>;
-  value: string;
-  onSelect: (value: string) => void;
-  // biome-ignore lint/suspicious/noExplicitAny: Necessário para tipagem dinâmica do nuqs
-  currentFilters: Record<string, any>;
-  onRemove: (value: string) => void;
-}
-
-function FilterValueSelector<TData>({
-  column,
-  value,
-  onSelect,
-  currentFilters,
-  onRemove,
-}: FilterValueSelectorProps<TData>) {
-  const variant = column.columnDef.meta?.variant ?? "text";
-  const columnId = column.id;
-  const currentValues = columnId
-    ? (currentFilters[columnId] as string[]) || []
-    : [];
-
-  switch (variant) {
-    case "boolean":
-      return (
-        <CommandGroup>
-          <CommandItem value="true" onSelect={() => onSelect("true")}>
-            Verdadeiro
-          </CommandItem>
-          <CommandItem value="false" onSelect={() => onSelect("false")}>
-            Falso
-          </CommandItem>
-        </CommandGroup>
-      );
-
-    case "select":
-    case "multiSelect":
-      return (
-        <CommandGroup>
-          {column.columnDef.meta?.options?.map((option) => {
-            const isSelected = currentValues.includes(option.value);
-            return (
-              <CommandItem
-                key={option.value}
-                value={option.value}
-                onSelect={() => {
-                  if (isSelected && variant === "multiSelect") {
-                    onRemove(option.value);
-                  } else {
-                    onSelect(option.value);
-                  }
-                }}
-              >
-                {option.icon && option.icon}
-                <span className="truncate">{option.label}</span>
-                {isSelected && (
-                  <Check className="ml-auto size-3" strokeWidth={3} />
-                )}
-              </CommandItem>
-            );
-          })}
-        </CommandGroup>
-      );
-
-    case "date":
-    case "dateRange":
-      return (
-        <Calendar
-          mode="single"
-          captionLayout="dropdown"
-          selected={
-            typeof value === "string" && value ? new Date(value) : undefined
-          }
-          onSelect={(date) => onSelect(date?.getTime().toString() ?? "")}
-        />
-      );
-
-    default: {
-      const stringValue = typeof value === "string" ? value : "";
-      const isEmpty = !stringValue.trim();
-
-      return (
-        <CommandGroup>
-          <CommandItem
-            value={stringValue}
-            onSelect={() => onSelect(stringValue)}
-            disabled={isEmpty}
-          >
-            {isEmpty ? (
-              <>
-                <Text />
-                <span>Digite para filtrar...</span>
-              </>
-            ) : (
-              <>
-                <BadgeCheck />
-                <span className="truncate">
-                  Filtrar por &quot;{stringValue}&quot;
-                </span>
-              </>
-            )}
-          </CommandItem>
-        </CommandGroup>
-      );
-    }
-  }
 }
