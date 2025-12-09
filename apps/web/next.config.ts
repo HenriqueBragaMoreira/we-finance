@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  typedRoutes: true,
   devIndicators: false,
 };
 
