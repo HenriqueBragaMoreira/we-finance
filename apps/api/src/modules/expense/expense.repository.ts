@@ -1,11 +1,11 @@
-import { Injectable } from "@nestjs/common";
-import type { ExpenseType, Prisma } from "@prisma/client";
 import {
   createEnumFilter,
   createRelationStringFilter,
 } from "@/utils/filter.util";
 import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
+import { Injectable } from "@nestjs/common";
+import type { ExpenseType, Prisma } from "@prisma/client";
 import { FilterExpenseDto } from "./dtos/filter-expense.dto";
 
 // Import ExpenseStatus from the DTO file
@@ -363,23 +363,56 @@ export class ExpenseRepository {
   }
 
   async delete(id: string): Promise<ExpenseResponse> {
-    return this.prisma.$transaction(async (prisma) => {
-      // Primeiro, buscar os dados da expense antes de excluir
-      const expenseToDelete = await this.findById(id);
-
-      // Excluir todos os installments associados à expense
-      await prisma.installment.deleteMany({
-        where: { expenseId: id },
-      });
-
-      // Excluir a expense
-      await prisma.expense.delete({
-        where: { id },
-      });
-
-      // Retornar os dados da expense que foi excluída
-      return expenseToDelete;
+    const expense = await this.prisma.expense.delete({
+      where: { id },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        paymentMethod: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+        installments: {
+          select: {
+            id: true,
+            amount: true,
+            dueDate: true,
+            number: true,
+            status: true,
+          },
+        },
+      },
     });
+
+    return {
+      ...expense,
+      amount: expense.amount.toNumber(),
+      user: {
+        id: expense.userId,
+        name: expense.user.name,
+      },
+      category: {
+        id: expense.categoryId,
+        name: expense.category.name,
+      },
+      paymentMethod: {
+        id: expense.paymentMethodId,
+        name: expense.paymentMethod.name,
+      },
+      installments: expense.installments.map((installment) => ({
+        ...installment,
+        amount: installment.amount.toNumber(),
+      })),
+    };
   }
 
   async getMonthlyStats(month: string) {

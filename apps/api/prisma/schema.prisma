@@ -110,7 +110,7 @@ model Expense {
 model Installment {
   id          String        @id @default(cuid())
   expenseId   String
-  expense     Expense       @relation(fields: [expenseId], references: [id])
+  expense     Expense       @relation(fields: [expenseId], references: [id], onDelete: Cascade)
   dueDate     DateTime
   amount      Decimal       @db.Decimal(10, 2)
   number      Int           
