@@ -1,11 +1,11 @@
+import { Injectable } from "@nestjs/common";
+import type { IncomeStatus, IncomeType, Prisma } from "@prisma/client";
 import {
   createEnumFilter,
   createRelationStringFilter,
 } from "@/utils/filter.util";
 import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
-import { Injectable } from "@nestjs/common";
-import type { IncomeStatus, IncomeType, Prisma } from "@prisma/client";
 import { FilterIncomeDto } from "./dtos/filter-income.dto";
 
 @Injectable()
@@ -118,11 +118,47 @@ export class IncomeRepository {
   }
 
   async create(data: Prisma.IncomeCreateInput) {
-    return this.prisma.income.create({ data });
+    const income = await this.prisma.income.create({
+      data,
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        paymentMethod: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    return {
+      ...income,
+      amount: income.amount.toNumber(),
+      user: {
+        id: income.userId,
+        name: income.user.name,
+      },
+      category: {
+        id: income.categoryId,
+        name: income.category.name,
+      },
+      paymentMethod: {
+        id: income.paymentMethodId,
+        name: income.paymentMethod.name,
+      },
+    };
   }
 
   async findById(id: string) {
-    return this.prisma.income.findUnique({
+    const income = await this.prisma.income.findUnique({
       where: { id },
       include: {
         category: {
@@ -142,10 +178,68 @@ export class IncomeRepository {
         },
       },
     });
+
+    if (!income) {
+      return null;
+    }
+
+    return {
+      ...income,
+      amount: income.amount.toNumber(),
+      user: {
+        id: income.userId,
+        name: income.user.name,
+      },
+      category: {
+        id: income.categoryId,
+        name: income.category.name,
+      },
+      paymentMethod: {
+        id: income.paymentMethodId,
+        name: income.paymentMethod.name,
+      },
+    };
   }
 
   async update(id: string, data: Prisma.IncomeUpdateInput) {
-    return this.prisma.income.update({ where: { id }, data });
+    const income = await this.prisma.income.update({
+      where: { id },
+      data,
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        paymentMethod: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    return {
+      ...income,
+      amount: income.amount.toNumber(),
+      user: {
+        id: income.userId,
+        name: income.user.name,
+      },
+      category: {
+        id: income.categoryId,
+        name: income.category.name,
+      },
+      paymentMethod: {
+        id: income.paymentMethodId,
+        name: income.paymentMethod.name,
+      },
+    };
   }
 
   async delete(id: string) {

@@ -1,3 +1,5 @@
+import { Injectable } from "@nestjs/common";
+import type { Prisma } from "@prisma/client";
 import {
   createBooleanFilter,
   createBooleanOrConditions,
@@ -8,8 +10,6 @@ import {
 } from "@/utils/filter.util";
 import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
-import { Injectable } from "@nestjs/common";
-import type { Prisma } from "@prisma/client";
 import { FilterCategoryDto } from "./dtos/filter-category.dto";
 
 @Injectable()

@@ -17,33 +17,11 @@ export class IncomeService {
   }
 
   async findById(id: string) {
-    const income = await this.repo.findById(id);
-
-    if (!income) {
-      return null;
-    }
-
-    const {
-      categoryId: _,
-      userId: __,
-      paymentMethodId: ___,
-      category,
-      user,
-      paymentMethod,
-      ...rest
-    } = income;
-
-    return {
-      ...rest,
-      amount: income.amount.toNumber(),
-      user: user?.name,
-      category: category?.name,
-      paymentMethod: paymentMethod?.name,
-    };
+    return this.repo.findById(id);
   }
 
   async create(data: CreateIncomeDto, userId: string) {
-    const createdIncome = await this.repo.create({
+    return this.repo.create({
       name: data.name,
       amount: data.amount,
       incomeType: data.incomeType,
@@ -53,22 +31,18 @@ export class IncomeService {
       category: { connect: { id: data.categoryId } },
       paymentMethod: { connect: { id: data.paymentMethodId } },
     });
-
-    return this.findById(createdIncome.id);
   }
 
   async update(id: string, data: UpdateIncomeDto) {
     const { categoryId, paymentMethodId, ...updateData } = data;
 
-    await this.repo.update(id, {
+    return this.repo.update(id, {
       ...updateData,
       ...(categoryId && { category: { connect: { id: categoryId } } }),
       ...(paymentMethodId && {
         paymentMethod: { connect: { id: paymentMethodId } },
       }),
     });
-
-    return this.findById(id);
   }
 
   delete(id: string) {
