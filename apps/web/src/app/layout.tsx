@@ -6,8 +6,18 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "We Finance",
+  title: {
+    default: "We Finance",
+    template: "%s | We Finance",
+  },
+  applicationName: "we-finance",
   description: "We Finance - Your Personal Finance App",
+  authors: [
+    {
+      name: "Henrique Braga",
+      url: "https://www.linkedin.com/in/h-braga/",
+    },
+  ],
 };
 
 export default function RootLayout({
