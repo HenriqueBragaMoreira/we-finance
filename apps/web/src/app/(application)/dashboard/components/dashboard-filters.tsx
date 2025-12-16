@@ -1,5 +1,9 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { CalendarDays, Funnel, History, UsersRound, X } from "lucide-react";
+import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
+import { useCallback, useState } from "react";
 import {
   FilterValueSelector,
   type FilterValueSelectorProps,
@@ -19,10 +23,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { usersServices } from "@/services/users";
-import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, Funnel, History, UsersRound, X } from "lucide-react";
-import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
-import { useCallback, useState } from "react";
 
 interface FilterOptionsType
   extends Omit<FilterValueSelectorProps, "value" | "onSelect"> {

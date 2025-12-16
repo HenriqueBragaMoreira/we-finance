@@ -1,8 +1,8 @@
 "use client";
 
-import { categoriesServices } from "@/services/categories";
 import { useQuery } from "@tanstack/react-query";
 import { parseAsString, useQueryStates } from "nuqs";
+import { categoriesServices } from "@/services/categories";
 import { CategoriesHeaderCards } from "./categories-header-cards";
 import { DataTableContainer } from "./data-table-container";
 

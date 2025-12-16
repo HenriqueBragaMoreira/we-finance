@@ -1,10 +1,10 @@
 "use client";
 
+import { Tag } from "lucide-react";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { Button } from "@/components/ui/button";
 import type { GetCategoriesResponse } from "@/services/categories/types";
-import { Tag } from "lucide-react";
 import { CategoriesActionDialog } from "./categories-action-dialog";
 import { useColumns } from "./columns";
 

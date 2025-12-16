@@ -1,11 +1,11 @@
 "use client";
 
-import { DataTable } from "@/components/data-table/data-table";
-import { Button } from "@/components/ui/button";
-import { incomesServices } from "@/services/incomes";
 import { useQuery } from "@tanstack/react-query";
 import { HandCoins } from "lucide-react";
 import { parseAsString, useQueryStates } from "nuqs";
+import { DataTable } from "@/components/data-table/data-table";
+import { Button } from "@/components/ui/button";
+import { incomesServices } from "@/services/incomes";
 import { useColumns } from "./columns";
 import { RevenueActionDialog } from "./revenue-action-dialog";
 

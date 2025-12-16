@@ -1,5 +1,9 @@
 "use client";
 
+import type { Column, Table } from "@tanstack/react-table";
+import { Funnel, X } from "lucide-react";
+import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
+import { useCallback, useMemo, useState } from "react";
 import { FilterValueSelector } from "@/components/filter-value-selector";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,10 +20,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { Column, Table } from "@tanstack/react-table";
-import { Funnel, X } from "lucide-react";
-import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
-import { useCallback, useMemo, useState } from "react";
 
 declare module "@tanstack/react-table" {
   // biome-ignore lint: Generic types needed for module augmentation

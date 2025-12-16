@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { DashboardFilters } from "@/app/(application)/dashboard/components/dashboard-filters";
 import {
   Breadcrumb,
@@ -12,7 +13,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { routes } from "@/routes/routes";
-import { usePathname } from "next/navigation";
 import { ModeToggle } from "./mode-toggle";
 
 export function AppHeader() {

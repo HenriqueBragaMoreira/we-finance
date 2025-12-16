@@ -1,8 +1,8 @@
 "use client";
 
+import { Tag } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { GetCategoriesResponse } from "@/services/categories/types";
-import { Tag } from "lucide-react";
 import { CategoriesHeaderCardsSkeleton } from "./categories-header-cards-skeleton";
 
 type CategoriesHeaderCardsProps = {

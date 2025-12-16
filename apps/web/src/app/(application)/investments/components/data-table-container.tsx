@@ -1,11 +1,11 @@
 "use client";
 
-import { DataTable } from "@/components/data-table/data-table";
-import { Button } from "@/components/ui/button";
-import { investmentServices } from "@/services/investment";
 import { useQuery } from "@tanstack/react-query";
 import { PiggyBank } from "lucide-react";
 import { parseAsString, useQueryStates } from "nuqs";
+import { DataTable } from "@/components/data-table/data-table";
+import { Button } from "@/components/ui/button";
+import { investmentServices } from "@/services/investment";
 import { useColumns } from "./columns";
 import { InvestmentActionDialog } from "./investment-action-dialog";
 

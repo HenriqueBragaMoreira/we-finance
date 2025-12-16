@@ -1,4 +1,10 @@
 "use client";
+import {
+  type ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { DataTableFilter } from "@/components/data-table/data-table-filter";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 import { Pagination } from "@/components/pagination";
@@ -11,12 +17,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePagination } from "@/hooks/use-pagination";
-import {
-  type ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import { DataTableSkeleton } from "./data-table-skeleton";
 
 type DataTableProps<TData, TValue> = {

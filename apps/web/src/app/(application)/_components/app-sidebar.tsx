@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 import logo from "@/app/favicon.ico";
 import {
   Sidebar,
@@ -15,8 +17,6 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { type RoutesType, routes } from "@/routes/routes";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { NavUser } from "./nav-user";
 
 const generalRoutesSidebar = [
@@ -66,7 +66,7 @@ export function AppSidebar() {
                       className="group/menu-button group-data-[collapsible=icon]:px-[5px]! gap-3 h-9 [&>svg]:size-auto"
                       tooltip={item.title}
                       isActive={pathname === item.path}
-                      href={item.path}
+                      href={{ pathname: item.path }}
                     >
                       {item.icon && (
                         <item.icon
@@ -98,7 +98,7 @@ export function AppSidebar() {
                       className="group/menu-button group-data-[collapsible=icon]:px-[5px]! gap-3 h-9 [&>svg]:size-auto"
                       tooltip={item.title}
                       isActive={pathname === item.path}
-                      href={item.path}
+                      href={{ pathname: item.path }}
                     >
                       {item.icon && (
                         <item.icon
