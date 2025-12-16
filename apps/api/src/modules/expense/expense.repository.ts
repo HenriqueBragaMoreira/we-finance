@@ -1,7 +1,11 @@
-import { Injectable } from "@nestjs/common";
-import type { ExpenseType, Prisma } from "@prisma/client";
+import {
+  createEnumFilter,
+  createRelationStringFilter,
+} from "@/utils/filter.util";
 import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
+import { Injectable } from "@nestjs/common";
+import type { ExpenseType, Prisma } from "@prisma/client";
 import { FilterExpenseDto } from "./dtos/filter-expense.dto";
 
 // Import ExpenseStatus from the DTO file
@@ -66,41 +70,24 @@ export class ExpenseRepository {
       limit: filter.limit,
     });
 
-    let expenseTypeCondition: ExpenseType | { in: ExpenseType[] } | undefined;
-    if (filter.expenseType) {
-      const expenseTypes = filter.expenseType
-        .split(",")
-        .map((type) => type.trim()) as ExpenseType[];
-      if (expenseTypes.length === 1) {
-        expenseTypeCondition = expenseTypes[0];
-      } else {
-        expenseTypeCondition = { in: expenseTypes };
-      }
-    }
+    // Processar filtros de enum
+    const expenseTypeCondition = createEnumFilter<ExpenseType>(
+      filter.expenseType
+    );
+    const statusCondition = createEnumFilter<ExpenseStatus>(filter.status);
 
-    let statusCondition: ExpenseStatus | { in: ExpenseStatus[] } | undefined;
-    if (filter.status) {
-      const statuses = filter.status.split(",").map((status) => status.trim());
-      if (statuses.length === 1) {
-        statusCondition = statuses[0] as ExpenseStatus;
-      } else {
-        statusCondition = { in: statuses as ExpenseStatus[] };
-      }
-    }
+    // Processar filtros de relação
+    const categoryFilter = createRelationStringFilter(filter.category);
+    const paymentMethodFilter = createRelationStringFilter(
+      filter.paymentMethod
+    );
 
     const whereClause = {
       name: filter.description
         ? { contains: filter.description, mode: "insensitive" as const }
         : undefined,
       amount: filter.amount,
-      paymentMethod: filter.paymentMethod
-        ? {
-            name: {
-              contains: filter.paymentMethod,
-              mode: "insensitive" as const,
-            },
-          }
-        : undefined,
+      paymentMethod: paymentMethodFilter,
       status: statusCondition,
       expenseType: expenseTypeCondition,
       spentAt: filter.date
@@ -110,16 +97,7 @@ export class ExpenseRepository {
           }
         : undefined,
       userId: filter.userId,
-      category: filter.category
-        ? {
-            OR: filter.category.split(",").map((categoryName) => ({
-              name: {
-                contains: categoryName.trim(),
-                mode: "insensitive" as const,
-              },
-            })),
-          }
-        : undefined,
+      category: categoryFilter,
     };
 
     const findManyOptions = {

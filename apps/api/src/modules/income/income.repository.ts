@@ -1,7 +1,11 @@
-import { Injectable } from "@nestjs/common";
-import type { IncomeStatus, IncomeType, Prisma } from "@prisma/client";
+import {
+  createEnumFilter,
+  createRelationStringFilter,
+} from "@/utils/filter.util";
 import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
+import { Injectable } from "@nestjs/common";
+import type { IncomeStatus, IncomeType, Prisma } from "@prisma/client";
 import { FilterIncomeDto } from "./dtos/filter-income.dto";
 
 @Injectable()
@@ -13,62 +17,17 @@ export class IncomeRepository {
 
     const { pageSize, skip } = calculatePagination({ init, limit });
 
-    let categoryFilter: Prisma.CategoryWhereInput | undefined;
+    // Processar filtros de relação
+    const categoryFilter = createRelationStringFilter(filters.category);
+    const paymentMethodCondition = createRelationStringFilter(
+      filters.paymentMethod
+    );
 
-    if (filters.category) {
-      const categories = filters.category.split(",").map((cat) => cat.trim());
-      if (categories.length === 1) {
-        categoryFilter = {
-          name: { contains: categories[0], mode: "insensitive" },
-        };
-      } else {
-        categoryFilter = {
-          OR: categories.map((cat) => ({
-            name: { contains: cat, mode: "insensitive" as const },
-          })),
-        };
-      }
-    }
-
-    let statusCondition: IncomeStatus | { in: IncomeStatus[] } | undefined;
-    if (filters.status) {
-      const statuses = filters.status.split(",").map((status) => status.trim());
-      if (statuses.length === 1) {
-        statusCondition = statuses[0] as IncomeStatus;
-      } else {
-        statusCondition = { in: statuses as IncomeStatus[] };
-      }
-    }
-
-    let paymentMethodCondition: Prisma.PaymentMethodWhereInput | undefined;
-    if (filters.paymentMethod) {
-      const paymentMethods = filters.paymentMethod
-        .split(",")
-        .map((method) => method.trim());
-      if (paymentMethods.length === 1) {
-        paymentMethodCondition = {
-          name: { contains: paymentMethods[0], mode: "insensitive" },
-        };
-      } else {
-        paymentMethodCondition = {
-          OR: paymentMethods.map((method) => ({
-            name: { contains: method, mode: "insensitive" as const },
-          })),
-        };
-      }
-    }
-
-    let incomeTypeCondition: IncomeType | { in: IncomeType[] } | undefined;
-    if (filters.incomeType) {
-      const incomeTypes = filters.incomeType
-        .split(",")
-        .map((type) => type.trim()) as IncomeType[];
-      if (incomeTypes.length === 1) {
-        incomeTypeCondition = incomeTypes[0];
-      } else {
-        incomeTypeCondition = { in: incomeTypes };
-      }
-    }
+    // Processar filtros de enum
+    const statusCondition = createEnumFilter<IncomeStatus>(filters.status);
+    const incomeTypeCondition = createEnumFilter<IncomeType>(
+      filters.incomeType
+    );
 
     const whereClause = {
       name: filters.description

@@ -1,7 +1,15 @@
-import { Injectable } from "@nestjs/common";
-import type { Prisma } from "@prisma/client";
+import {
+  createBooleanFilter,
+  createBooleanOrConditions,
+  createDateRangeFilter,
+  createEnumFilter,
+  createStringFilter,
+  createStringOrConditions,
+} from "@/utils/filter.util";
 import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
+import { Injectable } from "@nestjs/common";
+import type { Prisma } from "@prisma/client";
 import { FilterCategoryDto } from "./dtos/filter-category.dto";
 
 @Injectable()
@@ -13,98 +21,17 @@ export class CategoryRepository {
 
     const { pageSize, skip } = calculatePagination({ init, limit });
 
-    let nameCondition: Prisma.StringFilter<"Category"> | undefined;
-    if (filters.name) {
-      const names = filters.name.split(",").map((name) => name.trim());
-      if (names.length === 1) {
-        nameCondition = { contains: names[0], mode: "insensitive" as const };
-      } else {
-        nameCondition = undefined;
-      }
-    }
+    // Processar filtros simples
+    const nameCondition = createStringFilter(filters.name);
+    const typeCondition = createEnumFilter<"INCOME" | "EXPENSE" | "INVESTMENT">(
+      filters.type
+    );
+    const statusCondition = createBooleanFilter(filters.status);
+    const colorCondition = createStringFilter(filters.color);
+    const createdAtCondition = createDateRangeFilter(filters.createdAt);
+    const updatedAtCondition = createDateRangeFilter(filters.updatedAt);
 
-    let typeCondition:
-      | "INCOME"
-      | "EXPENSE"
-      | "INVESTMENT"
-      | { in: ("INCOME" | "EXPENSE" | "INVESTMENT")[] }
-      | undefined;
-    if (filters.type) {
-      const types = filters.type.split(",").map((type) => type.trim());
-      if (types.length === 1) {
-        typeCondition = types[0] as "INCOME" | "EXPENSE" | "INVESTMENT";
-      } else {
-        typeCondition = {
-          in: types as ("INCOME" | "EXPENSE" | "INVESTMENT")[],
-        };
-      }
-    }
-
-    let statusCondition: boolean | undefined;
-    let statusORCondition: Prisma.CategoryWhereInput[] | undefined;
-    if (filters.status) {
-      const statuses = filters.status.split(",").map((status) => status.trim());
-      if (statuses.length === 1) {
-        statusCondition = statuses[0] === "true";
-      } else {
-        statusORCondition = statuses.map((status) => ({
-          isActive: status === "true",
-        }));
-        statusCondition = undefined;
-      }
-    }
-
-    let colorCondition: Prisma.StringFilter<"Category"> | undefined;
-    if (filters.color) {
-      const colors = filters.color.split(",").map((color) => color.trim());
-      if (colors.length === 1) {
-        colorCondition = { contains: colors[0], mode: "insensitive" as const };
-      } else {
-        colorCondition = undefined;
-      }
-    }
-
-    // Processar filtros de data
-    let createdAtCondition: Prisma.DateTimeFilter<"Category"> | undefined;
-    if (filters.createdAt) {
-      // Verificar se é um timestamp em milissegundos ou uma data ISO
-      const dateValue = Number.isNaN(Number(filters.createdAt))
-        ? filters.createdAt
-        : new Date(Number(filters.createdAt)).toISOString();
-
-      // Garantir que estamos filtrando apenas pelo dia específico
-      const startOfDay = new Date(dateValue);
-      startOfDay.setUTCHours(0, 0, 0, 0);
-
-      const endOfDay = new Date(dateValue);
-      endOfDay.setUTCHours(23, 59, 59, 999);
-
-      createdAtCondition = {
-        gte: startOfDay,
-        lte: endOfDay,
-      };
-    }
-
-    let updatedAtCondition: Prisma.DateTimeFilter<"Category"> | undefined;
-    if (filters.updatedAt) {
-      // Verificar se é um timestamp em milissegundos ou uma data ISO
-      const dateValue = Number.isNaN(Number(filters.updatedAt))
-        ? filters.updatedAt
-        : new Date(Number(filters.updatedAt)).toISOString();
-
-      // Garantir que estamos filtrando apenas pelo dia específico
-      const startOfDay = new Date(dateValue);
-      startOfDay.setUTCHours(0, 0, 0, 0);
-
-      const endOfDay = new Date(dateValue);
-      endOfDay.setUTCHours(23, 59, 59, 999);
-
-      updatedAtCondition = {
-        gte: startOfDay,
-        lte: endOfDay,
-      };
-    }
-
+    // Criar whereClause base
     const whereClause: Prisma.CategoryWhereInput = {
       name: nameCondition,
       type: typeCondition,
@@ -114,34 +41,27 @@ export class CategoryRepository {
       updatedAt: updatedAtCondition,
     };
 
-    if (filters.name) {
-      const names = filters.name.split(",").map((name) => name.trim());
-      if (names.length > 1) {
-        whereClause.OR = [
-          ...(whereClause.OR || []),
-          ...names.map((name) => ({
-            name: { contains: name, mode: "insensitive" as const },
-          })),
-        ];
-        delete whereClause.name;
-      }
+    // Processar condições OR para múltiplos valores
+    const nameOrConditions = createStringOrConditions(filters.name, "name");
+    const colorOrConditions = createStringOrConditions(filters.color, "color");
+    const statusOrConditions = createBooleanOrConditions(
+      filters.status,
+      "isActive"
+    );
+
+    // Adicionar condições OR ao whereClause
+    if (nameOrConditions.length > 0) {
+      whereClause.OR = [...(whereClause.OR || []), ...nameOrConditions];
+      delete whereClause.name;
     }
 
-    if (filters.color) {
-      const colors = filters.color.split(",").map((color) => color.trim());
-      if (colors.length > 1) {
-        whereClause.OR = [
-          ...(whereClause.OR || []),
-          ...colors.map((color) => ({
-            color: { contains: color, mode: "insensitive" as const },
-          })),
-        ];
-        delete whereClause.color;
-      }
+    if (colorOrConditions.length > 0) {
+      whereClause.OR = [...(whereClause.OR || []), ...colorOrConditions];
+      delete whereClause.color;
     }
 
-    if (statusORCondition) {
-      whereClause.OR = [...(whereClause.OR || []), ...statusORCondition];
+    if (statusOrConditions.length > 0) {
+      whereClause.OR = [...(whereClause.OR || []), ...statusOrConditions];
       delete whereClause.isActive;
     }
 
