@@ -85,9 +85,9 @@ export class IncomeRepository {
 
     const data = rawData.map((income) => {
       const {
-        categoryId: _,
-        userId: __,
-        paymentMethodId: ___,
+        categoryId,
+        userId,
+        paymentMethodId,
         category,
         user,
         paymentMethod,
@@ -96,9 +96,18 @@ export class IncomeRepository {
       return {
         ...rest,
         amount: income.amount.toNumber(),
-        user: user.name,
-        category: category.name,
-        paymentMethod: paymentMethod.name,
+        user: {
+          id: userId,
+          name: user.name,
+        },
+        category: {
+          id: categoryId,
+          name: category.name,
+        },
+        paymentMethod: {
+          id: paymentMethodId,
+          name: paymentMethod.name,
+        },
       };
     });
 
@@ -141,55 +150,6 @@ export class IncomeRepository {
 
   async delete(id: string) {
     return this.prisma.income.delete({ where: { id } });
-  }
-
-  async findOrCreateCategory(
-    name: string,
-    type: "INCOME" | "EXPENSE" | "INVESTMENT",
-    color?: string
-  ) {
-    const existingCategory = await this.prisma.category.findFirst({
-      where: {
-        name: {
-          equals: name,
-          mode: "insensitive",
-        },
-        type,
-      },
-    });
-
-    if (existingCategory) {
-      return existingCategory;
-    }
-
-    return this.prisma.category.create({
-      data: {
-        name,
-        type,
-        color: color || "",
-      },
-    });
-  }
-
-  async findOrCreatePaymentMethod(name: string) {
-    const existingPaymentMethod = await this.prisma.paymentMethod.findFirst({
-      where: {
-        name: {
-          equals: name,
-          mode: "insensitive",
-        },
-      },
-    });
-
-    if (existingPaymentMethod) {
-      return existingPaymentMethod;
-    }
-
-    return this.prisma.paymentMethod.create({
-      data: {
-        name,
-      },
-    });
   }
 
   async getMonthlyStats(month: string) {

@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import type { Prisma } from "@prisma/client";
 import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
+import { Injectable } from "@nestjs/common";
+import type { Prisma } from "@prisma/client";
 import { FilterInvestmentDto } from "./dtos/filter-investment.dto";
 
 @Injectable()
@@ -194,33 +194,5 @@ export class InvestmentRepository {
       month,
       userStats,
     };
-  }
-
-  async findOrCreateCategory(
-    name: string,
-    type: "INCOME" | "EXPENSE" | "INVESTMENT",
-    color?: string
-  ) {
-    const existingCategory = await this.prisma.category.findFirst({
-      where: {
-        name: {
-          equals: name,
-          mode: "insensitive",
-        },
-        type,
-      },
-    });
-
-    if (existingCategory) {
-      return existingCategory;
-    }
-
-    return this.prisma.category.create({
-      data: {
-        name,
-        type,
-        color: color || "",
-      },
-    });
   }
 }

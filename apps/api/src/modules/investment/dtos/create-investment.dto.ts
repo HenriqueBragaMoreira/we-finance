@@ -20,6 +20,6 @@ export class CreateInvestmentDto {
   })
   notes?: string;
 
-  @ApiProperty({ example: "Ações" })
-  category!: string;
+  @ApiProperty({ example: "uuid-da-categoria", description: "ID da categoria" })
+  categoryId!: string;
 }

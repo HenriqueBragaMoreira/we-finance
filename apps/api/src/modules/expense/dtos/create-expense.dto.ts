@@ -25,10 +25,10 @@ export class CreateExpenseDto {
   amount!: number;
 
   @ApiProperty({
-    example: "PIX",
-    description: "Nome do método de pagamento",
+    example: "uuid-do-metodo-pagamento",
+    description: "ID do método de pagamento",
   })
-  paymentMethod!: string;
+  paymentMethodId!: string;
 
   @ApiProperty({ example: "PENDING", enum: ExpenseStatus })
   status!: ExpenseStatus;
@@ -39,8 +39,8 @@ export class CreateExpenseDto {
   })
   spentAt!: Date;
 
-  @ApiProperty({ example: "Utilidades" })
-  category!: string;
+  @ApiProperty({ example: "uuid-da-categoria", description: "ID da categoria" })
+  categoryId!: string;
 
   @ApiProperty({
     example: 12,

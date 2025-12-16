@@ -24,18 +24,8 @@ export class ExpenseService {
     data: CreateExpenseDto,
     userId: string
   ): Promise<ExpenseResponse> {
-    const category = await this.repo.findOrCreateCategory(
-      data.category,
-      "EXPENSE"
-    );
-
-    const paymentMethod = await this.repo.findOrCreatePaymentMethod(
-      data.paymentMethod
-    );
-
     const { installmentsCount } = data;
 
-    // Certificar que o expenseType está incluído
     const expenseCreateData = {
       name: data.name,
       amount: data.amount,
@@ -79,8 +69,8 @@ export class ExpenseService {
       return this.repo.create({
         ...expenseCreateData,
         user: { connect: { id: userId } },
-        category: { connect: { id: category.id } },
-        paymentMethod: { connect: { id: paymentMethod.id } },
+        category: { connect: { id: data.categoryId } },
+        paymentMethod: { connect: { id: data.paymentMethodId } },
         installments: {
           create: installments,
         },
@@ -90,28 +80,23 @@ export class ExpenseService {
     return this.repo.create({
       ...expenseCreateData,
       user: { connect: { id: userId } },
-      category: { connect: { id: category.id } },
-      paymentMethod: { connect: { id: paymentMethod.id } },
+      category: { connect: { id: data.categoryId } },
+      paymentMethod: { connect: { id: data.paymentMethodId } },
     });
   }
 
   async update(id: string, data: UpdateExpenseDto): Promise<ExpenseResponse> {
-    const { category, paymentMethod, installmentsCount, ...updateData } = data;
+    const { categoryId, paymentMethodId, installmentsCount, ...updateData } =
+      data;
 
     const updatePayload: Record<string, unknown> = { ...updateData };
 
-    if (category) {
-      const categoryRecord = await this.repo.findOrCreateCategory(
-        category,
-        "EXPENSE"
-      );
-      updatePayload.category = { connect: { id: categoryRecord.id } };
+    if (categoryId) {
+      updatePayload.category = { connect: { id: categoryId } };
     }
 
-    if (paymentMethod) {
-      const paymentMethodRecord =
-        await this.repo.findOrCreatePaymentMethod(paymentMethod);
-      updatePayload.paymentMethod = { connect: { id: paymentMethodRecord.id } };
+    if (paymentMethodId) {
+      updatePayload.paymentMethod = { connect: { id: paymentMethodId } };
     }
 
     // Se installmentsCount foi fornecido, precisamos recriar os installments
