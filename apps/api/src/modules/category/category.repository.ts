@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
+import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
 import { FilterCategoryDto } from "./dtos/filter-category.dto";
 
@@ -10,9 +11,7 @@ export class CategoryRepository {
   async findAll(filter: FilterCategoryDto) {
     const { init, limit, ...filters } = filter;
 
-    const page = Number(init) || 0;
-    const pageSize = limit ? Number(limit) : undefined;
-    const skip = pageSize ? page * pageSize : undefined;
+    const { pageSize, skip } = calculatePagination({ init, limit });
 
     let nameCondition: Prisma.StringFilter<"Category"> | undefined;
     if (filters.name) {

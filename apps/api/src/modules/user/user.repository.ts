@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
 import { FilterUserDto } from "./dtos/filter-user.dto";
 
@@ -9,9 +10,7 @@ export class UserRepository {
   async findAll(filter: FilterUserDto) {
     const { init, limit, ...filters } = filter;
 
-    const page = Number(init) || 0;
-    const pageSize = limit ? Number(limit) : undefined;
-    const skip = pageSize ? page * pageSize : undefined;
+    const { pageSize, skip } = calculatePagination({ init, limit });
 
     // Tratamento do filtro emailVerified (string -> boolean)
     let emailVerifiedFilter: boolean | undefined;

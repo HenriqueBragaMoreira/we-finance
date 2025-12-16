@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import type { ExpenseType, Prisma } from "@prisma/client";
+import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
 import { FilterExpenseDto } from "./dtos/filter-expense.dto";
 
@@ -60,9 +61,10 @@ export class ExpenseRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(filter: FilterExpenseDto): Promise<ExpenseListResponse> {
-    const page = Number(filter.init) || 0;
-    const pageSize = filter.limit ? Number(filter.limit) : undefined;
-    const skip = pageSize ? page * pageSize : undefined;
+    const { pageSize, skip } = calculatePagination({
+      init: filter.init,
+      limit: filter.limit,
+    });
 
     let expenseTypeCondition: ExpenseType | { in: ExpenseType[] } | undefined;
     if (filter.expenseType) {

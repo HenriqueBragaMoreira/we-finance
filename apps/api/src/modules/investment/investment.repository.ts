@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
+import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
 import { FilterInvestmentDto } from "./dtos/filter-investment.dto";
 
@@ -10,9 +11,7 @@ export class InvestmentRepository {
   async findAll(filter: FilterInvestmentDto) {
     const { init, limit, ...filters } = filter;
 
-    const page = Number(init) || 0;
-    const pageSize = limit ? Number(limit) : undefined;
-    const skip = pageSize ? page * pageSize : undefined;
+    const { pageSize, skip } = calculatePagination({ init, limit });
 
     const whereClause = {
       amount: filters.amount,

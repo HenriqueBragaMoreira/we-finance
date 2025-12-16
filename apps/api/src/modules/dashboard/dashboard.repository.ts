@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
 import type { DashboardFilterDto } from "./dtos/dashboard-filter.dto";
 import type { TransactionsFilterDto } from "./dtos/transactions-filter.dto";
@@ -299,9 +300,13 @@ export class DashboardRepository {
   async getLastTransactions(filter: TransactionsFilterDto) {
     const { init, limit, ...filters } = filter;
 
-    const page = Number(init) || 0;
-    const pageSize = limit ? Number(limit) : 10;
-    const skip = page * pageSize;
+    const pagination = calculatePagination({
+      init,
+      limit: limit || "10",
+    });
+
+    const pageSize = pagination.pageSize ?? 10;
+    const skip = pagination.skip ?? 0;
 
     const dateCondition = this.buildDateConditions(filters);
     const userCondition = filters.userId ? { userId: filters.userId } : {};
