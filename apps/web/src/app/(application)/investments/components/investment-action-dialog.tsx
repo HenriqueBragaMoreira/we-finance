@@ -38,7 +38,7 @@ export function InvestmentActionDialog({
             investment
               ? {
                   ...investment,
-                  amount: Number(investment.amount).toFixed(2),
+                  amount: investment.amount,
                   investedAt: investment.investedAt ?? "",
                 }
               : undefined

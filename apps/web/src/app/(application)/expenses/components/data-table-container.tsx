@@ -36,7 +36,7 @@ export function DataTableContainer() {
     <DataTable
       data={data?.data}
       columns={columns}
-      totalLength={data?.total || 0}
+      totalLength={data?.totalLength || 0}
       action={
         <ExpensesActionDialog>
           <Button variant="destructive" size="sm">
