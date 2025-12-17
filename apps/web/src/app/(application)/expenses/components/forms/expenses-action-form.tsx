@@ -214,11 +214,13 @@ export function ExpensesActionForm({ data }: ExpensesActionFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {categories?.data?.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
+                  {categories?.data
+                    ?.filter((category) => category.isActive === true)
+                    .map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
 

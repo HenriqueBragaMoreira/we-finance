@@ -18,6 +18,7 @@ export const categoriesServices = {
       { param: "name", value: data?.name },
       { param: "type", value: data?.type },
       { param: "status", value: data?.status },
+      { param: "isActive", value: data?.isActive },
       { param: "color", value: data?.color },
       { param: "createdAt", value: data?.createdAt },
       { param: "updatedAt", value: data?.updatedAt },

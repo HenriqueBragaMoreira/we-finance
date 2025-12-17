@@ -6,6 +6,7 @@ export type GetCategoriesProps = {
   name?: string;
   type?: string;
   status?: string;
+  isActive?: string;
   color?: string;
   createdAt?: string;
   updatedAt?: string;

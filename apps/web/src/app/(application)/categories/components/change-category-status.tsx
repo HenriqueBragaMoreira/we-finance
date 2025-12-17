@@ -42,7 +42,23 @@ export function ChangeCategoryStatus({
             item.id === data.id ? { ...item, isActive: data.isActive } : item
           );
 
-          return { ...oldData, data: updatedData };
+          let activeCount = oldData.activeCount;
+          let inactiveCount = oldData.inactiveCount;
+
+          if (data.isActive === true) {
+            activeCount++;
+            inactiveCount--;
+          } else {
+            activeCount--;
+            inactiveCount++;
+          }
+
+          return {
+            ...oldData,
+            data: updatedData,
+            activeCount,
+            inactiveCount,
+          };
         }
       );
     },
