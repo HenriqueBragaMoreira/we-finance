@@ -27,6 +27,7 @@ export class CategoryRepository {
       filters.type
     );
     const statusCondition = createBooleanFilter(filters.status);
+    const isActiveCondition = createBooleanFilter(filters.isActive);
     const colorCondition = createStringFilter(filters.color);
     const createdAtCondition = createDateRangeFilter(filters.createdAt);
     const updatedAtCondition = createDateRangeFilter(filters.updatedAt);
@@ -35,7 +36,7 @@ export class CategoryRepository {
     const whereClause: Prisma.CategoryWhereInput = {
       name: nameCondition,
       type: typeCondition,
-      isActive: statusCondition,
+      isActive: isActiveCondition || statusCondition,
       color: colorCondition,
       createdAt: createdAtCondition,
       updatedAt: updatedAtCondition,
@@ -46,6 +47,10 @@ export class CategoryRepository {
     const colorOrConditions = createStringOrConditions(filters.color, "color");
     const statusOrConditions = createBooleanOrConditions(
       filters.status,
+      "isActive"
+    );
+    const isActiveOrConditions = createBooleanOrConditions(
+      filters.isActive,
       "isActive"
     );
 
@@ -62,6 +67,11 @@ export class CategoryRepository {
 
     if (statusOrConditions.length > 0) {
       whereClause.OR = [...(whereClause.OR || []), ...statusOrConditions];
+      delete whereClause.isActive;
+    }
+
+    if (isActiveOrConditions.length > 0) {
+      whereClause.OR = [...(whereClause.OR || []), ...isActiveOrConditions];
       delete whereClause.isActive;
     }
 

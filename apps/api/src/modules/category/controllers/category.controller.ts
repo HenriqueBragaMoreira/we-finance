@@ -34,6 +34,14 @@ export class CategoryController {
     description: "Número da página",
   })
   @ApiQuery({ name: "limit", required: false, type: String, example: "10" })
+  @ApiQuery({
+    name: "isActive",
+    required: false,
+    type: String,
+    example: "true",
+    description:
+      "Filtrar por categorias ativas ou inativas. Aceita 'true' ou 'false'. Se não informado, retorna todas as categorias",
+  })
   @ApiResponse({
     status: 200,
     description:

@@ -42,6 +42,13 @@ export class FilterCategoryDto {
   status?: string;
 
   @ApiPropertyOptional({
+    example: "true",
+    description:
+      "Filtrar por categorias ativas ou inativas. Aceita 'true' ou 'false'. Se não informado, retorna todas as categorias",
+  })
+  isActive?: string;
+
+  @ApiPropertyOptional({
     example: "red,blue",
     description:
       "Filtrar por cor da categoria. Use vírgula para múltiplas cores",
