@@ -36,7 +36,9 @@ export type CreateCategoryProps = {
 
 export type CreateCategoryResponse = GetCategoriesResponseDataField;
 
-export type UpdateCategoryProps = Partial<CreateCategoryProps>;
+export type UpdateCategoryProps = Partial<CreateCategoryProps> & {
+  isActive?: boolean;
+};
 
 export type UpdateCategoryResponse = GetCategoriesResponseDataField;
 

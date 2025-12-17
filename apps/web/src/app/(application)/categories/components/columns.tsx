@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { GetCategoriesResponseDataField } from "@/services/categories/types";
 import { CategoriesActionDialog } from "./categories-action-dialog";
+import { ChangeCategoryStatus } from "./change-category-status";
 import { DeleteCategoryDialog } from "./delete-category-dialog";
 
 export function useColumns() {
@@ -220,6 +221,11 @@ export function useColumns() {
                   Editar
                 </DropdownMenuItem>
               </CategoriesActionDialog>
+
+              <ChangeCategoryStatus
+                categoryId={row.original.id}
+                isActive={row.original.isActive}
+              />
 
               <DeleteCategoryDialog categoryId={row.original.id} />
             </DropdownMenuContent>
