@@ -8,7 +8,7 @@ export type GetUsersProps = {
 
 export type GetUsersResponse = {
   data: GetUsersResponseDataField[];
-  total: number;
+  totalLength: number;
 };
 
 export type GetUsersResponseDataField = {

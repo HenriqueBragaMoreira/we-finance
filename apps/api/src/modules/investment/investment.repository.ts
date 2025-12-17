@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
 import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
+import type { CreateInvestmentDto } from "./dtos/create-investment.dto";
 import { FilterInvestmentDto } from "./dtos/filter-investment.dto";
 
 @Injectable()
@@ -72,9 +73,12 @@ export class InvestmentRepository {
     };
   }
 
-  async create(data: Prisma.InvestmentCreateInput) {
+  async create(data: CreateInvestmentDto & { userId: string }) {
     const investment = await this.prisma.investment.create({
-      data,
+      data: {
+        ...data,
+        userId: data.userId,
+      },
       include: {
         category: {
           select: {

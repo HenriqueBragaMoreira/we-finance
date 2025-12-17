@@ -114,6 +114,7 @@ export function useColumns() {
         id: "category",
         accessorKey: "category",
         header: "Categoria",
+        cell: ({ row }) => <>{row.original.category.name}</>,
         meta: {
           label: "Categoria",
           variant: "multiSelect",
@@ -145,6 +146,7 @@ export function useColumns() {
       {
         accessorKey: "paymentMethod",
         header: "Método de Pagamento",
+        cell: ({ row }) => <>{row.original.paymentMethod.name}</>,
         meta: {
           label: "Método de Pagamento",
           variant: "multiSelect",
@@ -181,6 +183,7 @@ export function useColumns() {
         id: "person",
         accessorFn: (row) => row.user,
         header: "Pessoa",
+        cell: ({ row }) => <>{row.original.user.name}</>,
         meta: {
           label: "Pessoa",
           variant: "select",

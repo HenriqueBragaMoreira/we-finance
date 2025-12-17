@@ -56,6 +56,7 @@ export function useColumns() {
         id: "categoryId",
         accessorKey: "category",
         header: "Categoria",
+        cell: ({ row }) => <>{row.original.category.name}</>,
         meta: {
           label: "Categoria",
           variant: "multiSelect",
@@ -75,7 +76,7 @@ export function useColumns() {
         cell: ({ row }) => {
           return (
             <span className="text-purple-600 font-semibold">
-              {masks.listedMoney(row.original.amount)}
+              {masks.listedMoney(String(row.original.amount))}
             </span>
           );
         },
@@ -112,6 +113,7 @@ export function useColumns() {
         accessorFn: (row) => row.user,
         accessorKey: "user",
         header: "Pessoa",
+        cell: ({ row }) => <>{row.original.user.name}</>,
         meta: {
           label: "Pessoa",
           variant: "select",

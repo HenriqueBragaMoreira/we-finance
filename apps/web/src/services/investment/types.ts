@@ -15,13 +15,19 @@ export type GetInvestmentResponse = {
 
 export type GetInvestmentResponseDataField = {
   id: string;
-  amount: string;
+  amount: number;
   investedAt: string;
   notes: string;
   createdAt: string;
   updatedAt: string;
-  user: string;
-  category: string;
+  user: {
+    id: string;
+    name: string;
+  };
+  category: {
+    id: string;
+    name: string;
+  };
 };
 
 export type GetInvestmentMonthlyStatsResponse = {
@@ -39,16 +45,22 @@ export type CreateInvestmentProps = {
   notes: string;
   amount: string;
   investedAt: string;
-  category: string;
+  categoryId: string;
 };
 
 export type CreateInvestmentResponse = {
   id: string;
-  amount: string;
+  amount: number;
   investedAt: string;
   notes: string;
-  user: string;
-  category: string;
+  user: {
+    id: string;
+    name: string;
+  };
+  category: {
+    id: string;
+    name: string;
+  };
   createdAt: string;
   updatedAt: string;
 };

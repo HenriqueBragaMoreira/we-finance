@@ -24,12 +24,21 @@ export type GetIncomesResponseDataField = {
   incomeType: "FIXED" | "VARIABLE";
   amount: string;
   receivedAt: string;
-  paymentMethod: string;
+  paymentMethod: {
+    id: string;
+    name: string;
+  };
   status: "RECEIVED" | "PENDING";
   createdAt: string;
   updatedAt: string;
-  user: string;
-  category: string;
+  user: {
+    id: string;
+    name: string;
+  };
+  category: {
+    id: string;
+    name: string;
+  };
 };
 
 export type GetIncomesByIdResponse = GetIncomesResponseDataField;

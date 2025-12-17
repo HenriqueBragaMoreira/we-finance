@@ -19,8 +19,7 @@ export class InvestmentService {
   async create(data: CreateInvestmentDto, userId: string) {
     return this.repo.create({
       ...data,
-      user: { connect: { id: userId } },
-      category: { connect: { id: data.categoryId } },
+      userId,
     });
   }
 

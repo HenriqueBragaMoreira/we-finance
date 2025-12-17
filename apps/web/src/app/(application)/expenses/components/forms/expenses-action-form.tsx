@@ -50,9 +50,9 @@ const expenseSchema = z.object({
   expenseType: z.enum(["FIXED", "VARIABLE"], {
     message: "Selecione um tipo de despesa",
   }),
-  category: z.string().min(1, "Categoria é obrigatória"),
+  categoryId: z.string().min(1, "Categoria é obrigatória"),
   amount: z.string().min(1, "Valor deve ser positivo"),
-  paymentMethod: z.string().min(1, "Selecione um método"),
+  paymentMethodId: z.string().min(1, "Selecione um método"),
   status: z.enum(["PAID", "PENDING"]),
   installmentsCount: z.string().optional(),
   spentAt: z.date(),
@@ -78,9 +78,9 @@ export function ExpensesActionForm({ data }: ExpensesActionFormProps) {
     defaultValues: {
       name: data?.name ?? "",
       expenseType: data?.expenseType ?? "FIXED",
-      category: data?.category ?? "",
+      categoryId: data?.category.id ?? "",
       amount: masks.money(data?.amount.toFixed(2) ?? "") ?? "",
-      paymentMethod: data?.paymentMethod ?? "",
+      paymentMethodId: data?.paymentMethod.id ?? "",
       status: data?.status ?? "PENDING",
       spentAt: data?.spentAt ? new Date(data.spentAt) : new Date(),
       installmentsCount: data?.installments?.length.toString() ?? "",
@@ -132,7 +132,7 @@ export function ExpensesActionForm({ data }: ExpensesActionFormProps) {
             return {
               ...oldData,
               data: [newExpense, ...oldData.data],
-              totalLength: oldData.total + 1,
+              totalLength: oldData.totalLength + 1,
             };
           }
         }
@@ -203,7 +203,7 @@ export function ExpensesActionForm({ data }: ExpensesActionFormProps) {
 
         <FormField
           control={form.control}
-          name="category"
+          name="categoryId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Categoria</FormLabel>
@@ -215,7 +215,7 @@ export function ExpensesActionForm({ data }: ExpensesActionFormProps) {
                 </FormControl>
                 <SelectContent>
                   {categories?.data?.map((category) => (
-                    <SelectItem key={category.name} value={category.name}>
+                    <SelectItem key={category.id} value={category.id}>
                       {category.name}
                     </SelectItem>
                   ))}
@@ -271,7 +271,7 @@ export function ExpensesActionForm({ data }: ExpensesActionFormProps) {
 
         <FormField
           control={form.control}
-          name="paymentMethod"
+          name="paymentMethodId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Método de Pagamento</FormLabel>
@@ -283,7 +283,7 @@ export function ExpensesActionForm({ data }: ExpensesActionFormProps) {
                 </FormControl>
                 <SelectContent>
                   {paymentMethods?.data?.map((method) => (
-                    <SelectItem key={method.name} value={method.name}>
+                    <SelectItem key={method.id} value={method.id}>
                       {method.name}
                     </SelectItem>
                   ))}

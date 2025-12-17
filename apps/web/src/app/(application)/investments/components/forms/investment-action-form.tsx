@@ -48,7 +48,7 @@ import { masks } from "@/utils/masks";
 
 const investmentSchema = z.object({
   notes: z.string().min(1, "Descrição obrigatória"),
-  category: z.string().min(1, "Categoria é obrigatória"),
+  categoryId: z.string().min(1, "Categoria é obrigatória"),
   amount: z.string().min(1, "Valor deve ser positivo"),
   investedAt: z.date(),
 });
@@ -69,7 +69,7 @@ export function InvestmentActionForm({ data }: InvestmentActionFormProps) {
     resolver: zodResolver(investmentSchema),
     defaultValues: {
       notes: data?.notes ?? "",
-      category: data?.category ?? "",
+      categoryId: data?.category.id ?? "",
       amount: masks.money(data?.amount ?? "") ?? "",
       investedAt: data?.investedAt ? new Date(data.investedAt) : new Date(),
     },
@@ -188,7 +188,7 @@ export function InvestmentActionForm({ data }: InvestmentActionFormProps) {
 
         <FormField
           control={form.control}
-          name="category"
+          name="categoryId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Categoria</FormLabel>
@@ -200,7 +200,7 @@ export function InvestmentActionForm({ data }: InvestmentActionFormProps) {
                 </FormControl>
                 <SelectContent>
                   {categories?.data?.map((category) => (
-                    <SelectItem key={category.name} value={category.name}>
+                    <SelectItem key={category.id} value={category.id}>
                       {category.name}
                     </SelectItem>
                   ))}

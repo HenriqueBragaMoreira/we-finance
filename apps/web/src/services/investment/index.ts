@@ -42,7 +42,7 @@ export const investmentServices = {
     const response = await api.post("investments", {
       json: {
         ...data,
-        amount: masks.removeMask(data.amount),
+        amount: masks.removeMask(String(data.amount)),
       },
     });
 
@@ -52,7 +52,7 @@ export const investmentServices = {
     const response = await api.patch(`investments/${data.id}`, {
       json: {
         ...data,
-        amount: masks.removeMask(data.amount),
+        amount: masks.removeMask(String(data.amount)),
       },
     });
 

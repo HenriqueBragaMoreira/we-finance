@@ -13,7 +13,7 @@ export type GetExpenseProps = {
 
 export type GetExpenseResponse = {
   data: GetExpenseResponseDataField[];
-  total: number;
+  totalLength: number;
 };
 
 export type GetExpenseResponseDataField = {
@@ -26,9 +26,18 @@ export type GetExpenseResponseDataField = {
   createdAt: string;
   updatedAt: string;
   installments: GetExpenseResponseInstallmentField[];
-  user: string;
-  category: string;
-  paymentMethod: string;
+  user: {
+    id: string;
+    name: string;
+  };
+  category: {
+    id: string;
+    name: string;
+  };
+  paymentMethod: {
+    id: string;
+    name: string;
+  };
 };
 
 export type GetExpenseResponseInstallmentField = {
@@ -52,8 +61,8 @@ export type CreateExpenseProps = {
   amount: string;
   spentAt: Date;
   status: "PAID" | "PENDING";
-  category: string;
-  paymentMethod: string;
+  categoryId: string;
+  paymentMethodId: string;
   installmentsCount?: string;
 };
 
@@ -67,9 +76,18 @@ export type CreateExpenseResponse = {
   createdAt: string;
   updatedAt: string;
   installments: GetExpenseResponseInstallmentField[];
-  user: string;
-  category: string;
-  paymentMethod: string;
+  user: {
+    id: string;
+    name: string;
+  };
+  category: {
+    id: string;
+    name: string;
+  };
+  paymentMethod: {
+    id: string;
+    name: string;
+  };
 };
 
 export type UpdateExpenseProps = CreateExpenseProps & {
