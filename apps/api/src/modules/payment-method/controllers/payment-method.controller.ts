@@ -83,6 +83,8 @@ export class PaymentMethodController {
           },
         },
         totalLength: { type: "number", example: 25 },
+        activeCount: { type: "number", example: 15 },
+        inactiveCount: { type: "number", example: 10 },
       },
     },
   })

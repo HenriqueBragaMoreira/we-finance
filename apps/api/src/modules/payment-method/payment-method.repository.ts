@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import type { Prisma } from "@prisma/client";
 import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
+import { Injectable } from "@nestjs/common";
+import type { Prisma } from "@prisma/client";
 import { FilterPaymentMethodDto } from "./dtos/filter-payment-method.dto";
 
 @Injectable()
@@ -31,16 +31,30 @@ export class PaymentMethodRepository {
       ...(pageSize && { skip, take: pageSize }),
     };
 
-    const [data, totalLength] = await Promise.all([
+    const [data, totalLength, activeCount, inactiveCount] = await Promise.all([
       this.prisma.paymentMethod.findMany(findManyOptions),
       this.prisma.paymentMethod.count({
         where: whereClause,
+      }),
+      this.prisma.paymentMethod.count({
+        where: {
+          ...whereClause,
+          isActive: true,
+        },
+      }),
+      this.prisma.paymentMethod.count({
+        where: {
+          ...whereClause,
+          isActive: false,
+        },
       }),
     ]);
 
     return {
       data,
       totalLength,
+      activeCount,
+      inactiveCount,
     };
   }
 
