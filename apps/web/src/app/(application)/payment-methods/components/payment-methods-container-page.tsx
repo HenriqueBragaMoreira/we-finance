@@ -1,8 +1,8 @@
 "use client";
 
-import { paymentMethodsServices } from "@/services/payment-methods";
 import { useQuery } from "@tanstack/react-query";
 import { parseAsString, useQueryStates } from "nuqs";
+import { paymentMethodsServices } from "@/services/payment-methods";
 import { DataTableContainer } from "./data-table-container";
 import { PaymentMethodsHeaderCards } from "./payment-methods-header-cards";
 

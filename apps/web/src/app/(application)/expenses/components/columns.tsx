@@ -42,7 +42,7 @@ export function useColumns() {
       {
         queryKey: ["get-payment-methods"],
         queryFn: async () =>
-          await paymentMethodsServices.get({ isActive: true }),
+          await paymentMethodsServices.get({ status: "true" }),
       },
       {
         queryKey: ["get-users"],

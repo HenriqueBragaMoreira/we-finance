@@ -1,8 +1,8 @@
 "use client";
 
+import { CreditCard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { GetPaymentMethodsResponse } from "@/services/payment-methods/types";
-import { CreditCard } from "lucide-react";
 import { PaymentMethodsHeaderCardsSkeleton } from "./payment-methods-header-cards-skeleton";
 
 type PaymentMethodsHeaderCardsProps = {

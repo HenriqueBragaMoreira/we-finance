@@ -1,3 +1,6 @@
+import { useMutation } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,9 +17,6 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { getQueryClient } from "@/lib/tanstack-query";
 import { paymentMethodsServices } from "@/services/payment-methods";
 import type { GetPaymentMethodsResponse } from "@/services/payment-methods/types";
-import { useMutation } from "@tanstack/react-query";
-import { Trash2 } from "lucide-react";
-import { toast } from "sonner";
 
 export function DeletePaymentMethodDialog({
   paymentMethodId,

@@ -1,10 +1,10 @@
 "use client";
 
+import { CreditCard } from "lucide-react";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { Button } from "@/components/ui/button";
 import type { GetPaymentMethodsResponse } from "@/services/payment-methods/types";
-import { CreditCard } from "lucide-react";
 import { useColumns } from "./columns";
 import { PaymentMethodsActionDialog } from "./payment-methods-action-dialog";
 
