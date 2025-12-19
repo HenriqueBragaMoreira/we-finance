@@ -1,3 +1,4 @@
+import { createDateRangeFilter } from "@/utils/filter.util";
 import { calculatePagination } from "@/utils/pagination.util";
 import { PrismaService } from "@/utils/prisma.service";
 import { Injectable } from "@nestjs/common";
@@ -18,11 +19,16 @@ export class PaymentMethodRepository {
       isActiveFilter = filters.isActive.toLowerCase() === "true";
     }
 
-    const whereClause = {
+    const createdAtCondition = createDateRangeFilter(filters.createdAt);
+    const updatedAtCondition = createDateRangeFilter(filters.updatedAt);
+
+    const whereClause: Prisma.PaymentMethodWhereInput = {
       name: filters.name
         ? { contains: filters.name, mode: "insensitive" as const }
         : undefined,
       isActive: isActiveFilter,
+      createdAt: createdAtCondition,
+      updatedAt: updatedAtCondition,
     };
 
     const findManyOptions = {

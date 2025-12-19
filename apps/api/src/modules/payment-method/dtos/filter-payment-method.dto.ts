@@ -33,4 +33,20 @@ export class FilterPaymentMethodDto {
   @IsOptional()
   @IsString()
   limit?: string;
+
+  @ApiPropertyOptional({
+    example: "2025-01-01",
+    description: "Filtrar por data de criação do método de pagamento",
+  })
+  @IsOptional()
+  @IsString()
+  createdAt?: string;
+
+  @ApiPropertyOptional({
+    example: "2025-01-01",
+    description: "Filtrar por data de atualização do método de pagamento",
+  })
+  @IsOptional()
+  @IsString()
+  updatedAt?: string;
 }
