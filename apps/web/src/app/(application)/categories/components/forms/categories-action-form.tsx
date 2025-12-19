@@ -1,9 +1,3 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Color from "color";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { DialogFooter, handleCloseDialog } from "@/components/ui/dialog";
 import {
@@ -34,6 +28,12 @@ import type {
   GetCategoriesResponse,
   GetCategoriesResponseDataField,
 } from "@/services/categories/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Color from "color";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const categoriesSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -98,6 +98,7 @@ export function CategoriesActionForm({ category }: CategoriesActionFormProps) {
               ...oldData,
               data: [newCategory, ...oldData.data],
               totalLength: oldData.totalLength + 1,
+              activeCount: oldData.activeCount + 1,
             };
           }
         }

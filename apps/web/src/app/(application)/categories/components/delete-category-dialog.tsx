@@ -1,6 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
-import { Trash2 } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,6 +14,9 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { getQueryClient } from "@/lib/tanstack-query";
 import { categoriesServices } from "@/services/categories";
 import type { GetCategoriesResponse } from "@/services/categories/types";
+import { useMutation } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function DeleteCategoryDialog({ categoryId }: { categoryId: string }) {
   const queryClient = getQueryClient();
@@ -39,9 +39,21 @@ export function DeleteCategoryDialog({ categoryId }: { categoryId: string }) {
             (item) => item.id !== data.id
           );
 
+          let activeCount = oldData.activeCount;
+          let inactiveCount = oldData.inactiveCount;
+
+          if (data.isActive === true) {
+            activeCount--;
+          } else {
+            inactiveCount--;
+          }
+
           return {
             ...oldData,
             data: updatedData,
+            totalLength: oldData.totalLength - 1,
+            activeCount,
+            inactiveCount,
           };
         }
       );
