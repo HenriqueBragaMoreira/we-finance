@@ -47,6 +47,13 @@ Remove uma despesa e suas parcelas:
 - Exclusão em cascata dos parcelamentos
 - Exclusão física do registro
 
+### 6. **Atualizar Parcela** (`PATCH /expenses/installments/:id`)
+Atualiza uma parcela específica de forma independente:
+- Permite alterar apenas **data de vencimento** (`dueDate`)
+- Permite alterar apenas **status** (`status`: PENDING ou PAID)
+- Atualização parcial e independente da despesa principal
+- Útil para gerenciar pagamentos de parcelas individuais
+
 ## 🔍 Filtros Disponíveis
 
 ### **Filtros de Listagem** (`GET /expenses`)
@@ -79,6 +86,7 @@ expense/
 └── dtos/
     ├── create-expense.dto.ts       # DTO para criação
     ├── update-expense.dto.ts       # DTO para atualização
+    ├── update-installment.dto.ts   # DTO para atualizar parcela
     ├── filter-expense.dto.ts       # DTO para filtros
     └── monthly-stats.dto.ts        # DTO para estatísticas
 ```
@@ -188,12 +196,38 @@ PATCH /expenses/clx123456789
 }
 ```
 
+### Atualizar Status de uma Parcela
+```bash
+PATCH /expenses/installments/clx987654321
+{
+  "status": "PAID"
+}
+```
+
+### Alterar Data de Vencimento de uma Parcela
+```bash
+PATCH /expenses/installments/clx987654321
+{
+  "dueDate": "2025-09-15T00:00:00Z"
+}
+```
+
+### Atualizar Parcela Completamente
+```bash
+PATCH /expenses/installments/clx987654321
+{
+  "dueDate": "2025-09-20T00:00:00Z",
+  "status": "PAID"
+}
+```
+
 ## 📈 Casos de Uso
 
 Este módulo atende aos seguintes requisitos:
 - ✅ Controle completo de despesas pessoais
 - ✅ Gestão de gastos fixos e variáveis
 - ✅ Sistema robusto de parcelamentos
+- ✅ Atualização independente de parcelas
 - ✅ Estatísticas mensais para análise financeira
 - ✅ Filtros avançados para busca específica
 - ✅ Integração com categorias e métodos de pagamento
@@ -207,6 +241,8 @@ Este módulo atende aos seguintes requisitos:
 - Parcelas são criadas com vencimento mensal sequencial
 - Última parcela ajustada para exato fechamento do valor total
 - Recriação completa de parcelas ao alterar quantidade ou valor
+- Parcelas podem ser atualizadas individualmente (data e status)
+- Status de parcela independente do status da despesa principal
 
 ### **Tipos de Despesa**
 - **FIXED**: Despesas recorrentes (aluguel, conta de luz, etc.)

@@ -6,6 +6,7 @@ import type {
   MonthlyStatsResponseDto,
 } from "../dtos/monthly-stats.dto";
 import type { UpdateExpenseDto } from "../dtos/update-expense.dto";
+import type { UpdateInstallmentDto } from "../dtos/update-installment.dto";
 import {
   type ExpenseListResponse,
   ExpenseRepository,
@@ -176,5 +177,18 @@ export class ExpenseService {
     }
 
     return this.repo.getMonthlyStats(month);
+  }
+
+  async updateInstallment(
+    id: string,
+    data: UpdateInstallmentDto
+  ): Promise<{
+    id: string;
+    amount: number;
+    dueDate: Date;
+    number: number;
+    status: string;
+  }> {
+    return this.repo.updateInstallment(id, data);
   }
 }

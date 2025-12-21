@@ -14,6 +14,7 @@ import type { CreateExpenseDto } from "../dtos/create-expense.dto";
 import type { FilterExpenseDto } from "../dtos/filter-expense.dto";
 import type { MonthlyStatsDto } from "../dtos/monthly-stats.dto";
 import type { UpdateExpenseDto } from "../dtos/update-expense.dto";
+import type { UpdateInstallmentDto } from "../dtos/update-installment.dto";
 import { ExpenseService } from "../services/expense.service";
 
 @Controller("expenses")
@@ -321,5 +322,48 @@ export class ExpenseController {
   })
   delete(@Param("id") id: string) {
     return this.service.delete(id);
+  }
+
+  @Patch("installments/:id")
+  @ApiOperation({ summary: "Atualiza uma parcela específica" })
+  @ApiBody({
+    description: "Dados para atualizar uma parcela",
+    schema: {
+      type: "object",
+      properties: {
+        dueDate: {
+          type: "string",
+          format: "date-time",
+          example: "2025-08-15T00:00:00Z",
+          description: "Data de vencimento da parcela (opcional)",
+        },
+        status: {
+          type: "string",
+          enum: ["PENDING", "PAID"],
+          example: "PAID",
+          description: "Status da parcela (opcional)",
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Parcela atualizada com sucesso",
+    schema: {
+      type: "object",
+      properties: {
+        id: { type: "string", example: "clx123456789" },
+        amount: { type: "number", example: 125.42 },
+        dueDate: { type: "string", format: "date-time" },
+        number: { type: "number", example: 1 },
+        status: { type: "string", example: "PAID" },
+      },
+    },
+  })
+  updateInstallment(
+    @Param("id") id: string,
+    @Body() data: UpdateInstallmentDto
+  ) {
+    return this.service.updateInstallment(id, data);
   }
 }

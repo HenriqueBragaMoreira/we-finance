@@ -473,4 +473,25 @@ export class ExpenseRepository {
       month,
     };
   }
+
+  async updateInstallment(
+    id: string,
+    data: Prisma.InstallmentUpdateInput
+  ): Promise<{
+    id: string;
+    amount: number;
+    dueDate: Date;
+    number: number;
+    status: string;
+  }> {
+    const installment = await this.prisma.installment.update({
+      where: { id },
+      data,
+    });
+
+    return {
+      ...installment,
+      amount: installment.amount.toNumber(),
+    };
+  }
 }
