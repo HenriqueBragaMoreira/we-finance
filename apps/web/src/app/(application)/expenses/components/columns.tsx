@@ -3,6 +3,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 import {
   Banknote,
   CalendarIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   CircleDashed,
   DollarSign,
   EllipsisIcon,
@@ -53,6 +55,40 @@ export function useColumns() {
 
   const columns: ColumnDef<GetExpenseResponseDataField>[] = useMemo(
     () => [
+      {
+        cell: ({ row }) => {
+          return row.getCanExpand() ? (
+            <Button
+              {...{
+                "aria-expanded": row.getIsExpanded(),
+                "aria-label": row.getIsExpanded()
+                  ? `Collapse details for ${row.original.name}`
+                  : `Expand details for ${row.original.name}`,
+                className: "size-7 shadow-none text-muted-foreground",
+                onClick: row.getToggleExpandedHandler(),
+                size: "icon",
+                variant: "ghost",
+              }}
+            >
+              {row.getIsExpanded() ? (
+                <ChevronUpIcon
+                  aria-hidden="true"
+                  className="opacity-60"
+                  size={16}
+                />
+              ) : (
+                <ChevronDownIcon
+                  aria-hidden="true"
+                  className="opacity-60"
+                  size={16}
+                />
+              )}
+            </Button>
+          ) : undefined;
+        },
+        header: () => null,
+        id: "expander",
+      },
       {
         id: "description",
         accessorKey: "name",

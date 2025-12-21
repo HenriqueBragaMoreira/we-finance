@@ -97,3 +97,10 @@ export type UpdateExpenseProps = CreateExpenseProps & {
 export type UpdateExpenseResponse = CreateExpenseResponse;
 
 export type DeleteExpenseResponse = CreateExpenseResponse;
+
+export type UpdateInstallmentProps = {
+  dueDate?: Date;
+  status?: "PAID" | "PENDING";
+};
+
+export type UpdateInstallmentResponse = GetExpenseResponseInstallmentField;

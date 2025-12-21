@@ -10,6 +10,8 @@ import type {
   GetExpenseResponse,
   UpdateExpenseProps,
   UpdateExpenseResponse,
+  UpdateInstallmentProps,
+  UpdateInstallmentResponse,
 } from "./types";
 
 export const expenseServices = {
@@ -64,6 +66,16 @@ export const expenseServices = {
   },
   async delete(id: string): Promise<DeleteExpenseResponse> {
     const response = await api.delete(`expenses/${id}`);
+
+    return response.json();
+  },
+  async updateInstallment(
+    id: string,
+    data: UpdateInstallmentProps
+  ): Promise<UpdateInstallmentResponse> {
+    const response = await api.patch(`expenses/installments/${id}`, {
+      json: data,
+    });
 
     return response.json();
   },
