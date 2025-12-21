@@ -33,6 +33,8 @@ export const masks = {
   listedMoney: (value: string): string => {
     if (!value || typeof value !== "string") return "";
 
+    const isNegative = value.startsWith("-");
+
     const cleanValue = value?.replace(/[^\d.]/g, "");
 
     if (!cleanValue) return "";
@@ -46,6 +48,10 @@ export const masks = {
 
     if (Number.isNaN(number)) {
       return "";
+    }
+
+    if (isNegative) {
+      number = -number;
     }
 
     return new Intl.NumberFormat("pt-BR", {
